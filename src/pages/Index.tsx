@@ -6,10 +6,12 @@ import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthDialog } from "@/components/AuthDialog";
 import { AddWordDialog } from "@/components/AddWordDialog";
+import { EditWordDialog } from "@/components/EditWordDialog";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useCustomWords } from "@/hooks/use-custom-words";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites";
 
@@ -26,13 +28,14 @@ const Index = () => {
   const { isDark, toggle: toggleTheme } = useTheme();
   const { user } = useAuth();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
-  const { customWords, refetch: refetchCustom } = useCustomWords();
+  const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [selectedCategory, setSelectedCategory] = useState<WordCategory | "all">("all");
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [editingWord, setEditingWord] = useState<import("@/data/words").PolishWord | null>(null);
 
   const allWords = useMemo(() => [...words, ...customWords], [customWords]);
 
@@ -194,6 +197,17 @@ const Index = () => {
               isFavorite={isFavorite(currentWord.id)}
               onToggleFavorite={() => toggleFavorite(currentWord.id)}
               onNext={handleNext}
+              isCustom={currentWord.id.startsWith("custom-")}
+              onEdit={() => setEditingWord(currentWord)}
+              onDelete={async () => {
+                try {
+                  await deleteWord(currentWord.id);
+                  toast.success("Słowo usunięte!");
+                  handleNext();
+                } catch {
+                  toast.error("Nie udało się usunąć słowa");
+                }
+              }}
             />
           )
         )}
@@ -210,6 +224,7 @@ const Index = () => {
 
       <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
+      <EditWordDialog open={!!editingWord} word={editingWord} onClose={() => setEditingWord(null)} onSave={updateWord} />
     </div>
   );
 };
