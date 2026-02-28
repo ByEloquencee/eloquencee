@@ -1,28 +1,31 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User, LogOut } from "lucide-react";
+import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 interface AuthDialogProps {
   open: boolean;
   onClose: () => void;
+  profileName?: string;
 }
 
-export function AuthDialog({ open, onClose }: AuthDialogProps) {
+export function AuthDialog({ open, onClose, profileName }: AuthDialogProps) {
   const { user, signUp, signIn, signOut } = useAuth();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) return;
+    if (mode === "register" && !name.trim()) return;
     setSubmitting(true);
     try {
       if (mode === "register") {
-        const { error } = await signUp(email, password);
+        const { error } = await signUp(email, password, name.trim());
         if (error) throw error;
         toast.success("Sprawdź swoją skrzynkę e-mail, aby potwierdzić konto!");
         setMode("login");
@@ -76,8 +79,13 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
             {user ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary">
-                  <User size={18} className="text-muted-foreground" />
-                  <span className="text-sm truncate">{user.email}</span>
+                  <UserCircle size={18} className="text-muted-foreground" />
+                  <div className="flex flex-col min-w-0">
+                    {profileName && (
+                      <span className="text-sm font-medium truncate">{profileName}</span>
+                    )}
+                    <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+                  </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Twoje ulubione słowa i własne słowa są synchronizowane z kontem.
@@ -93,6 +101,20 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-3">
+                  {mode === "register" && (
+                    <div className="relative">
+                      <UserIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="text"
+                        placeholder="Twoje imię *"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        maxLength={50}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
+                    </div>
+                  )}
                   <div className="relative">
                     <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <input

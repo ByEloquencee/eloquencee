@@ -1,16 +1,18 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Shuffle, Plus, User, ChevronDown } from "lucide-react";
-import { words, categories, type WordCategory } from "@/data/words";
+import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthDialog } from "@/components/AuthDialog";
 import { AddWordDialog } from "@/components/AddWordDialog";
 import { EditWordDialog } from "@/components/EditWordDialog";
+import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useCustomWords } from "@/hooks/use-custom-words";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/use-profile";
 import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites";
@@ -24,18 +26,63 @@ function getRandomIndex(max: number, exclude?: number): number {
   return idx;
 }
 
+function pickWeightedWord(
+  allWords: PolishWord[],
+  preferredCategories: WordCategory[],
+  exclude?: number
+): number {
+  if (allWords.length <= 1) return 0;
+  if (preferredCategories.length === 0) return getRandomIndex(allWords.length, exclude);
+
+  // 80% chance to pick from preferred categories
+  const usePreferred = Math.random() < 0.8;
+  if (usePreferred) {
+    const preferredIndices = allWords
+      .map((w, i) => (preferredCategories.includes(w.category) ? i : -1))
+      .filter((i) => i !== -1 && i !== exclude);
+    if (preferredIndices.length > 0) {
+      return preferredIndices[Math.floor(Math.random() * preferredIndices.length)];
+    }
+  }
+  return getRandomIndex(allWords.length, exclude);
+}
+
 const Index = () => {
   const { isDark, toggle: toggleTheme } = useTheme();
   const { user } = useAuth();
+  const { profile, updateProfile } = useProfile();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
-  const [selectedCategory, setSelectedCategory] = useState<WordCategory | "all">("all");
+  const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const [editingWord, setEditingWord] = useState<import("@/data/words").PolishWord | null>(null);
+  const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Show onboarding after first login
+  useEffect(() => {
+    if (user && profile && !profile.onboarding_done) {
+      setShowOnboarding(true);
+    }
+  }, [user, profile]);
+
+  const handleOnboardingComplete = async (cats: WordCategory[]) => {
+    try {
+      await updateProfile({
+        preferred_categories: cats,
+        onboarding_done: true,
+      });
+      if (cats.length > 0) {
+        setSelectedCategories(cats);
+      }
+    } catch {
+      // silently continue
+    }
+    setShowOnboarding(false);
+  };
 
   const allWords = useMemo(() => [...words, ...customWords], [customWords]);
 
@@ -44,7 +91,6 @@ const Index = () => {
     [favorites, allWords]
   );
 
-  // Only show "własne" category if user has custom words
   const visibleCategories = useMemo(() => {
     if (customWords.length > 0) return categories;
     return categories.filter(c => c.value !== "własne");
@@ -52,18 +98,47 @@ const Index = () => {
 
   const filteredWords = useMemo(() => {
     const base = viewMode === "favorites" ? favoriteWords : allWords;
-    if (selectedCategory === "all") return base;
-    return base.filter((w) => w.category === selectedCategory);
-  }, [viewMode, favoriteWords, selectedCategory, allWords]);
+    if (selectedCategories.includes("all")) return base;
+    return base.filter((w) => selectedCategories.includes(w.category));
+  }, [viewMode, favoriteWords, selectedCategories, allWords]);
 
   const currentWord = filteredWords[currentIndex % filteredWords.length];
 
+  const preferredCategories = profile?.preferred_categories || [];
+
   const handleNext = useCallback(() => {
     if (filteredWords.length === 0) return;
-    setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
-  }, [filteredWords.length]);
+    // If showing all words and user has preferences, use weighted selection
+    if (selectedCategories.includes("all") && preferredCategories.length > 0) {
+      setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
+    } else {
+      setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
+    }
+  }, [filteredWords, selectedCategories, preferredCategories]);
+
+  const toggleCategory = (cat: WordCategory | "all") => {
+    if (cat === "all") {
+      setSelectedCategories(["all"]);
+    } else {
+      setSelectedCategories((prev) => {
+        const withoutAll = prev.filter((c) => c !== "all");
+        const next = withoutAll.includes(cat)
+          ? withoutAll.filter((c) => c !== cat)
+          : [...withoutAll, cat];
+        return next.length === 0 ? ["all"] : next;
+      });
+    }
+    setCurrentIndex(0);
+  };
 
   const hasFavorites = favoriteWords.length > 0;
+
+  const selectedCategoryLabels = useMemo(() => {
+    if (selectedCategories.includes("all")) return "Wszystkie";
+    return selectedCategories
+      .map((c) => categories.find((cat) => cat.value === c)?.label || c)
+      .join(", ");
+  }, [selectedCategories]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -74,7 +149,9 @@ const Index = () => {
             Eloquencee
           </span>
           <span className="text-xs text-muted-foreground tracking-wide">
-            Ucz się nowych słów każdego dnia!
+            {profile?.name
+              ? `Cześć, ${profile.name}! Ucz się nowych słów!`
+              : "Ucz się nowych słów każdego dnia!"}
           </span>
         </div>
         <div className="flex items-center gap-1">
@@ -113,7 +190,7 @@ const Index = () => {
                 ? "text-primary hover:bg-secondary"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary"
             }`}
-            title={user ? user.email || "Konto" : "Zaloguj się"}
+            title={user ? profile?.name || user.email || "Konto" : "Zaloguj się"}
           >
             <User size={18} />
           </motion.button>
@@ -125,12 +202,12 @@ const Index = () => {
       <div className="w-full max-w-lg mx-auto px-4 pb-4">
         <button
           onClick={() => setCategoriesOpen((v) => !v)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors max-w-full"
         >
-          Kategorie
+          <span className="truncate">{selectedCategoryLabels}</span>
           <ChevronDown
             size={16}
-            className={`transition-transform ${categoriesOpen ? "rotate-180" : ""}`}
+            className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
           />
         </button>
         <AnimatePresence>
@@ -142,23 +219,24 @@ const Index = () => {
               className="overflow-hidden"
             >
               <div className="flex flex-wrap gap-1.5 pt-3">
-                {visibleCategories.map((cat) => (
-                  <button
-                    key={cat.value}
-                    onClick={() => {
-                      setSelectedCategory(cat.value);
-                      setCurrentIndex(0);
-                      setCategoriesOpen(false);
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                      selectedCategory === cat.value
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
+                {visibleCategories.map((cat) => {
+                  const isSelected = cat.value === "all"
+                    ? selectedCategories.includes("all")
+                    : selectedCategories.includes(cat.value);
+                  return (
+                    <button
+                      key={cat.value}
+                      onClick={() => toggleCategory(cat.value)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  );
+                })}
               </div>
             </motion.div>
           )}
@@ -179,11 +257,11 @@ const Index = () => {
                 Brak słów
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Nie znaleziono słów w tej kategorii.
+                Nie znaleziono słów w wybranych kategoriach.
               </p>
             </div>
             <button
-              onClick={() => { setViewMode("all"); setSelectedCategory("all"); }}
+              onClick={() => { setViewMode("all"); setSelectedCategories(["all"]); }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
             >
               <Shuffle size={16} />
@@ -222,9 +300,14 @@ const Index = () => {
         </p>
       </footer>
 
-      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} profileName={profile?.name} />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <EditWordDialog open={!!editingWord} word={editingWord} onClose={() => setEditingWord(null)} onSave={updateWord} />
+      <OnboardingDialog
+        open={showOnboarding}
+        name={profile?.name || ""}
+        onComplete={handleOnboardingComplete}
+      />
     </div>
   );
 };
