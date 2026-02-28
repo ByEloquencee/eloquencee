@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Shuffle, Plus, User } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown } from "lucide-react";
 import { words, categories, type WordCategory } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -32,6 +32,7 @@ const Index = () => {
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   const allWords = useMemo(() => [...words, ...customWords], [customWords]);
 
@@ -64,7 +65,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Nav */}
-      <header className="w-full max-w-lg mx-auto px-4 pt-6 pb-2 flex items-center justify-between">
+      <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between">
         <div className="flex flex-col">
           <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
             Eloquencee
@@ -118,25 +119,47 @@ const Index = () => {
       </header>
 
       {/* Category filter */}
-      <div className="w-full max-w-lg mx-auto px-4 pb-2">
-        <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-          {visibleCategories.map((cat) => (
-            <button
-              key={cat.value}
-              onClick={() => {
-                setSelectedCategory(cat.value);
-                setCurrentIndex(0);
-              }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                selectedCategory === cat.value
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-              }`}
+      <div className="w-full max-w-lg mx-auto px-4 pb-4">
+        <button
+          onClick={() => setCategoriesOpen((v) => !v)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
+        >
+          Kategorie
+          <ChevronDown
+            size={16}
+            className={`transition-transform ${categoriesOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+        <AnimatePresence>
+          {categoriesOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
             >
-              {cat.label}
-            </button>
-          ))}
-        </div>
+              <div className="flex flex-wrap gap-1.5 pt-3">
+                {visibleCategories.map((cat) => (
+                  <button
+                    key={cat.value}
+                    onClick={() => {
+                      setSelectedCategory(cat.value);
+                      setCurrentIndex(0);
+                      setCategoriesOpen(false);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                      selectedCategory === cat.value
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Content */}
