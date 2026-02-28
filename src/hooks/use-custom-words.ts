@@ -37,5 +37,26 @@ export function useCustomWords() {
     fetchCustomWords();
   }, [fetchCustomWords]);
 
-  return { customWords, refetch: fetchCustomWords };
+  const deleteWord = useCallback(async (wordId: string) => {
+    const dbId = wordId.replace("custom-", "");
+    const { error } = await supabase.from("custom_words").delete().eq("id", dbId);
+    if (error) throw error;
+    await fetchCustomWords();
+  }, [fetchCustomWords]);
+
+  const updateWord = useCallback(async (wordId: string, updates: {
+    word: string;
+    part_of_speech: string;
+    definition: string;
+    example: string;
+    etymology: string | null;
+    category: string;
+  }) => {
+    const dbId = wordId.replace("custom-", "");
+    const { error } = await supabase.from("custom_words").update(updates).eq("id", dbId);
+    if (error) throw error;
+    await fetchCustomWords();
+  }, [fetchCustomWords]);
+
+  return { customWords, refetch: fetchCustomWords, deleteWord, updateWord };
 }

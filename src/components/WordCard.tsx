@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, RotateCcw } from "lucide-react";
+import { Heart, RotateCcw, Pencil, Trash2 } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 
 interface WordCardProps {
@@ -8,17 +8,31 @@ interface WordCardProps {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onNext: () => void;
+  isCustom?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, onNext }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, onNext, isCustom, onEdit, onDelete }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const handleReveal = () => setRevealed(true);
 
   const handleNext = useCallback(() => {
     setRevealed(false);
+    setConfirmDelete(false);
     onNext();
   }, [onNext]);
+
+  const handleDelete = () => {
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+    onDelete?.();
+    setConfirmDelete(false);
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -32,7 +46,29 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext }: WordCar
       >
         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
           {/* Header */}
-          <div className="px-6 pt-8 pb-4 text-center">
+          <div className="px-6 pt-8 pb-4 text-center relative">
+            {isCustom && (
+              <div className="absolute top-3 right-3 flex gap-1">
+                <button
+                  onClick={onEdit}
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                  title="Edytuj"
+                >
+                  <Pencil size={14} />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                    confirmDelete
+                      ? "bg-destructive text-destructive-foreground"
+                      : "text-muted-foreground hover:text-destructive hover:bg-secondary"
+                  }`}
+                  title={confirmDelete ? "Kliknij ponownie, aby usunąć" : "Usuń"}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            )}
             <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
               {word.partOfSpeech}
             </span>
