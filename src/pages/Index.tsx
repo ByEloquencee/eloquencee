@@ -67,10 +67,10 @@ const Index = () => {
       {/* Nav */}
       <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+          <span className="text-2xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
             Eloquencee
           </span>
-          <span className="text-[10px] text-muted-foreground tracking-wide">
+          <span className="text-xs text-muted-foreground tracking-wide">
             Ucz się nowych słów każdego dnia!
           </span>
         </div>
