@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -8,6 +8,8 @@ import { AuthDialog } from "@/components/AuthDialog";
 import { AddWordDialog } from "@/components/AddWordDialog";
 import { EditWordDialog } from "@/components/EditWordDialog";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
+import { QuizModeDialog } from "@/components/QuizModeDialog";
+import { QuizView } from "@/components/QuizView";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useCustomWords } from "@/hooks/use-custom-words";
 import { useTheme } from "@/hooks/use-theme";
@@ -61,6 +63,8 @@ const Index = () => {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [quizModeOpen, setQuizModeOpen] = useState(false);
+  const [quizActive, setQuizActive] = useState(false);
 
   // Show onboarding after first login
   useEffect(() => {
@@ -132,6 +136,7 @@ const Index = () => {
   };
 
   const hasFavorites = favoriteWords.length > 0;
+  const hasEnoughForQuiz = favoriteWords.length >= 4;
 
   const selectedCategoryLabels = useMemo(() => {
     if (selectedCategories.includes("all")) return "Wszystkie";
@@ -139,6 +144,16 @@ const Index = () => {
       .map((c) => categories.find((cat) => cat.value === c)?.label || c)
       .join(", ");
   }, [selectedCategories]);
+
+  if (quizActive) {
+    return (
+      <QuizView
+        words={favoriteWords}
+        allWords={allWords}
+        onExit={() => setQuizActive(false)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -165,6 +180,14 @@ const Index = () => {
               <Plus size={18} />
             </motion.button>
           )}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setQuizModeOpen(true)}
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            title="Sprawdź się"
+          >
+            <GraduationCap size={18} />
+          </motion.button>
           {hasFavorites && (
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -307,6 +330,12 @@ const Index = () => {
         open={showOnboarding}
         name={profile?.name || ""}
         onComplete={handleOnboardingComplete}
+      />
+      <QuizModeDialog
+        open={quizModeOpen}
+        onClose={() => setQuizModeOpen(false)}
+        onStartQuiz={() => { setQuizModeOpen(false); setQuizActive(true); }}
+        hasFavorites={hasEnoughForQuiz}
       />
     </div>
   );
