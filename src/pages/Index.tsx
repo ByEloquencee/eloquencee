@@ -140,7 +140,7 @@ const Index = () => {
       </div>
 
       {/* Content */}
-      <main className="flex-1 flex items-center justify-center px-4 pb-12">
+      <main className="flex-1 flex items-center justify-center px-4 pb-12 pt-8">
         {filteredWords.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
