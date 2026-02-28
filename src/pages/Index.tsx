@@ -1,11 +1,15 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, BookOpen, Shuffle } from "lucide-react";
+import { Heart, Shuffle, Plus, User } from "lucide-react";
 import { words, categories, type WordCategory } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AuthDialog } from "@/components/AuthDialog";
+import { AddWordDialog } from "@/components/AddWordDialog";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useCustomWords } from "@/hooks/use-custom-words";
 import { useTheme } from "@/hooks/use-theme";
+import { useAuth } from "@/hooks/use-auth";
 
 type ViewMode = "all" | "favorites";
 
@@ -20,21 +24,33 @@ function getRandomIndex(max: number, exclude?: number): number {
 
 const Index = () => {
   const { isDark, toggle: toggleTheme } = useTheme();
+  const { user } = useAuth();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { customWords, refetch: refetchCustom } = useCustomWords();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [selectedCategory, setSelectedCategory] = useState<WordCategory | "all">("all");
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
+  const [authOpen, setAuthOpen] = useState(false);
+  const [addWordOpen, setAddWordOpen] = useState(false);
+
+  const allWords = useMemo(() => [...words, ...customWords], [customWords]);
 
   const favoriteWords = useMemo(
-    () => words.filter((w) => favorites.includes(w.id)),
-    [favorites]
+    () => allWords.filter((w) => favorites.includes(w.id)),
+    [favorites, allWords]
   );
 
+  // Only show "własne" category if user has custom words
+  const visibleCategories = useMemo(() => {
+    if (customWords.length > 0) return categories;
+    return categories.filter(c => c.value !== "własne");
+  }, [customWords.length]);
+
   const filteredWords = useMemo(() => {
-    const base = viewMode === "favorites" ? favoriteWords : words;
+    const base = viewMode === "favorites" ? favoriteWords : allWords;
     if (selectedCategory === "all") return base;
     return base.filter((w) => w.category === selectedCategory);
-  }, [viewMode, favoriteWords, selectedCategory]);
+  }, [viewMode, favoriteWords, selectedCategory, allWords]);
 
   const currentWord = filteredWords[currentIndex % filteredWords.length];
 
@@ -49,13 +65,25 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Nav */}
       <header className="w-full max-w-lg mx-auto px-4 pt-6 pb-2 flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <BookOpen size={20} className="text-primary" />
+        <div className="flex flex-col">
           <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-            Codzienne Słowo
+            Eloquencee
+          </span>
+          <span className="text-[10px] text-muted-foreground tracking-wide">
+            Ucz się nowych słów każdego dnia!
           </span>
         </div>
         <div className="flex items-center gap-1">
+          {user && (
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setAddWordOpen(true)}
+              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+              title="Dodaj własne słowo"
+            >
+              <Plus size={18} />
+            </motion.button>
+          )}
           {hasFavorites && (
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -73,6 +101,18 @@ const Index = () => {
               <span>{favoriteWords.length}</span>
             </motion.button>
           )}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setAuthOpen(true)}
+            className={`p-2 rounded-xl transition-colors cursor-pointer ${
+              user
+                ? "text-primary hover:bg-secondary"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+            }`}
+            title={user ? user.email || "Konto" : "Zaloguj się"}
+          >
+            <User size={18} />
+          </motion.button>
           <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
         </div>
       </header>
@@ -80,7 +120,7 @@ const Index = () => {
       {/* Category filter */}
       <div className="w-full max-w-lg mx-auto px-4 pb-2">
         <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-          {categories.map((cat) => (
+          {visibleCategories.map((cat) => (
             <button
               key={cat.value}
               onClick={() => {
@@ -141,9 +181,12 @@ const Index = () => {
         <p className="text-xs text-muted-foreground">
           {viewMode === "favorites"
             ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-            : `${filteredWords.length} trudnych słów do nauki`}
+            : `${filteredWords.length} słów do nauki`}
         </p>
       </footer>
+
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
+      <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
     </div>
   );
 };
