@@ -55,7 +55,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-visible relative">
           {/* Header */}
           <div className="px-6 pt-8 pb-4 text-center relative">
-            <SpiderWeb />
             {canGoBack && (
               <button
                 onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
@@ -191,6 +190,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               </motion.button>
             </div>
           </div>
+          <SpiderWeb />
         </div>
       </motion.div>
     </AnimatePresence>
