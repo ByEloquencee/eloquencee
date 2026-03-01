@@ -13,12 +13,11 @@ export function SpiderWeb() {
     const schedule = () => {
       clearTimeout(timer);
       if (visible) {
-        // Trigger flee animation first
         setFleeing(true);
         setTimeout(() => {
           setVisible(false);
           setFleeing(false);
-        }, 600);
+        }, 500);
       }
       timer = setTimeout(() => {
         setFleeing(false);
@@ -42,112 +41,138 @@ export function SpiderWeb() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.2 } }}
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
           transition={{ duration: 0.8 }}
           className="w-full pointer-events-none select-none"
           style={{ marginTop: "-1px" }}
         >
-          {/* Web stretched along card width */}
+          {/* Cartoon web stretched along card bottom */}
           <motion.svg
             width="100%"
-            height="24"
-            viewBox="0 0 400 24"
+            height="20"
+            viewBox="0 0 400 20"
             preserveAspectRatio="none"
-            className="opacity-[0.12] w-full"
+            className="w-full opacity-[0.18]"
             style={{ color: "hsl(var(--muted-foreground))" }}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.12 }}
-            transition={{ duration: 0.8 }}
+            animate={{ opacity: 0.18 }}
+            transition={{ duration: 0.6 }}
           >
-            {/* Threads from card edge converging to right side */}
-            <line x1="40" y1="0" x2="310" y2="22" stroke="currentColor" strokeWidth="0.6" />
-            <line x1="120" y1="0" x2="310" y2="22" stroke="currentColor" strokeWidth="0.6" />
-            <line x1="200" y1="0" x2="310" y2="22" stroke="currentColor" strokeWidth="0.6" />
-            <line x1="280" y1="0" x2="310" y2="22" stroke="currentColor" strokeWidth="0.6" />
-            <line x1="360" y1="0" x2="310" y2="22" stroke="currentColor" strokeWidth="0.6" />
-            {/* Cross threads */}
-            <path d="M 100 5 Q 220 10 340 5" stroke="currentColor" strokeWidth="0.4" fill="none" />
-            <path d="M 80 12 Q 220 18 350 12" stroke="currentColor" strokeWidth="0.4" fill="none" />
-            <path d="M 90 18 Q 220 24 340 18" stroke="currentColor" strokeWidth="0.35" fill="none" />
+            {/* Main radial threads converging to spider position (right side) */}
+            <path d="M 30 0 Q 200 8 300 18" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+            <path d="M 100 0 Q 220 6 300 18" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
+            <path d="M 180 0 Q 250 8 300 18" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
+            <path d="M 260 0 Q 280 6 300 18" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+            <path d="M 350 0 Q 320 6 300 18" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" />
+            {/* Cross arcs — cartoon rounded style */}
+            <path d="M 60 4 Q 180 12 320 6" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+            <path d="M 80 10 Q 200 18 330 12" stroke="currentColor" strokeWidth="0.7" fill="none" strokeLinecap="round" />
           </motion.svg>
 
-          {/* Thread + spider, positioned to the right */}
-          <div className="flex" style={{ justifyContent: "right", paddingRight: "22%" }}>
+          {/* Thread + spider on right side */}
+          <div className="flex" style={{ justifyContent: "right", paddingRight: "20%" }}>
             <div className="flex flex-col items-center">
               {/* Thread */}
               <motion.div
                 initial={{ height: 0 }}
-                animate={fleeing ? { height: 0 } : { height: 44 }}
-                transition={fleeing ? { duration: 0.3 } : { duration: 0.8, ease: "easeOut", delay: 0.3 }}
-                className="w-px overflow-hidden"
+                animate={fleeing ? { height: 0 } : { height: 36 }}
+                transition={fleeing ? { duration: 0.25 } : { duration: 0.7, ease: "easeOut", delay: 0.2 }}
+                className="overflow-hidden"
                 style={{
-                  background: "linear-gradient(to bottom, hsl(var(--muted-foreground) / 0.18), hsl(var(--muted-foreground) / 0.06))",
+                  width: "1.5px",
+                  background: "linear-gradient(to bottom, hsl(var(--muted-foreground) / 0.2), hsl(var(--muted-foreground) / 0.08))",
+                  borderRadius: "1px",
                 }}
               />
 
-              {/* Spider */}
+              {/* Spider — cartoonish */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.3, y: -20 }}
+                initial={{ opacity: 0, scale: 0.2, y: -16 }}
                 animate={
                   fleeing
-                    ? { opacity: 0, y: -60, scale: 0.3, transition: { duration: 0.4, ease: "easeIn" } }
+                    ? { opacity: 0, y: -50, scale: 0.2, transition: { duration: 0.35, ease: "easeIn" } }
                     : { opacity: 1, scale: 1, y: 0 }
                 }
-                transition={{ delay: 0.9, duration: 0.4, type: "spring", bounce: 0.5 }}
+                transition={{ delay: 0.7, duration: 0.4, type: "spring", bounce: 0.6 }}
                 className="origin-top"
               >
                 <motion.div
-                  animate={fleeing ? {} : { rotate: [0, 8, -8, 5, -5, 0] }}
-                  transition={{ delay: 1.8, duration: 4, repeat: Infinity, repeatDelay: 3 }}
+                  animate={fleeing ? {} : { rotate: [0, 12, -12, 8, -8, 0] }}
+                  transition={{ delay: 1.5, duration: 3.5, repeat: Infinity, repeatDelay: 2.5 }}
                   className="origin-top"
                 >
                   <motion.svg
-                    width="24"
-                    height="22"
-                    viewBox="0 0 24 22"
+                    width="30"
+                    height="28"
+                    viewBox="0 0 30 28"
                     style={{ color: "hsl(var(--muted-foreground))" }}
                   >
-                    {/* Legs left */}
+                    {/* === CARTOON LEGS — thick, rounded, bouncy === */}
+                    {/* Left legs */}
                     <motion.g
-                      animate={fleeing ? { rotate: -15 } : { rotate: [0, 5, -5, 0] }}
-                      transition={fleeing ? { duration: 0.2 } : { duration: 0.8, repeat: Infinity, repeatDelay: 0.6 }}
-                      style={{ transformOrigin: "10px 9px" }}
+                      animate={fleeing ? { rotate: -20 } : { rotate: [0, 6, -6, 0] }}
+                      transition={fleeing ? { duration: 0.15 } : { duration: 0.7, repeat: Infinity, repeatDelay: 0.5 }}
+                      style={{ transformOrigin: "13px 12px" }}
                     >
-                      <path d="M 10 7 Q 5 2 1 0" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
-                      <path d="M 10 9 Q 3 7 0 5" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
-                      <path d="M 9 11 Q 4 13 1 17" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
-                      <path d="M 9 13 Q 5 16 2 20" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                      <path d="M 12 9 Q 7 4 3 1" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M 12 11 Q 5 9 1 7" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M 11 14 Q 5 16 2 20" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M 11 16 Q 6 19 3 24" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                     </motion.g>
-                    {/* Legs right */}
+                    {/* Right legs */}
                     <motion.g
-                      animate={fleeing ? { rotate: 15 } : { rotate: [0, -5, 5, 0] }}
-                      transition={fleeing ? { duration: 0.2 } : { duration: 0.8, repeat: Infinity, repeatDelay: 0.6, delay: 0.1 }}
-                      style={{ transformOrigin: "14px 9px" }}
+                      animate={fleeing ? { rotate: 20 } : { rotate: [0, -6, 6, 0] }}
+                      transition={fleeing ? { duration: 0.15 } : { duration: 0.7, repeat: Infinity, repeatDelay: 0.5, delay: 0.12 }}
+                      style={{ transformOrigin: "17px 12px" }}
                     >
-                      <path d="M 14 7 Q 19 2 23 0" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
-                      <path d="M 14 9 Q 21 7 24 5" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
-                      <path d="M 15 11 Q 20 13 23 17" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
-                      <path d="M 15 13 Q 19 16 22 20" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                      <path d="M 18 9 Q 23 4 27 1" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M 18 11 Q 25 9 29 7" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M 19 14 Q 25 16 28 20" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M 19 16 Q 24 19 27 24" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                     </motion.g>
-                    {/* Head */}
-                    <ellipse cx="12" cy="7" rx="3" ry="2.5" fill="currentColor" opacity="0.7" />
-                    {/* Abdomen */}
-                    <ellipse cx="12" cy="13" rx="4" ry="3.5" fill="currentColor" opacity="0.6" />
-                    {/* Eyes */}
-                    <circle cx="10.8" cy="6.2" r="0.9" fill="hsl(var(--background))" opacity="0.9" />
-                    <circle cx="13.2" cy="6.2" r="0.9" fill="hsl(var(--background))" opacity="0.9" />
-                    {/* Pupils */}
+
+                    {/* Head — big round cartoon head */}
+                    <circle cx="15" cy="9" r="5" fill="currentColor" opacity="0.75" />
+                    {/* Abdomen — chubby */}
+                    <ellipse cx="15" cy="18" rx="6" ry="5.5" fill="currentColor" opacity="0.6" />
+                    {/* Belly highlight */}
+                    <ellipse cx="15" cy="17" rx="2.5" ry="2" fill="hsl(var(--background))" opacity="0.1" />
+
+                    {/* Big cartoon eyes */}
+                    <circle cx="12.5" cy="8" r="2.2" fill="hsl(var(--background))" />
+                    <circle cx="17.5" cy="8" r="2.2" fill="hsl(var(--background))" />
+                    {/* Pupils — looking around */}
                     <motion.circle
-                      r="0.45"
+                      r="1.1"
                       fill="hsl(var(--foreground))"
-                      animate={fleeing ? { cy: 5.8 } : { cx: [10.8, 11.3, 10.3, 10.8], cy: [6.2, 6.5, 6, 6.2] }}
-                      transition={fleeing ? { duration: 0.1 } : { duration: 3, repeat: Infinity, repeatDelay: 1.5 }}
+                      animate={fleeing
+                        ? { cx: 12.5, cy: 6.5 }
+                        : { cx: [12.5, 13.2, 11.8, 12.5], cy: [8, 8.5, 7.8, 8] }
+                      }
+                      transition={fleeing ? { duration: 0.1 } : { duration: 3, repeat: Infinity, repeatDelay: 1.2 }}
                     />
                     <motion.circle
-                      r="0.45"
+                      r="1.1"
                       fill="hsl(var(--foreground))"
-                      animate={fleeing ? { cy: 5.8 } : { cx: [13.2, 13.7, 12.7, 13.2], cy: [6.2, 6.5, 6, 6.2] }}
-                      transition={fleeing ? { duration: 0.1 } : { duration: 3, repeat: Infinity, repeatDelay: 1.5 }}
+                      animate={fleeing
+                        ? { cx: 17.5, cy: 6.5 }
+                        : { cx: [17.5, 18.2, 16.8, 17.5], cy: [8, 8.5, 7.8, 8] }
+                      }
+                      transition={fleeing ? { duration: 0.1 } : { duration: 3, repeat: Infinity, repeatDelay: 1.2 }}
+                    />
+                    {/* Eye shine */}
+                    <circle cx="11.8" cy="7" r="0.5" fill="hsl(var(--background))" opacity="0.7" />
+                    <circle cx="16.8" cy="7" r="0.5" fill="hsl(var(--background))" opacity="0.7" />
+
+                    {/* Little smile */}
+                    <motion.path
+                      d="M 13.5 11 Q 15 12.5 16.5 11"
+                      stroke="hsl(var(--background))"
+                      strokeWidth="0.8"
+                      fill="none"
+                      strokeLinecap="round"
+                      animate={{ d: ["M 13.5 11 Q 15 12.5 16.5 11", "M 13.5 11 Q 15 13 16.5 11", "M 13.5 11 Q 15 12.5 16.5 11"] }}
+                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
                     />
                   </motion.svg>
                 </motion.div>
