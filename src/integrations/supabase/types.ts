@@ -75,6 +75,7 @@ export type Database = {
         Row: {
           created_at: string
           daily_email_enabled: boolean
+          daily_goal: number
           id: string
           name: string
           onboarding_done: boolean
@@ -84,6 +85,7 @@ export type Database = {
         Insert: {
           created_at?: string
           daily_email_enabled?: boolean
+          daily_goal?: number
           id?: string
           name?: string
           onboarding_done?: boolean
@@ -93,6 +95,7 @@ export type Database = {
         Update: {
           created_at?: string
           daily_email_enabled?: boolean
+          daily_goal?: number
           id?: string
           name?: string
           onboarding_done?: boolean
