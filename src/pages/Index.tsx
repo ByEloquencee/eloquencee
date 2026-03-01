@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
@@ -12,6 +12,7 @@ import { QuizModeDialog } from "@/components/QuizModeDialog";
 import { QuizView } from "@/components/QuizView";
 import { DailyProgress } from "@/components/DailyProgress";
 import { WordAIChat } from "@/components/WordAIChat";
+import { FlashcardCreator } from "@/components/FlashcardCreator";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
@@ -79,7 +80,8 @@ const Index = () => {
   const [quizModeOpen, setQuizModeOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
-
+  const [activePage, setActivePage] = useState(0); // 0 = words, 1 = creator
+  const containerRef = useRef<HTMLDivElement>(null);
   // Show onboarding after first login
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
@@ -318,72 +320,115 @@ const Index = () => {
         </AnimatePresence>
       </div>
 
-      {/* Content */}
-      <main className="flex-1 flex items-center justify-center px-4 pb-12 pt-8">
-        {filteredWords.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center space-y-4"
-          >
-            <Heart size={48} className="mx-auto text-muted-foreground/30" />
-            <div>
-              <h2 className="text-xl font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-                Brak słów
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Nie znaleziono słów w wybranych kategoriach.
-              </p>
-            </div>
+      {/* Swipeable content area */}
+      <main className="flex-1 flex flex-col overflow-hidden relative" ref={containerRef}>
+        {/* Page indicator dots */}
+        <div className="flex justify-center gap-2 pb-2">
+          {[0, 1].map((i) => (
             <button
-              onClick={() => { setViewMode("all"); setSelectedCategories(["all"]); setActiveFolderId(null); }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
-            >
-              <Shuffle size={16} />
-              Wszystkie słowa
-            </button>
-          </motion.div>
-        ) : (
-          currentWord && (
-            <WordCard
-              word={currentWord}
-              isFavorite={isFavorite(currentWord.id)}
-              onToggleFavorite={() => {
-                const wasFav = isFavorite(currentWord.id);
-                toggleFavorite(currentWord.id);
-                if (!wasFav) incrementProgress();
-                else decrementProgress();
-              }}
-              onNext={handleNext}
-              onPrev={handlePrev}
-              canGoBack={history.length > 0}
-              isCustom={currentWord.id.startsWith("custom-")}
-              onEdit={() => setEditingWord(currentWord)}
-              onDelete={async () => {
-                try {
-                  await deleteWord(currentWord.id);
-                  toast.success("Słowo usunięte!");
-                  handleNext();
-                } catch {
-                  toast.error("Nie udało się usunąć słowa");
-                }
-              }}
-              onAskAI={() => setAiChatOpen(true)}
-              folders={folders}
-              onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
+              key={i}
+              onClick={() => setActivePage(i)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                activePage === i
+                  ? "bg-primary w-6"
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
             />
-          )
-        )}
+          ))}
+        </div>
+
+        <div className="flex-1 relative overflow-hidden">
+          <motion.div
+            className="flex h-full"
+            animate={{ x: `${-activePage * 100}%` }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(_, info) => {
+              const threshold = 50;
+              if (info.offset.x < -threshold && activePage === 0) {
+                setActivePage(1);
+              } else if (info.offset.x > threshold && activePage === 1) {
+                setActivePage(0);
+              }
+            }}
+          >
+            {/* Page 1: Word card */}
+            <div className="w-full flex-shrink-0 flex items-center justify-center px-4 pb-12 pt-8">
+              {filteredWords.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center space-y-4"
+                >
+                  <Heart size={48} className="mx-auto text-muted-foreground/30" />
+                  <div>
+                    <h2 className="text-xl font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+                      Brak słów
+                    </h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Nie znaleziono słów w wybranych kategoriach.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => { setViewMode("all"); setSelectedCategories(["all"]); setActiveFolderId(null); }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
+                  >
+                    <Shuffle size={16} />
+                    Wszystkie słowa
+                  </button>
+                </motion.div>
+              ) : (
+                currentWord && (
+                  <WordCard
+                    word={currentWord}
+                    isFavorite={isFavorite(currentWord.id)}
+                    onToggleFavorite={() => {
+                      const wasFav = isFavorite(currentWord.id);
+                      toggleFavorite(currentWord.id);
+                      if (!wasFav) incrementProgress();
+                      else decrementProgress();
+                    }}
+                    onNext={handleNext}
+                    onPrev={handlePrev}
+                    canGoBack={history.length > 0}
+                    isCustom={currentWord.id.startsWith("custom-")}
+                    onEdit={() => setEditingWord(currentWord)}
+                    onDelete={async () => {
+                      try {
+                        await deleteWord(currentWord.id);
+                        toast.success("Słowo usunięte!");
+                        handleNext();
+                      } catch {
+                        toast.error("Nie udało się usunąć słowa");
+                      }
+                    }}
+                    onAskAI={() => setAiChatOpen(true)}
+                    folders={folders}
+                    onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
+                  />
+                )
+              )}
+            </div>
+
+            {/* Page 2: Flashcard creator */}
+            <div className="w-full flex-shrink-0 flex items-center justify-center px-4 pb-12 pt-8">
+              <FlashcardCreator onAddWord={() => setAddWordOpen(true)} />
+            </div>
+          </motion.div>
+        </div>
       </main>
 
-      {/* Footer */}
       <footer className="pb-6 text-center">
         <p className="text-xs text-muted-foreground">
-          {activeFolderId
-            ? `${filteredWords.length} słów w folderze`
-            : viewMode === "favorites"
-              ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-              : `${filteredWords.length} słów do nauki`}
+          {activePage === 1
+            ? "Przesuń w prawo, aby wrócić do słów"
+            : activeFolderId
+              ? `${filteredWords.length} słów w folderze`
+              : viewMode === "favorites"
+                ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+                : `${filteredWords.length} słów do nauki`}
         </p>
       </footer>
 
