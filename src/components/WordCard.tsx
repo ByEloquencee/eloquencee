@@ -50,6 +50,15 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
           {/* Header */}
           <div className="px-6 pt-8 pb-4 text-center relative">
+            {canGoBack && (
+              <button
+                onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
+                className="absolute top-3 left-3 p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                title="Cofnij"
+              >
+                <ChevronLeft size={18} />
+              </button>
+            )}
             <div className="absolute top-3 right-3 flex gap-1">
               <button
                 onClick={onAskAI}
@@ -148,15 +157,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
             </motion.button>
 
             <div className="flex items-center gap-2">
-              {canGoBack && (
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
-                  className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors cursor-pointer"
-                >
-                  <ChevronLeft size={16} />
-                </motion.button>
-              )}
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={handleNext}
