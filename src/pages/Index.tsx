@@ -227,7 +227,7 @@ const Index = () => {
 
       {/* Category filter */}
       <div className="w-full max-w-lg mx-auto px-4 pb-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2">
           <button
             onClick={() => setCategoriesOpen((v) => !v)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
