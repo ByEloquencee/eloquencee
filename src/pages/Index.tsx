@@ -333,9 +333,9 @@ const Index = () => {
       {/* Swipeable content area */}
       <main className="flex-1 flex flex-col overflow-hidden relative" ref={containerRef}>
 
-        <div className="flex-1 relative overflow-hidden flex items-center">
+        <div className="flex-1 relative overflow-hidden flex items-center justify-center">
           <motion.div
-            className="flex h-full"
+            className="flex w-full"
             animate={{ x: `${-activePage * 100}%` }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             drag="x"
