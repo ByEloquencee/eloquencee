@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
+import { SpiderWeb } from "@/components/SpiderWeb";
 import type { Folder } from "@/hooks/use-folders";
 
 interface WordCardProps {
@@ -51,9 +52,10 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-lg mx-auto"
       >
-        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-visible relative">
           {/* Header */}
           <div className="px-6 pt-8 pb-4 text-center relative">
+            <SpiderWeb />
             {canGoBack && (
               <button
                 onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
