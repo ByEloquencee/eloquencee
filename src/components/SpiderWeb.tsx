@@ -6,10 +6,6 @@ const IDLE_TIMEOUT = 3 * 1000; // 3 seconds for testing (change back to 5 * 60 *
 export function SpiderWeb() {
   const [visible, setVisible] = useState(false);
 
-  const reset = useCallback(() => {
-    setVisible(false);
-  }, []);
-
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
@@ -35,107 +31,113 @@ export function SpiderWeb() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.5 }}
-          className="absolute -bottom-2 left-10 z-10 pointer-events-none select-none"
-          onClick={reset}
+          exit={{ opacity: 0, transition: { duration: 0.3 } }}
+          transition={{ duration: 1 }}
+          className="w-full flex justify-center pointer-events-none select-none"
+          style={{ marginTop: "-1px" }}
         >
-          {/* Web structure attached to bottom of card */}
-          <svg width="48" height="40" viewBox="0 0 48 40" className="opacity-25" style={{ color: "hsl(var(--muted-foreground))" }}>
-            {/* Radial threads */}
-            <line x1="24" y1="0" x2="2" y2="38" stroke="currentColor" strokeWidth="0.5" />
-            <line x1="24" y1="0" x2="14" y2="40" stroke="currentColor" strokeWidth="0.5" />
-            <line x1="24" y1="0" x2="24" y2="40" stroke="currentColor" strokeWidth="0.5" />
-            <line x1="24" y1="0" x2="34" y2="40" stroke="currentColor" strokeWidth="0.5" />
-            <line x1="24" y1="0" x2="46" y2="38" stroke="currentColor" strokeWidth="0.5" />
-            {/* Cross threads */}
-            <path d="M 10 10 Q 24 14 38 10" stroke="currentColor" strokeWidth="0.4" fill="none" />
-            <path d="M 6 20 Q 24 25 42 20" stroke="currentColor" strokeWidth="0.4" fill="none" />
-            <path d="M 4 30 Q 24 36 44 30" stroke="currentColor" strokeWidth="0.4" fill="none" />
-          </svg>
+          <div className="relative flex flex-col items-center">
+            {/* Web anchored to card bottom */}
+            <motion.svg
+              width="120"
+              height="60"
+              viewBox="0 0 120 60"
+              className="opacity-[0.15]"
+              style={{ color: "hsl(var(--muted-foreground))" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.15 }}
+              transition={{ duration: 1 }}
+            >
+              {/* Anchor points along card bottom edge */}
+              <line x1="20" y1="0" x2="60" y2="58" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="40" y1="0" x2="60" y2="58" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="60" y1="0" x2="60" y2="58" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="80" y1="0" x2="60" y2="58" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="100" y1="0" x2="60" y2="58" stroke="currentColor" strokeWidth="0.6" />
+              {/* Concentric arcs */}
+              <path d="M 35 12 Q 60 20 85 12" stroke="currentColor" strokeWidth="0.5" fill="none" />
+              <path d="M 30 24 Q 60 34 90 24" stroke="currentColor" strokeWidth="0.5" fill="none" />
+              <path d="M 28 36 Q 60 48 92 36" stroke="currentColor" strokeWidth="0.5" fill="none" />
+              <path d="M 32 48 Q 60 58 88 48" stroke="currentColor" strokeWidth="0.4" fill="none" />
+            </motion.svg>
 
-          {/* Thread down to spider */}
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: 80 }}
-            transition={{ duration: 1.4, ease: "easeOut", delay: 0.3 }}
-            className="w-px mx-auto overflow-hidden"
-            style={{ background: "linear-gradient(to bottom, hsl(var(--muted-foreground) / 0.25), hsl(var(--muted-foreground) / 0.1))" }}
-          />
-
-          {/* Spider swinging */}
-          <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              opacity: { delay: 1.2, duration: 0.6 },
-              y: { delay: 1.2, duration: 0.6, type: "spring", bounce: 0.4 },
-            }}
-            className="flex flex-col items-center origin-top"
-          >
+            {/* Single thread going further down */}
             <motion.div
-              animate={{
-                rotate: [0, 8, -8, 5, -5, 3, -3, 0],
+              initial={{ height: 0 }}
+              animate={{ height: 50 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
+              className="w-px overflow-hidden"
+              style={{
+                background: "linear-gradient(to bottom, hsl(var(--muted-foreground) / 0.2), hsl(var(--muted-foreground) / 0.08))",
               }}
-              transition={{
-                rotate: { delay: 2, duration: 4, repeat: Infinity, repeatDelay: 2 },
-              }}
+            />
+
+            {/* Spider */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.2, duration: 0.5, type: "spring", bounce: 0.5 }}
               className="origin-top"
             >
-              {/* Spider SVG */}
-              <motion.svg
-                width="26"
-                height="24"
-                viewBox="0 0 26 24"
-                style={{ color: "hsl(var(--muted-foreground))" }}
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 6, -6, 0] }}
+                transition={{ delay: 2, duration: 5, repeat: Infinity, repeatDelay: 3 }}
+                className="origin-top"
               >
-                {/* Legs left - animated */}
-                <motion.g
-                  animate={{ rotate: [0, 3, -3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 1 }}
-                  style={{ transformOrigin: "10px 10px" }}
+                <motion.svg
+                  width="28"
+                  height="26"
+                  viewBox="0 0 28 26"
+                  style={{ color: "hsl(var(--muted-foreground))" }}
                 >
-                  <path d="M 10 8 Q 5 3 2 1" stroke="currentColor" strokeWidth="0.9" fill="none" strokeLinecap="round" />
-                  <path d="M 10 10 Q 3 8 0 6" stroke="currentColor" strokeWidth="0.9" fill="none" strokeLinecap="round" />
-                  <path d="M 10 12 Q 4 14 1 18" stroke="currentColor" strokeWidth="0.9" fill="none" strokeLinecap="round" />
-                  <path d="M 10 13 Q 5 17 3 22" stroke="currentColor" strokeWidth="0.9" fill="none" strokeLinecap="round" />
-                </motion.g>
-                {/* Legs right - animated opposite */}
-                <motion.g
-                  animate={{ rotate: [0, -3, 3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 1, delay: 0.2 }}
-                  style={{ transformOrigin: "16px 10px" }}
-                >
-                  <path d="M 16 8 Q 21 3 24 1" stroke="currentColor" strokeWidth="0.9" fill="none" strokeLinecap="round" />
-                  <path d="M 16 10 Q 23 8 26 6" stroke="currentColor" strokeWidth="0.9" fill="none" strokeLinecap="round" />
-                  <path d="M 16 12 Q 22 14 25 18" stroke="currentColor" strokeWidth="0.9" fill="none" strokeLinecap="round" />
-                  <path d="M 16 13 Q 21 17 23 22" stroke="currentColor" strokeWidth="0.9" fill="none" strokeLinecap="round" />
-                </motion.g>
-                {/* Body */}
-                <ellipse cx="13" cy="8" rx="3.5" ry="3" fill="currentColor" opacity="0.75" />
-                <ellipse cx="13" cy="14" rx="4.5" ry="4" fill="currentColor" opacity="0.75" />
-                {/* Eyes */}
-                <circle cx="11.5" cy="7" r="0.8" fill="hsl(var(--background))" />
-                <circle cx="14.5" cy="7" r="0.8" fill="hsl(var(--background))" />
-                {/* Pupils */}
-                <motion.circle
-                  cx="11.5" cy="7" r="0.4"
-                  fill="hsl(var(--foreground))"
-                  animate={{ cx: [11.5, 12, 11, 11.5] }}
-                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-                />
-                <motion.circle
-                  cx="14.5" cy="7" r="0.4"
-                  fill="hsl(var(--foreground))"
-                  animate={{ cx: [14.5, 15, 14, 14.5] }}
-                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-                />
-              </motion.svg>
+                  {/* Legs left */}
+                  <motion.g
+                    animate={{ rotate: [0, 4, -4, 0] }}
+                    transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 0.8 }}
+                    style={{ transformOrigin: "12px 11px" }}
+                  >
+                    <path d="M 12 8 Q 6 3 2 0" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                    <path d="M 12 10 Q 4 8 0 6" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                    <path d="M 11 13 Q 5 15 1 20" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                    <path d="M 11 15 Q 6 19 3 24" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                  </motion.g>
+                  {/* Legs right */}
+                  <motion.g
+                    animate={{ rotate: [0, -4, 4, 0] }}
+                    transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 0.8, delay: 0.15 }}
+                    style={{ transformOrigin: "16px 11px" }}
+                  >
+                    <path d="M 16 8 Q 22 3 26 0" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                    <path d="M 16 10 Q 24 8 28 6" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                    <path d="M 17 13 Q 23 15 27 20" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                    <path d="M 17 15 Q 22 19 25 24" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                  </motion.g>
+                  {/* Head */}
+                  <ellipse cx="14" cy="8" rx="3.5" ry="3" fill="currentColor" opacity="0.7" />
+                  {/* Abdomen */}
+                  <ellipse cx="14" cy="15" rx="5" ry="4.5" fill="currentColor" opacity="0.65" />
+                  {/* Pattern on abdomen */}
+                  <ellipse cx="14" cy="14" rx="2" ry="1.5" fill="hsl(var(--background))" opacity="0.15" />
+                  {/* Eyes */}
+                  <circle cx="12.5" cy="7.2" r="1" fill="hsl(var(--background))" opacity="0.9" />
+                  <circle cx="15.5" cy="7.2" r="1" fill="hsl(var(--background))" opacity="0.9" />
+                  {/* Pupils that look around */}
+                  <motion.circle
+                    r="0.5"
+                    fill="hsl(var(--foreground))"
+                    animate={{ cx: [12.5, 13, 12, 12.5], cy: [7.2, 7.5, 7, 7.2] }}
+                    transition={{ duration: 3.5, repeat: Infinity, repeatDelay: 1.5 }}
+                  />
+                  <motion.circle
+                    r="0.5"
+                    fill="hsl(var(--foreground))"
+                    animate={{ cx: [15.5, 16, 15, 15.5], cy: [7.2, 7.5, 7, 7.2] }}
+                    transition={{ duration: 3.5, repeat: Infinity, repeatDelay: 1.5 }}
+                  />
+                </motion.svg>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

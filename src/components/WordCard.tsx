@@ -52,7 +52,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-lg mx-auto"
       >
-        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-visible relative">
+        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden relative">
           {/* Header */}
           <div className="px-6 pt-8 pb-4 text-center relative">
             {canGoBack && (
@@ -190,8 +190,8 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               </motion.button>
             </div>
           </div>
-          <SpiderWeb />
         </div>
+        <SpiderWeb />
       </motion.div>
     </AnimatePresence>
   );
