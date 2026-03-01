@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN daily_goal integer NOT NULL DEFAULT 5;

@@ -10,11 +10,13 @@ import { EditWordDialog } from "@/components/EditWordDialog";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { QuizModeDialog } from "@/components/QuizModeDialog";
 import { QuizView } from "@/components/QuizView";
+import { DailyProgress } from "@/components/DailyProgress";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useCustomWords } from "@/hooks/use-custom-words";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/hooks/use-profile";
+import { useDailyProgress } from "@/hooks/use-daily-progress";
 import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites";
@@ -54,6 +56,7 @@ const Index = () => {
   const { user } = useAuth();
   const { profile, updateProfile } = useProfile();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { todayCount, increment: incrementProgress, decrement: decrementProgress } = useDailyProgress();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
@@ -73,11 +76,12 @@ const Index = () => {
     }
   }, [user, profile]);
 
-  const handleOnboardingComplete = async (cats: WordCategory[]) => {
+  const handleOnboardingComplete = async (cats: WordCategory[], dailyGoal: number) => {
     try {
       await updateProfile({
         preferred_categories: cats,
         onboarding_done: true,
+        daily_goal: dailyGoal,
       });
       if (cats.length > 0) {
         setSelectedCategories(cats);
@@ -223,16 +227,19 @@ const Index = () => {
 
       {/* Category filter */}
       <div className="w-full max-w-lg mx-auto px-4 pb-4">
-        <button
-          onClick={() => setCategoriesOpen((v) => !v)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors max-w-full"
-        >
-          <span className="truncate">{selectedCategoryLabels}</span>
-          <ChevronDown
-            size={16}
-            className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
-          />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCategoriesOpen((v) => !v)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
+          >
+            <span className="truncate max-w-[180px]">{selectedCategoryLabels}</span>
+            <ChevronDown
+              size={16}
+              className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+          <DailyProgress current={todayCount} goal={profile?.daily_goal ?? 5} />
+        </div>
         <AnimatePresence>
           {categoriesOpen && (
             <motion.div
@@ -296,7 +303,12 @@ const Index = () => {
             <WordCard
               word={currentWord}
               isFavorite={isFavorite(currentWord.id)}
-              onToggleFavorite={() => toggleFavorite(currentWord.id)}
+              onToggleFavorite={() => {
+                const wasFav = isFavorite(currentWord.id);
+                toggleFavorite(currentWord.id);
+                if (!wasFav) incrementProgress();
+                else decrementProgress();
+              }}
               onNext={handleNext}
               isCustom={currentWord.id.startsWith("custom-")}
               onEdit={() => setEditingWord(currentWord)}

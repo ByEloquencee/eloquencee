@@ -8,6 +8,7 @@ export interface Profile {
   preferred_categories: WordCategory[];
   onboarding_done: boolean;
   daily_email_enabled: boolean;
+  daily_goal: number;
 }
 
 export function useProfile() {
@@ -23,7 +24,7 @@ export function useProfile() {
     }
     const { data } = await supabase
       .from("profiles")
-      .select("name, preferred_categories, onboarding_done, daily_email_enabled")
+      .select("name, preferred_categories, onboarding_done, daily_email_enabled, daily_goal")
       .eq("user_id", user.id)
       .single();
 
@@ -33,6 +34,7 @@ export function useProfile() {
         preferred_categories: (data.preferred_categories || []) as WordCategory[],
         onboarding_done: data.onboarding_done,
         daily_email_enabled: data.daily_email_enabled,
+        daily_goal: data.daily_goal ?? 5,
       });
     }
     setLoading(false);
@@ -42,7 +44,7 @@ export function useProfile() {
     fetchProfile();
   }, [fetchProfile]);
 
-  const updateProfile = useCallback(async (updates: Partial<Pick<Profile, "name" | "preferred_categories" | "onboarding_done" | "daily_email_enabled">>) => {
+  const updateProfile = useCallback(async (updates: Partial<Pick<Profile, "name" | "preferred_categories" | "onboarding_done" | "daily_email_enabled" | "daily_goal">>) => {
     if (!user) return;
     const { error } = await supabase
       .from("profiles")
