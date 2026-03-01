@@ -323,7 +323,7 @@ const Index = () => {
         </p>
       </footer>
 
-      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} profileName={profile?.name} />
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <EditWordDialog open={!!editingWord} word={editingWord} onClose={() => setEditingWord(null)} onSave={updateWord} />
       <OnboardingDialog
