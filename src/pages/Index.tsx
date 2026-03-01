@@ -272,70 +272,66 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Category filter */}
-      <div className="w-full max-w-lg mx-auto px-4 pb-4">
-        <div className="flex items-center justify-between gap-2">
-          <button
-            onClick={() => setCategoriesOpen((v) => !v)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
+      {/* Category filter - hidden on page 2 */}
+      <AnimatePresence>
+        {activePage === 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="w-full max-w-lg mx-auto px-4 pb-4"
           >
-            <span className="truncate max-w-[180px]">{selectedCategoryLabels}</span>
-            <ChevronDown
-              size={16}
-              className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
-            />
-          </button>
-          <DailyProgress current={todayCount} goal={profile?.daily_goal ?? 5} />
-        </div>
-        <AnimatePresence>
-          {categoriesOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="flex flex-wrap gap-1.5 pt-3">
-                {visibleCategories.map((cat) => {
-                  const isSelected = cat.value === "all"
-                    ? selectedCategories.includes("all")
-                    : selectedCategories.includes(cat.value);
-                  return (
-                    <button
-                      key={cat.value}
-                      onClick={() => toggleCategory(cat.value)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                        isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                      }`}
-                    >
-                      {cat.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            <div className="flex items-center justify-between gap-2">
+              <button
+                onClick={() => setCategoriesOpen((v) => !v)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
+              >
+                <span className="truncate max-w-[180px]">{selectedCategoryLabels}</span>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+              <DailyProgress current={todayCount} goal={profile?.daily_goal ?? 5} />
+            </div>
+            <AnimatePresence>
+              {categoriesOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex flex-wrap gap-1.5 pt-3">
+                    {visibleCategories.map((cat) => {
+                      const isSelected = cat.value === "all"
+                        ? selectedCategories.includes("all")
+                        : selectedCategories.includes(cat.value);
+                      return (
+                        <button
+                          key={cat.value}
+                          onClick={() => toggleCategory(cat.value)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                            isSelected
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                          }`}
+                        >
+                          {cat.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Swipeable content area */}
       <main className="flex-1 flex flex-col overflow-hidden relative" ref={containerRef}>
-        {/* Page indicator dots */}
-        <div className="flex justify-center gap-2 pb-2">
-          {[0, 1].map((i) => (
-            <button
-              key={i}
-              onClick={() => setActivePage(i)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                activePage === i
-                  ? "bg-primary w-6"
-                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-              }`}
-            />
-          ))}
-        </div>
 
         <div className="flex-1 relative overflow-hidden">
           <motion.div
@@ -420,7 +416,21 @@ const Index = () => {
         </div>
       </main>
 
-      <footer className="pb-6 text-center">
+      {/* Page indicator dots + footer */}
+      <div className="pb-6 flex flex-col items-center gap-2">
+        <div className="flex justify-center gap-2">
+          {[0, 1].map((i) => (
+            <button
+              key={i}
+              onClick={() => setActivePage(i)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                activePage === i
+                  ? "bg-primary w-6"
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
+            />
+          ))}
+        </div>
         <p className="text-xs text-muted-foreground">
           {activePage === 1
             ? "Przesuń w prawo, aby wrócić do słów"
@@ -430,7 +440,7 @@ const Index = () => {
                 ? `Uczysz się z ${filteredWords.length} ulubionych słów`
                 : `${filteredWords.length} słów do nauki`}
         </p>
-      </footer>
+      </div>
 
       <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
       <PlusMenuDialog
