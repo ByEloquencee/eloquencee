@@ -81,8 +81,14 @@ const Index = () => {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
   const [activePage, setActivePage] = useState(0); // 0 = words, 1 = creator
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  // Show onboarding after first login
+
+  const switchPage = useCallback((nextPage: number) => {
+    if (nextPage === activePage) return;
+    setIsPageTransitioning(true);
+    setActivePage(nextPage);
+  }, [activePage]);
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
       setShowOnboarding(true);
@@ -274,7 +280,7 @@ const Index = () => {
 
       {/* Category filter - hidden on page 2 */}
       <AnimatePresence>
-        {activePage === 0 && (
+        {activePage === 0 && !isPageTransitioning && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -337,16 +343,18 @@ const Index = () => {
           <motion.div
             className="flex min-w-full"
             animate={{ x: `${-activePage * 100}%` }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
+            onAnimationComplete={() => setIsPageTransitioning(false)}
             drag="x"
+            dragMomentum={false}
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
             onDragEnd={(_, info) => {
               const threshold = 50;
               if (info.offset.x < -threshold && activePage === 0) {
-                setActivePage(1);
+                switchPage(1);
               } else if (info.offset.x > threshold && activePage === 1) {
-                setActivePage(0);
+                switchPage(0);
               }
             }}
           >
@@ -422,7 +430,7 @@ const Index = () => {
           {[0, 1].map((i) => (
             <button
               key={i}
-              onClick={() => setActivePage(i)}
+              onClick={() => switchPage(i)}
               className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
                 activePage === i
                   ? "bg-primary w-6"
