@@ -11,6 +11,7 @@ import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { QuizModeDialog } from "@/components/QuizModeDialog";
 import { QuizView } from "@/components/QuizView";
 import { DailyProgress } from "@/components/DailyProgress";
+import { WordAIChat } from "@/components/WordAIChat";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useCustomWords } from "@/hooks/use-custom-words";
 import { useTheme } from "@/hooks/use-theme";
@@ -68,6 +69,7 @@ const Index = () => {
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [quizModeOpen, setQuizModeOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
 
   // Show onboarding after first login
@@ -334,6 +336,7 @@ const Index = () => {
                   toast.error("Nie udało się usunąć słowa");
                 }
               }}
+              onAskAI={() => setAiChatOpen(true)}
             />
           )
         )}
@@ -362,6 +365,13 @@ const Index = () => {
         onStartQuiz={() => { setQuizModeOpen(false); setQuizActive(true); }}
         hasFavorites={hasEnoughForQuiz}
       />
+      {currentWord && (
+        <WordAIChat
+          word={currentWord}
+          open={aiChatOpen}
+          onClose={() => setAiChatOpen(false)}
+        />
+      )}
     </div>
   );
 };
