@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, RotateCcw, Pencil, Trash2 } from "lucide-react";
+import { Heart, RotateCcw, Pencil, Trash2, UserRound } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 
 interface WordCardProps {
@@ -69,9 +69,14 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, isCustom,
                 </button>
               </div>
             )}
-            <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
-              {word.partOfSpeech}
-            </span>
+            <div className="flex items-center justify-center gap-1.5">
+              {word.category === "ciekawi_ludzie" && (
+                <UserRound size={14} className="text-primary" />
+              )}
+              <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
+                {word.partOfSpeech}
+              </span>
+            </div>
             <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
               {word.word}
             </h1>
