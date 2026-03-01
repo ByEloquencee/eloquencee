@@ -61,6 +61,7 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
+  const [history, setHistory] = useState<number[]>([]);
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
@@ -116,13 +117,23 @@ const Index = () => {
 
   const handleNext = useCallback(() => {
     if (filteredWords.length === 0) return;
-    // If showing all words and user has preferences, use weighted selection
+    setHistory((prev) => [...prev, currentIndex]);
     if (selectedCategories.includes("all") && preferredCategories.length > 0) {
       setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
     } else {
       setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
     }
-  }, [filteredWords, selectedCategories, preferredCategories]);
+  }, [filteredWords, selectedCategories, preferredCategories, currentIndex]);
+
+  const handlePrev = useCallback(() => {
+    if (history.length === 0) return;
+    setHistory((prev) => {
+      const next = [...prev];
+      const lastIndex = next.pop()!;
+      setCurrentIndex(lastIndex);
+      return next;
+    });
+  }, [history]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
     if (cat === "all") {
@@ -310,6 +321,8 @@ const Index = () => {
                 else decrementProgress();
               }}
               onNext={handleNext}
+              onPrev={handlePrev}
+              canGoBack={history.length > 0}
               isCustom={currentWord.id.startsWith("custom-")}
               onEdit={() => setEditingWord(currentWord)}
               onDelete={async () => {

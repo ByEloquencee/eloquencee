@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, RotateCcw, Pencil, Trash2, UserRound } from "lucide-react";
+import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 
 interface WordCardProps {
@@ -8,12 +8,14 @@ interface WordCardProps {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onNext: () => void;
+  onPrev?: () => void;
+  canGoBack?: boolean;
   isCustom?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, onNext, isCustom, onEdit, onDelete }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -135,14 +137,25 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, isCustom,
               <span>{isFavorite ? "Ulubione" : "Dodaj"}</span>
             </motion.button>
 
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={handleNext}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-            >
-              <RotateCcw size={16} />
-              Nowe słowo
-            </motion.button>
+            <div className="flex items-center gap-2">
+              {canGoBack && (
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
+                  className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors cursor-pointer"
+                >
+                  <ChevronLeft size={16} />
+                </motion.button>
+              )}
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={handleNext}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                <RotateCcw size={16} />
+                Nowe słowo
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.div>
