@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+const IDLE_TIMEOUT = 3 * 1000; // 3 seconds for testing (change back to 5 * 60 * 1000)
 
 export function SpiderWeb() {
   const [visible, setVisible] = useState(false);
