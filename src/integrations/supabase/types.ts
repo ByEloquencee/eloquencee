@@ -71,6 +71,62 @@ export type Database = {
         }
         Relationships: []
       }
+      folder_words: {
+        Row: {
+          created_at: string
+          folder_id: string
+          id: string
+          user_id: string
+          word_id: string
+        }
+        Insert: {
+          created_at?: string
+          folder_id: string
+          id?: string
+          user_id: string
+          word_id: string
+        }
+        Update: {
+          created_at?: string
+          folder_id?: string
+          id?: string
+          user_id?: string
+          word_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folder_words_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      folders: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
