@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb } from "lucide-react";
+import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2 } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 import { SpiderWeb } from "@/components/SpiderWeb";
@@ -24,6 +24,30 @@ interface WordCardProps {
 export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, folders = [], onToggleFolder }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+
+  // Show pronunciation for foreign-origin words and historical figures
+  const hasPronunciation = word.category === "ciekawi_ludzie" || !!word.etymology;
+
+  const handleSpeak = useCallback(() => {
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(word.word);
+    // Try to detect language from etymology or category
+    if (word.category === "ciekawi_ludzie") {
+      utterance.lang = "pl-PL"; // Polish pronunciation for names in context
+    } else {
+      utterance.lang = "pl-PL";
+    }
+    utterance.rate = 0.85;
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  }, [word.word, word.category, speaking]);
 
   const handleReveal = () => setRevealed(true);
 
@@ -102,6 +126,20 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
                 {word.partOfSpeech}
               </span>
+              {hasPronunciation && (
+                <motion.button
+                  whileTap={{ scale: 0.85 }}
+                  onClick={handleSpeak}
+                  className={`p-1 rounded-full transition-colors cursor-pointer ${
+                    speaking
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+                  }`}
+                  title="Odsłuchaj wymowę"
+                >
+                  <Volume2 size={14} className={speaking ? "animate-pulse" : ""} />
+                </motion.button>
+              )}
             </div>
             <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
               {word.word}
