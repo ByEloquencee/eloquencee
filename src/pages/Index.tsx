@@ -333,7 +333,7 @@ const Index = () => {
       {/* Swipeable content area */}
       <main className="flex-1 flex flex-col overflow-hidden relative" ref={containerRef}>
 
-        <div className="flex-1 relative overflow-hidden">
+        <div className="flex-1 relative overflow-hidden flex items-center">
           <motion.div
             className="flex h-full"
             animate={{ x: `${-activePage * 100}%` }}
@@ -351,7 +351,7 @@ const Index = () => {
             }}
           >
             {/* Page 1: Word card */}
-            <div className="w-full flex-shrink-0 flex items-center justify-center px-4 pb-12 pt-8">
+            <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
               {filteredWords.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -409,7 +409,7 @@ const Index = () => {
             </div>
 
             {/* Page 2: Flashcard creator */}
-            <div className="w-full flex-shrink-0 flex items-center justify-center px-4 pb-12 pt-8">
+            <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
               <FlashcardCreator onAddWord={() => setAddWordOpen(true)} />
             </div>
           </motion.div>
