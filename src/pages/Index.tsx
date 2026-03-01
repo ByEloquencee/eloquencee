@@ -12,8 +12,12 @@ import { QuizModeDialog } from "@/components/QuizModeDialog";
 import { QuizView } from "@/components/QuizView";
 import { DailyProgress } from "@/components/DailyProgress";
 import { WordAIChat } from "@/components/WordAIChat";
+import { PlusMenuDialog } from "@/components/PlusMenuDialog";
+import { CreateFolderDialog } from "@/components/CreateFolderDialog";
+import { FolderDropdown } from "@/components/FolderDropdown";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useCustomWords } from "@/hooks/use-custom-words";
+import { useFolders } from "@/hooks/use-folders";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/hooks/use-profile";
@@ -59,12 +63,16 @@ const Index = () => {
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { todayCount, increment: incrementProgress, decrement: decrementProgress } = useDailyProgress();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
+  const { folders, createFolder, deleteFolder, toggleWordInFolder } = useFolders();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [history, setHistory] = useState<number[]>([]);
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
+  const [plusMenuOpen, setPlusMenuOpen] = useState(false);
+  const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -108,10 +116,16 @@ const Index = () => {
   }, [customWords.length]);
 
   const filteredWords = useMemo(() => {
+    // If a folder is active, show only words in that folder
+    if (activeFolderId) {
+      const folder = folders.find((f) => f.id === activeFolderId);
+      if (!folder) return [];
+      return allWords.filter((w) => folder.wordIds.includes(w.id));
+    }
     const base = viewMode === "favorites" ? favoriteWords : allWords;
     if (selectedCategories.includes("all")) return base;
     return base.filter((w) => selectedCategories.includes(w.category));
-  }, [viewMode, favoriteWords, selectedCategories, allWords]);
+  }, [viewMode, favoriteWords, selectedCategories, allWords, activeFolderId, folders]);
 
   const currentWord = filteredWords[currentIndex % filteredWords.length];
 
@@ -190,9 +204,9 @@ const Index = () => {
           {user && (
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={() => setAddWordOpen(true)}
+              onClick={() => setPlusMenuOpen(true)}
               className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-              title="Dodaj własne słowo"
+              title="Dodaj"
             >
               <Plus size={18} />
             </motion.button>
@@ -206,22 +220,40 @@ const Index = () => {
             <GraduationCap size={18} />
           </motion.button>
           {hasFavorites && (
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => {
-                setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  setActiveFolderId(null);
+                  setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
+                  setCurrentIndex(0);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+                  viewMode === "favorites" && !activeFolderId
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                }`}
+              >
+                <Heart size={14} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
+                <span>{favoriteWords.length}</span>
+              </motion.button>
+            )}
+            <FolderDropdown
+              folders={folders}
+              activeFolder={activeFolderId}
+              onSelectFolder={(id) => {
+                setActiveFolderId(id);
+                if (id) setViewMode("all");
                 setCurrentIndex(0);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
-                viewMode === "favorites"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-              }`}
-            >
-              <Heart size={14} className={viewMode === "favorites" ? "fill-primary-foreground" : ""} />
-              <span>{favoriteWords.length}</span>
-            </motion.button>
-          )}
+              onDeleteFolder={async (id) => {
+                try {
+                  await deleteFolder(id);
+                  toast.success("Folder usunięty!");
+                } catch {
+                  toast.error("Nie udało się usunąć folderu");
+                }
+              }}
+            />
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
@@ -304,7 +336,7 @@ const Index = () => {
               </p>
             </div>
             <button
-              onClick={() => { setViewMode("all"); setSelectedCategories(["all"]); }}
+              onClick={() => { setViewMode("all"); setSelectedCategories(["all"]); setActiveFolderId(null); }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
             >
               <Shuffle size={16} />
@@ -337,6 +369,8 @@ const Index = () => {
                 }
               }}
               onAskAI={() => setAiChatOpen(true)}
+              folders={folders}
+              onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
             />
           )
         )}
@@ -345,14 +379,30 @@ const Index = () => {
       {/* Footer */}
       <footer className="pb-6 text-center">
         <p className="text-xs text-muted-foreground">
-          {viewMode === "favorites"
-            ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-            : `${filteredWords.length} słów do nauki`}
+          {activeFolderId
+            ? `${filteredWords.length} słów w folderze`
+            : viewMode === "favorites"
+              ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+              : `${filteredWords.length} słów do nauki`}
         </p>
       </footer>
 
       <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
+      <PlusMenuDialog
+        open={plusMenuOpen}
+        onClose={() => setPlusMenuOpen(false)}
+        onAddWord={() => setAddWordOpen(true)}
+        onCreateFolder={() => setCreateFolderOpen(true)}
+      />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
+      <CreateFolderDialog
+        open={createFolderOpen}
+        onClose={() => setCreateFolderOpen(false)}
+        onCreated={async (name, icon) => {
+          await createFolder(name, icon);
+          toast.success("Folder utworzony!");
+        }}
+      />
       <EditWordDialog open={!!editingWord} word={editingWord} onClose={() => setEditingWord(null)} onSave={updateWord} />
       <OnboardingDialog
         open={showOnboarding}

@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb } from "lucide-react";
 import type { PolishWord } from "@/data/words";
+import { getFolderIcon } from "@/components/CreateFolderDialog";
+import type { Folder } from "@/hooks/use-folders";
 
 interface WordCardProps {
   word: PolishWord;
@@ -14,9 +16,11 @@ interface WordCardProps {
   onEdit?: () => void;
   onDelete?: () => void;
   onAskAI?: () => void;
+  folders?: Folder[];
+  onToggleFolder?: (folderId: string) => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, folders = [], onToggleFolder }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -144,17 +148,35 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
 
           {/* Actions */}
           <div className="px-6 pb-6 flex items-center justify-between">
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={onToggleFavorite}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-            >
-              <Heart
-                size={20}
-                className={isFavorite ? "fill-primary text-primary" : ""}
-              />
-              <span>{isFavorite ? "Ulubione" : "Dodaj"}</span>
-            </motion.button>
+            <div className="flex items-center gap-1">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={onToggleFavorite}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Heart
+                  size={20}
+                  className={isFavorite ? "fill-primary text-primary" : ""}
+                />
+              </motion.button>
+              {folders.map((f) => {
+                const Icon = getFolderIcon(f.icon);
+                const isIn = f.wordIds.includes(word.id);
+                return (
+                  <motion.button
+                    key={f.id}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => onToggleFolder?.(f.id)}
+                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                      isIn ? "text-primary" : "text-muted-foreground hover:text-primary"
+                    }`}
+                    title={`${isIn ? "Usuń z" : "Dodaj do"} "${f.name}"`}
+                  >
+                    <Icon size={18} className={isIn ? "fill-primary" : ""} />
+                  </motion.button>
+                );
+              })}
+            </div>
 
             <div className="flex items-center gap-2">
               <motion.button
