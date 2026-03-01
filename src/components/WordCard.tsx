@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft } from "lucide-react";
+import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 
 interface WordCardProps {
@@ -13,9 +13,10 @@ interface WordCardProps {
   isCustom?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
+  onAskAI?: () => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -49,28 +50,37 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
           {/* Header */}
           <div className="px-6 pt-8 pb-4 text-center relative">
-            {isCustom && (
-              <div className="absolute top-3 right-3 flex gap-1">
-                <button
-                  onClick={onEdit}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-                  title="Edytuj"
-                >
-                  <Pencil size={14} />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                    confirmDelete
-                      ? "bg-destructive text-destructive-foreground"
-                      : "text-muted-foreground hover:text-destructive hover:bg-secondary"
-                  }`}
-                  title={confirmDelete ? "Kliknij ponownie, aby usunąć" : "Usuń"}
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            )}
+            <div className="absolute top-3 right-3 flex gap-1">
+              <button
+                onClick={onAskAI}
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                title="Zapytaj AI"
+              >
+                <Lightbulb size={14} />
+              </button>
+              {isCustom && (
+                <>
+                  <button
+                    onClick={onEdit}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                    title="Edytuj"
+                  >
+                    <Pencil size={14} />
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                      confirmDelete
+                        ? "bg-destructive text-destructive-foreground"
+                        : "text-muted-foreground hover:text-destructive hover:bg-secondary"
+                    }`}
+                    title={confirmDelete ? "Kliknij ponownie, aby usunąć" : "Usuń"}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </>
+              )}
+            </div>
             <div className="flex items-center justify-center gap-1.5">
               {word.category === "ciekawi_ludzie" && (
                 <UserRound size={14} className="text-primary" />
