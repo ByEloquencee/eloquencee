@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/use-profile";
 import { toast } from "sonner";
 
 interface AuthDialogProps {
   open: boolean;
   onClose: () => void;
-  profileName?: string;
 }
 
-export function AuthDialog({ open, onClose, profileName }: AuthDialogProps) {
+export function AuthDialog({ open, onClose }: AuthDialogProps) {
   const { user, signUp, signIn, signOut } = useAuth();
+  const { profile, updateProfile } = useProfile();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,8 +83,8 @@ export function AuthDialog({ open, onClose, profileName }: AuthDialogProps) {
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary">
                   <UserCircle size={18} className="text-muted-foreground" />
                   <div className="flex flex-col min-w-0">
-                    {profileName && (
-                      <span className="text-sm font-medium truncate">{profileName}</span>
+                    {profile?.name && (
+                      <span className="text-sm font-medium truncate">{profile.name}</span>
                     )}
                     <span className="text-xs text-muted-foreground truncate">{user.email}</span>
                   </div>
@@ -90,6 +92,23 @@ export function AuthDialog({ open, onClose, profileName }: AuthDialogProps) {
                 <p className="text-xs text-muted-foreground">
                   Twoje ulubione słowa i własne słowa są synchronizowane z kontem.
                 </p>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-secondary">
+                  <label htmlFor="daily-email" className="text-sm font-medium cursor-pointer">
+                    Codzienne słowo na e-mail
+                  </label>
+                  <Switch
+                    id="daily-email"
+                    checked={profile?.daily_email_enabled ?? false}
+                    onCheckedChange={async (checked) => {
+                      try {
+                        await updateProfile({ daily_email_enabled: checked });
+                        toast.success(checked ? "Włączono codzienne e-maile!" : "Wyłączono codzienne e-maile");
+                      } catch {
+                        toast.error("Nie udało się zmienić ustawienia");
+                      }
+                    }}
+                  />
+                </div>
                 <button
                   onClick={handleSignOut}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
