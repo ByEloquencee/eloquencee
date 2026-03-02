@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, X, Trophy, ChevronLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, Check, X, Trophy, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 import {
   Dialog,
@@ -42,6 +42,7 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const [inspectWord, setInspectWord] = useState<PolishWord | null>(null);
+  const [maxReached, setMaxReached] = useState(0);
 
   const question = questions[current];
   const selected = answers[current] ?? null;
@@ -56,7 +57,9 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
         if (current + 1 >= questions.length) {
           setFinished(true);
         } else {
-          setCurrent((c) => c + 1);
+          const next = current + 1;
+          setCurrent(next);
+          setMaxReached((m) => Math.max(m, next));
         }
       }, 1200);
     },
@@ -64,6 +67,7 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
   );
 
   const canGoBack = current > 0;
+  const canGoForward = current < maxReached;
 
   if (finished) {
     const pct = Math.round((score / questions.length) * 100);
@@ -93,6 +97,7 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
                 setCurrent(0);
                 setAnswers({});
                 setScore(0);
+                setMaxReached(0);
                 setFinished(false);
               }}
               className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
@@ -126,6 +131,18 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
               title="Poprzednie pytanie"
             >
               <ChevronLeft size={20} />
+            </motion.button>
+          )}
+          {canGoForward && (
+            <motion.button
+              initial={{ opacity: 0, x: 8 }}
+              animate={{ opacity: 1, x: 0 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setCurrent((c) => c + 1)}
+              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+              title="Następne pytanie"
+            >
+              <ChevronRight size={20} />
             </motion.button>
           )}
         </div>
