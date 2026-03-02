@@ -81,6 +81,7 @@ const Index = () => {
   const [quizModeOpen, setQuizModeOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
+  const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
   const [activePage, setActivePage] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
@@ -204,7 +205,7 @@ const Index = () => {
   if (quizActive) {
     return (
       <QuizView
-        words={favoriteWords}
+        words={quizWords}
         allWords={allWords}
         onExit={() => setQuizActive(false)}
       />
@@ -494,8 +495,20 @@ const Index = () => {
       <QuizModeDialog
         open={quizModeOpen}
         onClose={() => setQuizModeOpen(false)}
-        onStartQuiz={() => { setQuizModeOpen(false); setQuizActive(true); }}
+        onStartQuiz={(source) => {
+          setQuizModeOpen(false);
+          if (source === "favorites") {
+            setQuizWords(favoriteWords);
+          } else {
+            const folder = folders.find((f) => f.id === source);
+            if (folder) {
+              setQuizWords(allWords.filter((w) => folder.wordIds.includes(w.id)));
+            }
+          }
+          setQuizActive(true);
+        }}
         hasFavorites={hasEnoughForQuiz}
+        folders={folders}
       />
       {currentWord && (
         <>
