@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
@@ -82,13 +82,28 @@ const Index = () => {
   const [quizActive, setQuizActive] = useState(false);
   const [activePage, setActivePage] = useState(0); // 0 = words, 1 = creator
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+  const [sliderWidth, setSliderWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateWidth = () => setSliderWidth(container.clientWidth);
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, []);
 
   const switchPage = useCallback((nextPage: number) => {
     if (nextPage === activePage) return;
     setIsPageTransitioning(true);
     setActivePage(nextPage);
   }, [activePage]);
+
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
       setShowOnboarding(true);
@@ -342,15 +357,16 @@ const Index = () => {
         <div className="flex-1 relative overflow-hidden flex items-center">
           <motion.div
             className="flex min-w-full"
-            animate={{ x: `${-activePage * 100}%` }}
+            style={{ touchAction: "pan-y" }}
+            animate={{ x: -activePage * sliderWidth }}
             transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
             onAnimationComplete={() => setIsPageTransitioning(false)}
-            drag="x"
+            drag={sliderWidth > 0 ? "x" : false}
             dragMomentum={false}
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
+            dragConstraints={{ left: -sliderWidth, right: 0 }}
+            dragElastic={0.08}
             onDragEnd={(_, info) => {
-              const threshold = 50;
+              const threshold = Math.max(60, sliderWidth * 0.18);
               if (info.offset.x < -threshold && activePage === 0) {
                 switchPage(1);
               } else if (info.offset.x > threshold && activePage === 1) {
