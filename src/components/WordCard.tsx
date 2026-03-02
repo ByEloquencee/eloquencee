@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2 } from "lucide-react";
 import type { PolishWord } from "@/data/words";
@@ -26,6 +26,8 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [zenMode, setZenMode] = useState(false);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Show pronunciation for foreign-origin words and historical figures
   const hasPronunciation = word.category === "ciekawi_ludzie" || !!word.etymology;
@@ -67,6 +69,24 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
     setConfirmDelete(false);
   };
 
+  const startHold = () => {
+    holdTimerRef.current = setTimeout(() => setZenMode(true), 1000);
+  };
+
+  const endHold = () => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    setZenMode(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+    };
+  }, []);
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -77,56 +97,78 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-lg mx-auto"
       >
-        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden relative">
+        <div
+          className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden relative select-none"
+          onPointerDown={startHold}
+          onPointerUp={endHold}
+          onPointerLeave={endHold}
+          onPointerCancel={endHold}
+        >
           {/* Header */}
           <div className="px-6 pt-8 pb-4 text-center relative">
-            {canGoBack && (
-              <button
-                onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
-                className="absolute top-3 left-3 p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                title="Cofnij"
-              >
-                <ChevronLeft size={18} />
-              </button>
-            )}
-            <div className="absolute top-3 right-3 flex gap-1">
-              <button
-                onClick={onShare}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
-                title="Udostępnij"
-              >
-                <Share2 size={14} />
-              </button>
-              <button
-                onClick={onAskAI}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
-                title="Zapytaj AI"
-              >
-                <Lightbulb size={14} />
-              </button>
-              {isCustom && (
-                <>
-                  <button
-                    onClick={onEdit}
-                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-                    title="Edytuj"
-                  >
-                    <Pencil size={14} />
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                      confirmDelete
-                        ? "bg-destructive text-destructive-foreground"
-                        : "text-muted-foreground hover:text-destructive hover:bg-secondary"
-                    }`}
-                    title={confirmDelete ? "Kliknij ponownie, aby usunąć" : "Usuń"}
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </>
+            <AnimatePresence>
+              {!zenMode && canGoBack && (
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
+                  className="absolute top-3 left-3 p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  title="Cofnij"
+                >
+                  <ChevronLeft size={18} />
+                </motion.button>
               )}
-            </div>
+            </AnimatePresence>
+            <AnimatePresence>
+              {!zenMode && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute top-3 right-3 flex gap-1"
+                >
+                  <button
+                    onClick={onShare}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                    title="Udostępnij"
+                  >
+                    <Share2 size={14} />
+                  </button>
+                  <button
+                    onClick={onAskAI}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                    title="Zapytaj AI"
+                  >
+                    <Lightbulb size={14} />
+                  </button>
+                  {isCustom && (
+                    <>
+                      <button
+                        onClick={onEdit}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                        title="Edytuj"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          confirmDelete
+                            ? "bg-destructive text-destructive-foreground"
+                            : "text-muted-foreground hover:text-destructive hover:bg-secondary"
+                        }`}
+                        title={confirmDelete ? "Kliknij ponownie, aby usunąć" : "Usuń"}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div className="flex items-center justify-center gap-1.5">
               {word.category === "ciekawi_ludzie" && (
                 <UserRound size={14} className="text-primary" />
@@ -134,20 +176,26 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
                 {word.partOfSpeech}
               </span>
-              {hasPronunciation && (
-                <motion.button
-                  whileTap={{ scale: 0.85 }}
-                  onClick={handleSpeak}
-                  className={`p-1 rounded-full transition-colors cursor-pointer ${
-                    speaking
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-primary hover:bg-primary/10"
-                  }`}
-                  title="Odsłuchaj wymowę"
-                >
-                  <Volume2 size={14} className={speaking ? "animate-pulse" : ""} />
-                </motion.button>
-              )}
+              <AnimatePresence>
+                {!zenMode && hasPronunciation && (
+                  <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    whileTap={{ scale: 0.85 }}
+                    onClick={handleSpeak}
+                    className={`p-1 rounded-full transition-colors cursor-pointer ${
+                      speaking
+                        ? "text-primary bg-primary/10"
+                        : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    }`}
+                    title="Odsłuchaj wymowę"
+                  >
+                    <Volume2 size={14} className={speaking ? "animate-pulse" : ""} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
             <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
               {word.word}
@@ -161,7 +209,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
 
           {/* Definition area */}
           <div className="px-6 pb-6">
-            {!revealed ? (
+            {!revealed && !zenMode ? (
               <motion.button
                 onClick={handleReveal}
                 whileTap={{ scale: 0.97 }}
@@ -194,48 +242,58 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           </div>
 
           {/* Actions */}
-          <div className="px-6 pb-6 flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={onToggleFavorite}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          <AnimatePresence>
+            {!zenMode && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="px-6 pb-6 flex items-center justify-between"
               >
-                <Heart
-                  size={20}
-                  className={isFavorite ? "fill-primary text-primary" : ""}
-                />
-              </motion.button>
-              {folders.map((f) => {
-                const Icon = getFolderIcon(f.icon);
-                const isIn = f.wordIds.includes(word.id);
-                return (
+                <div className="flex items-center gap-1">
                   <motion.button
-                    key={f.id}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => onToggleFolder?.(f.id)}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                      isIn ? "text-primary" : "text-muted-foreground hover:text-primary"
-                    }`}
-                    title={`${isIn ? "Usuń z" : "Dodaj do"} "${f.name}"`}
+                    onClick={onToggleFavorite}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                   >
-                    <Icon size={18} className={isIn ? "fill-primary" : ""} />
+                    <Heart
+                      size={20}
+                      className={isFavorite ? "fill-primary text-primary" : ""}
+                    />
                   </motion.button>
-                );
-              })}
-            </div>
+                  {folders.map((f) => {
+                    const Icon = getFolderIcon(f.icon);
+                    const isIn = f.wordIds.includes(word.id);
+                    return (
+                      <motion.button
+                        key={f.id}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => onToggleFolder?.(f.id)}
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          isIn ? "text-primary" : "text-muted-foreground hover:text-primary"
+                        }`}
+                        title={`${isIn ? "Usuń z" : "Dodaj do"} "${f.name}"`}
+                      >
+                        <Icon size={18} className={isIn ? "fill-primary" : ""} />
+                      </motion.button>
+                    );
+                  })}
+                </div>
 
-            <div className="flex items-center gap-2">
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={handleNext}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                <RotateCcw size={16} />
-                Nowe słowo
-              </motion.button>
-            </div>
-          </div>
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleNext}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+                  >
+                    <RotateCcw size={16} />
+                    Nowe słowo
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         <SpiderWeb />
       </motion.div>
