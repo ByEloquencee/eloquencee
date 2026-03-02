@@ -249,9 +249,9 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="px-6 pb-6 flex items-center justify-between"
+                className="px-6 pb-6 flex items-center justify-between gap-2 min-w-0"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 min-w-0 overflow-x-auto scrollbar-none flex-shrink"  >
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={onToggleFavorite}
@@ -281,7 +281,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                   })}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={handleNext}
