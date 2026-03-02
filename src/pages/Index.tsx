@@ -13,6 +13,7 @@ import { QuizView } from "@/components/QuizView";
 import { DailyProgress } from "@/components/DailyProgress";
 import { WordAIChat } from "@/components/WordAIChat";
 import { FlashcardCreator } from "@/components/FlashcardCreator";
+import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
@@ -80,7 +81,8 @@ const Index = () => {
   const [quizModeOpen, setQuizModeOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
-  const [activePage, setActivePage] = useState(0); // 0 = words, 1 = creator
+  const [activePage, setActivePage] = useState(0);
+  const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [sliderWidth, setSliderWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -427,6 +429,7 @@ const Index = () => {
                     onAskAI={() => setAiChatOpen(true)}
                     folders={folders}
                     onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
+                    onShare={() => setShareOpen(true)}
                   />
                 )
               )}
@@ -495,11 +498,18 @@ const Index = () => {
         hasFavorites={hasEnoughForQuiz}
       />
       {currentWord && (
-        <WordAIChat
-          word={currentWord}
-          open={aiChatOpen}
-          onClose={() => setAiChatOpen(false)}
-        />
+        <>
+          <WordAIChat
+            word={currentWord}
+            open={aiChatOpen}
+            onClose={() => setAiChatOpen(false)}
+          />
+          <ShareWordDialog
+            word={currentWord}
+            open={shareOpen}
+            onClose={() => setShareOpen(false)}
+          />
+        </>
       )}
     </div>
   );

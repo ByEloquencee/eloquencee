@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2 } from "lucide-react";
+import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2 } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 import { SpiderWeb } from "@/components/SpiderWeb";
@@ -17,11 +17,12 @@ interface WordCardProps {
   onEdit?: () => void;
   onDelete?: () => void;
   onAskAI?: () => void;
+  onShare?: () => void;
   folders?: Folder[];
   onToggleFolder?: (folderId: string) => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, folders = [], onToggleFolder }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -89,6 +90,13 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               </button>
             )}
             <div className="absolute top-3 right-3 flex gap-1">
+              <button
+                onClick={onShare}
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                title="Udostępnij"
+              >
+                <Share2 size={14} />
+              </button>
               <button
                 onClick={onAskAI}
                 className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
