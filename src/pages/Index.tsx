@@ -364,9 +364,9 @@ const Index = () => {
             drag={sliderWidth > 0 ? "x" : false}
             dragMomentum={false}
             dragConstraints={{ left: -sliderWidth, right: 0 }}
-            dragElastic={0.08}
+            dragElastic={0.15}
             onDragEnd={(_, info) => {
-              const threshold = Math.max(60, sliderWidth * 0.18);
+              const threshold = 30;
               if (info.offset.x < -threshold && activePage === 0) {
                 switchPage(1);
               } else if (info.offset.x > threshold && activePage === 1) {
