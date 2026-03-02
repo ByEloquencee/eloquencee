@@ -251,7 +251,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                 transition={{ duration: 0.25 }}
                 className="px-6 pb-6 flex items-center justify-between gap-2 min-w-0"
               >
-                <div className="flex items-center gap-1 min-w-0 overflow-x-auto scrollbar-none flex-shrink"  >
+                <div className="flex items-center gap-1 min-w-0 overflow-x-auto flex-shrink [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={onToggleFavorite}
