@@ -1,7 +1,13 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, X, Trophy } from "lucide-react";
+import { ArrowLeft, Check, X, Trophy, ChevronLeft, BookOpen } from "lucide-react";
 import type { PolishWord } from "@/data/words";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface QuizViewProps {
   words: PolishWord[];
@@ -32,16 +38,18 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
   }, [words, allWords]);
 
   const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [inspectWord, setInspectWord] = useState<PolishWord | null>(null);
 
   const question = questions[current];
+  const selected = answers[current] ?? null;
 
   const handleSelect = useCallback(
     (id: string) => {
-      if (selected) return;
-      setSelected(id);
+      if (answers[current] !== undefined) return;
+      setAnswers((prev) => ({ ...prev, [current]: id }));
       const correct = id === question.correctId;
       if (correct) setScore((s) => s + 1);
       setTimeout(() => {
@@ -49,12 +57,13 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
           setFinished(true);
         } else {
           setCurrent((c) => c + 1);
-          setSelected(null);
         }
       }, 1200);
     },
-    [selected, question, current, questions.length]
+    [answers, current, question, questions.length]
   );
+
+  const canGoBack = current > 0;
 
   if (finished) {
     const pct = Math.round((score / questions.length) * 100);
@@ -82,7 +91,7 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 setCurrent(0);
-                setSelected(null);
+                setAnswers({});
                 setScore(0);
                 setFinished(false);
               }}
@@ -99,13 +108,27 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between">
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={onExit}
-          className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-        >
-          <ArrowLeft size={20} />
-        </motion.button>
+        <div className="flex items-center gap-1">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={onExit}
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+          >
+            <ArrowLeft size={20} />
+          </motion.button>
+          {canGoBack && (
+            <motion.button
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setCurrent((c) => c - 1)}
+              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+              title="Poprzednie pytanie"
+            >
+              <ChevronLeft size={20} />
+            </motion.button>
+          )}
+        </div>
         <span className="text-sm font-medium text-muted-foreground">
           {current + 1} / {questions.length}
         </span>
@@ -135,7 +158,7 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
                 const showResult = selected !== null;
 
                 let classes =
-                  "w-full p-4 rounded-xl text-left text-sm font-medium transition-all cursor-pointer border ";
+                  "w-full p-4 rounded-xl text-left text-sm font-medium transition-all border ";
                 if (showResult && isCorrect) {
                   classes += "bg-green-500/15 border-green-500/50 text-green-700 dark:text-green-400";
                 } else if (showResult && isSelected && !isCorrect) {
@@ -143,7 +166,7 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
                 } else if (showResult) {
                   classes += "bg-secondary border-border text-muted-foreground opacity-60";
                 } else {
-                  classes += "bg-secondary border-border text-foreground hover:bg-secondary/80";
+                  classes += "bg-secondary border-border text-foreground hover:bg-secondary/80 cursor-pointer";
                 }
 
                 return (
@@ -155,9 +178,26 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
                     className={classes}
                   >
                     <span className="flex items-center justify-between">
-                      {opt.word}
-                      {showResult && isCorrect && <Check size={16} />}
-                      {showResult && isSelected && !isCorrect && <X size={16} />}
+                      <span>{opt.word}</span>
+                      <span className="flex items-center gap-1.5">
+                        {showResult && isCorrect && <Check size={16} />}
+                        {showResult && isSelected && !isCorrect && <X size={16} />}
+                        {showResult && (
+                          <motion.button
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            whileTap={{ scale: 0.85 }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setInspectWord(opt);
+                            }}
+                            className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                            title="Sprawdź znaczenie"
+                          >
+                            <BookOpen size={14} />
+                          </motion.button>
+                        )}
+                      </span>
                     </span>
                   </motion.button>
                 );
@@ -166,6 +206,33 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      <Dialog open={!!inspectWord} onOpenChange={(o) => !o && setInspectWord(null)}>
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
+              {inspectWord?.word}
+            </DialogTitle>
+          </DialogHeader>
+          {inspectWord && (
+            <div className="space-y-3">
+              <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
+                {inspectWord.partOfSpeech}
+              </span>
+              <div className="p-4 rounded-xl bg-secondary/50">
+                <p className="text-sm leading-relaxed text-foreground">{inspectWord.definition}</p>
+              </div>
+              <div className="p-4 rounded-xl border border-border">
+                <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground mb-2">Przykład</p>
+                <p className="text-sm leading-relaxed text-muted-foreground italic">„{inspectWord.example}"</p>
+              </div>
+              {inspectWord.etymology && (
+                <p className="text-xs text-muted-foreground italic">{inspectWord.etymology}</p>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
