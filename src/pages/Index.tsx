@@ -513,8 +513,8 @@ const Index = () => {
       <FlashcardSetCreator
         open={createSetOpen}
         onClose={() => setCreateSetOpen(false)}
-        onCreated={async (title, description, cards) => {
-          await createSet(title, description, cards);
+        onCreated={async (title, description, cards, icon) => {
+          await createSet(title, description, cards, icon);
           refetchCustom();
         }}
         onImport={() => setImportOpen(true)}
