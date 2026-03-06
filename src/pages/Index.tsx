@@ -457,7 +457,6 @@ const Index = () => {
             {/* Page 2: Flashcard creator */}
             <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
               <FlashcardCreator
-                onAddWord={() => setAddWordOpen(true)}
                 onCreateSet={() => setCreateSetOpen(true)}
                 onImport={() => setImportOpen(true)}
                 sets={flashcardSets}
