@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Plus, Sparkles, Layers, Trash2, BookOpen, Keyboard, Upload } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Layers, Trash2, BookOpen, Keyboard, Upload, ChevronRight, X, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
 
 interface FlashcardCreatorProps {
-  onAddWord: () => void;
   onCreateSet: () => void;
   onImport: () => void;
   sets: FlashcardSet[];
