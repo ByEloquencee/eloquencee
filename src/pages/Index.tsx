@@ -495,6 +495,14 @@ const Index = () => {
         onCreateFolder={() => setCreateFolderOpen(true)}
       />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
+      <FlashcardSetCreator
+        open={createSetOpen}
+        onClose={() => setCreateSetOpen(false)}
+        onCreated={async (title, description, cards) => {
+          await createSet(title, description, cards);
+          refetchCustom();
+        }}
+      />
       <CreateFolderDialog
         open={createFolderOpen}
         onClose={() => setCreateFolderOpen(false)}
