@@ -130,7 +130,47 @@ export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: Flas
               />
             </div>
 
-            {/* Description */}
+            {/* Icon picker */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
+                Ikonka
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowIconPicker((v) => !v)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary border border-border text-sm hover:bg-secondary/80 transition-colors cursor-pointer"
+              >
+                {(() => { const Icon = getFlashcardIcon(selectedIcon); return <Icon size={18} className="text-primary" />; })()}
+                <span className="text-muted-foreground">Zmień ikonkę</span>
+              </button>
+              <AnimatePresence>
+                {showIconPicker && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="grid grid-cols-10 gap-1 pt-2">
+                      {FLASHCARD_ICONS.map(({ name, icon: Icon }) => (
+                        <button
+                          key={name}
+                          type="button"
+                          onClick={() => { setSelectedIcon(name); setShowIconPicker(false); }}
+                          className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                            selectedIcon === name
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                          }`}
+                        >
+                          <Icon size={16} />
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
                 Opis (opcjonalnie)
