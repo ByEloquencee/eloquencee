@@ -517,6 +517,7 @@ const Index = () => {
           await createSet(title, description, cards);
           refetchCustom();
         }}
+        onImport={() => setImportOpen(true)}
       />
       <FlashcardImportDialog
         open={importOpen}
