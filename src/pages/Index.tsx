@@ -442,7 +442,20 @@ const Index = () => {
 
             {/* Page 2: Flashcard creator */}
             <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
-              <FlashcardCreator onAddWord={() => setAddWordOpen(true)} />
+              <FlashcardCreator
+                onAddWord={() => setAddWordOpen(true)}
+                onCreateSet={() => setCreateSetOpen(true)}
+                sets={flashcardSets}
+                onDeleteSet={async (id) => {
+                  try {
+                    await deleteSet(id);
+                    refetchCustom();
+                    toast.success("Zestaw usunięty!");
+                  } catch {
+                    toast.error("Nie udało się usunąć zestawu");
+                  }
+                }}
+              />
             </div>
           </motion.div>
         </div>
