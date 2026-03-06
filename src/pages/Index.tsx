@@ -78,6 +78,7 @@ const Index = () => {
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
+  const [createSetOpen, setCreateSetOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
