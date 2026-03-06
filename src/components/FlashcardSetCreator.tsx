@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Trash2, GripVertical, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { FLASHCARD_ICONS, getFlashcardIcon } from "@/lib/flashcard-icons";
 
 interface CardEntry {
   id: string;
@@ -15,7 +16,8 @@ interface FlashcardSetCreatorProps {
   onCreated: (
     title: string,
     description: string,
-    cards: { word: string; definition: string }[]
+    cards: { word: string; definition: string }[],
+    icon: string
   ) => Promise<void>;
   onImport: () => void;
 }
@@ -26,6 +28,8 @@ const makeCard = (): CardEntry => ({ id: `card-${nextId++}`, word: "", definitio
 export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: FlashcardSetCreatorProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedIcon, setSelectedIcon] = useState("book-open");
+  const [showIconPicker, setShowIconPicker] = useState(false);
   const [cards, setCards] = useState<CardEntry[]>([makeCard(), makeCard()]);
   const [submitting, setSubmitting] = useState(false);
 
