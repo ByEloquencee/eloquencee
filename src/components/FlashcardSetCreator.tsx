@@ -192,15 +192,25 @@ export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: Flas
               ))}
             </div>
 
-            {/* Add card button */}
-            <button
-              type="button"
-              onClick={addCard}
-              className="w-full py-2.5 rounded-xl border-2 border-dashed border-border text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors cursor-pointer flex items-center justify-center gap-2"
-            >
-              <Plus size={16} />
-              Dodaj fiszkę
-            </button>
+            {/* Import or Add card */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={addCard}
+                className="flex-1 py-2.5 rounded-xl border-2 border-dashed border-border text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Plus size={16} />
+                Dodaj fiszkę
+              </button>
+              <button
+                type="button"
+                onClick={() => { onClose(); onImport(); }}
+                className="py-2.5 px-4 rounded-xl border-2 border-dashed border-border text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Upload size={16} />
+                Importuj
+              </button>
+            </div>
 
             {/* Submit */}
             <button
