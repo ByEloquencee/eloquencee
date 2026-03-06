@@ -520,6 +520,14 @@ const Index = () => {
           refetchCustom();
         }}
       />
+      <FlashcardImportDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImport={async (title, description, cards) => {
+          await createSet(title, description, cards);
+          refetchCustom();
+        }}
+      />
       <CreateFolderDialog
         open={createFolderOpen}
         onClose={() => setCreateFolderOpen(false)}
