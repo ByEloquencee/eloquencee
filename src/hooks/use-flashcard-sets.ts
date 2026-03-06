@@ -76,7 +76,8 @@ export function useFlashcardSets() {
     async (
       title: string,
       description: string,
-      cards: { word: string; definition: string; partOfSpeech?: string; example?: string; etymology?: string }[]
+      cards: { word: string; definition: string; partOfSpeech?: string; example?: string; etymology?: string }[],
+      icon: string = "book-open"
     ) => {
       if (!user) throw new Error("Not authenticated");
 
