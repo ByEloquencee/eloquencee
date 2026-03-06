@@ -1,42 +1,160 @@
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, RotateCcw, X, BookOpen } from "lucide-react";
+import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { RotateCcw, X, BookOpen, ThumbsUp, ThumbsDown, RotateCw } from "lucide-react";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
+import type { PolishWord } from "@/data/words";
 
 interface FlashcardStudyViewProps {
   set: FlashcardSet;
   onExit: () => void;
 }
 
+type SwipeDirection = "left" | "right" | null;
+
 export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
+  const [cards, setCards] = useState<PolishWord[]>(set.cards);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [direction, setDirection] = useState(0);
+  const [known, setKnown] = useState<PolishWord[]>([]);
+  const [unknown, setUnknown] = useState<PolishWord[]>([]);
+  const [finished, setFinished] = useState(false);
+  const [swipeHint, setSwipeHint] = useState<SwipeDirection>(null);
 
-  const card = set.cards[index];
-  const total = set.cards.length;
+  const card = cards[index];
+  const total = cards.length;
 
-  const goNext = useCallback(() => {
-    if (index < total - 1) {
-      setDirection(1);
+  const handleResult = useCallback(
+    (isKnown: boolean) => {
+      if (!card) return;
+      if (isKnown) {
+        setKnown((prev) => [...prev, card]);
+      } else {
+        setUnknown((prev) => [...prev, card]);
+      }
+      setDirection(isKnown ? 1 : -1);
       setFlipped(false);
-      setIndex((i) => i + 1);
-    }
-  }, [index, total]);
+      setSwipeHint(null);
 
-  const goPrev = useCallback(() => {
-    if (index > 0) {
-      setDirection(-1);
-      setFlipped(false);
-      setIndex((i) => i - 1);
-    }
-  }, [index]);
+      if (index >= total - 1) {
+        setFinished(true);
+      } else {
+        setIndex((i) => i + 1);
+      }
+    },
+    [card, index, total]
+  );
 
-  const restart = () => {
+  const handleDragEnd = useCallback(
+    (_: any, info: PanInfo) => {
+      const threshold = 80;
+      if (info.offset.x > threshold) {
+        handleResult(true);
+      } else if (info.offset.x < -threshold) {
+        handleResult(false);
+      }
+      setSwipeHint(null);
+    },
+    [handleResult]
+  );
+
+  const handleDrag = useCallback((_: any, info: PanInfo) => {
+    if (info.offset.x > 40) setSwipeHint("right");
+    else if (info.offset.x < -40) setSwipeHint("left");
+    else setSwipeHint(null);
+  }, []);
+
+  const restartAll = () => {
+    setCards(set.cards);
     setIndex(0);
     setFlipped(false);
     setDirection(0);
+    setKnown([]);
+    setUnknown([]);
+    setFinished(false);
+    setSwipeHint(null);
   };
+
+  const studyUnknown = () => {
+    setCards(unknown);
+    setIndex(0);
+    setFlipped(false);
+    setDirection(0);
+    setKnown([]);
+    setUnknown([]);
+    setFinished(false);
+    setSwipeHint(null);
+  };
+
+  if (finished) {
+    const knownCount = known.length;
+    const unknownCount = unknown.length;
+    const percentage = total > 0 ? Math.round((knownCount / total) * 100) : 0;
+
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-sm text-center space-y-6">
+          <div className="space-y-2">
+            <h2
+              className="text-2xl font-semibold"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Wyniki
+            </h2>
+            <p className="text-sm text-muted-foreground">{set.title}</p>
+          </div>
+
+          <div className="flex justify-center gap-8">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">{knownCount}</div>
+              <p className="text-xs text-muted-foreground mt-1">Umiem</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-destructive">{unknownCount}</div>
+              <p className="text-xs text-muted-foreground mt-1">Nie umiem</p>
+            </div>
+          </div>
+
+          <div className="h-2 rounded-full bg-secondary overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full transition-all"
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">{percentage}% opanowane</p>
+
+          <div className="space-y-3 pt-4">
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={restartAll}
+              className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2"
+            >
+              <RotateCcw size={16} />
+              Powtórz cały zestaw
+            </motion.button>
+
+            {unknownCount > 0 && (
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={studyUnknown}
+                className="w-full py-3 rounded-xl border border-border text-sm font-medium hover:bg-secondary transition-colors cursor-pointer flex items-center justify-center gap-2 text-foreground"
+              >
+                <RotateCw size={16} />
+                Ucz się nieznanych ({unknownCount})
+              </motion.button>
+            )}
+
+            <button
+              onClick={onExit}
+              className="w-full py-3 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              Zakończ
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!card) return null;
 
@@ -51,7 +169,10 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           <X size={20} />
         </button>
         <div className="text-center">
-          <h2 className="text-sm font-semibold truncate max-w-[200px]" style={{ fontFamily: "var(--font-display)" }}>
+          <h2
+            className="text-sm font-semibold truncate max-w-[200px]"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
             {set.title}
           </h2>
           <p className="text-xs text-muted-foreground">
@@ -59,7 +180,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           </p>
         </div>
         <button
-          onClick={restart}
+          onClick={restartAll}
           className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
         >
           <RotateCcw size={18} />
@@ -77,17 +198,40 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
         </div>
       </div>
 
+      {/* Swipe hints */}
+      <div className="w-full max-w-lg mx-auto px-4 flex justify-between pointer-events-none">
+        <motion.div
+          animate={{ opacity: swipeHint === "left" ? 1 : 0, scale: swipeHint === "left" ? 1 : 0.8 }}
+          className="flex items-center gap-1.5 text-destructive text-xs font-medium"
+        >
+          <ThumbsDown size={14} />
+          Nie umiem
+        </motion.div>
+        <motion.div
+          animate={{ opacity: swipeHint === "right" ? 1 : 0, scale: swipeHint === "right" ? 1 : 0.8 }}
+          className="flex items-center gap-1.5 text-primary text-xs font-medium"
+        >
+          Umiem
+          <ThumbsUp size={14} />
+        </motion.div>
+      </div>
+
       {/* Card */}
       <main className="flex-1 flex items-center justify-center px-4">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
-            key={index}
+            key={`${index}-${cards.length}`}
             custom={direction}
             initial={{ opacity: 0, x: direction * 100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -direction * 100 }}
             transition={{ duration: 0.25 }}
             className="w-full max-w-sm"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.7}
+            onDrag={handleDrag}
+            onDragEnd={handleDragEnd}
           >
             <motion.button
               onClick={() => setFlipped((f) => !f)}
@@ -124,25 +268,25 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
         </AnimatePresence>
       </main>
 
-      {/* Navigation */}
+      {/* Navigation buttons */}
       <div className="w-full max-w-lg mx-auto px-4 pb-8 flex items-center justify-center gap-4">
         <button
-          onClick={goPrev}
-          disabled={index === 0}
-          className="p-3 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors cursor-pointer disabled:opacity-30"
+          onClick={() => handleResult(false)}
+          className="p-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors cursor-pointer flex items-center gap-2"
         >
-          <ArrowLeft size={20} />
+          <ThumbsDown size={18} />
+          <span className="text-xs font-medium">Nie umiem</span>
         </button>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <BookOpen size={14} />
           <span>{total} fiszek</span>
         </div>
         <button
-          onClick={goNext}
-          disabled={index === total - 1}
-          className="p-3 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors cursor-pointer disabled:opacity-30"
+          onClick={() => handleResult(true)}
+          className="p-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer flex items-center gap-2"
         >
-          <ArrowRight size={20} />
+          <span className="text-xs font-medium">Umiem</span>
+          <ThumbsUp size={18} />
         </button>
       </div>
     </div>
