@@ -68,6 +68,7 @@ export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: Flas
       toast.success("Zestaw fiszek utworzony!");
       setTitle("");
       setDescription("");
+      setSelectedIcon("book-open");
       setCards([makeCard(), makeCard()]);
       onClose();
     } catch (err: any) {
