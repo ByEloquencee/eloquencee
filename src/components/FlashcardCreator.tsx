@@ -79,7 +79,7 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                                   className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                                 >
                                   <BookOpen size={14} />
-                                  Przeglądaj
+                                  Ucz się
                                 </button>
                                 <button
                                   onClick={() => { setShowAllSets(false); onTypingSet(set); }}
