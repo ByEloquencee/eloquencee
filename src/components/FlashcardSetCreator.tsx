@@ -23,7 +23,7 @@ interface FlashcardSetCreatorProps {
 let nextId = 0;
 const makeCard = (): CardEntry => ({ id: `card-${nextId++}`, word: "", definition: "" });
 
-export function FlashcardSetCreator({ open, onClose, onCreated }: FlashcardSetCreatorProps) {
+export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: FlashcardSetCreatorProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [cards, setCards] = useState<CardEntry[]>([makeCard(), makeCard()]);
