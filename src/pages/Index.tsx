@@ -233,18 +233,18 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Nav */}
-      <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-2xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+      <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between gap-2">
+        <div className="flex flex-col min-w-0 flex-shrink">
+          <span className="text-xl sm:text-2xl font-semibold tracking-tight truncate" style={{ fontFamily: "var(--font-display)" }}>
             Eloquencee
           </span>
-          <span className="text-xs text-muted-foreground tracking-wide">
+          <span className="text-[10px] sm:text-xs text-muted-foreground tracking-wide truncate">
             {profile?.name
-              ? `Cześć, ${profile.name}! Ucz się nowych słów!`
-              : "Ucz się nowych słów każdego dnia!"}
+              ? `Cześć, ${profile.name}!`
+              : "Ucz się nowych słów!"}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 flex-shrink-0">
           {user && (
             <motion.button
               whileTap={{ scale: 0.9 }}
