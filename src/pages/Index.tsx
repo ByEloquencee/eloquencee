@@ -212,6 +212,14 @@ const Index = () => {
       .join(", ");
   }, [selectedCategories]);
 
+  if (studySet) {
+    return <FlashcardStudyView set={studySet} onExit={() => setStudySet(null)} />;
+  }
+
+  if (typingSet) {
+    return <FlashcardTypingView set={typingSet} onExit={() => setTypingSet(null)} />;
+  }
+
   if (quizActive) {
     return (
       <QuizView
@@ -219,6 +227,7 @@ const Index = () => {
         allWords={allWords}
         onExit={() => setQuizActive(false)}
       />
+    );
     );
   }
 
