@@ -23,6 +23,7 @@ export type Database = {
           example: string
           id: string
           part_of_speech: string
+          set_id: string | null
           user_id: string
           word: string
         }
@@ -34,6 +35,7 @@ export type Database = {
           example?: string
           id?: string
           part_of_speech?: string
+          set_id?: string | null
           user_id: string
           word: string
         }
@@ -45,10 +47,19 @@ export type Database = {
           example?: string
           id?: string
           part_of_speech?: string
+          set_id?: string | null
           user_id?: string
           word?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "custom_words_set_id_fkey"
+            columns: ["set_id"]
+            isOneToOne: false
+            referencedRelation: "flashcard_sets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       favorites: {
         Row: {
@@ -68,6 +79,30 @@ export type Database = {
           id?: string
           user_id?: string
           word_id?: string
+        }
+        Relationships: []
+      }
+      flashcard_sets: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
