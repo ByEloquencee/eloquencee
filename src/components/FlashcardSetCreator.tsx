@@ -62,7 +62,8 @@ export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: Flas
       await onCreated(
         title.trim(),
         description.trim(),
-        validCards.map((c) => ({ word: c.word.trim(), definition: c.definition.trim() }))
+        validCards.map((c) => ({ word: c.word.trim(), definition: c.definition.trim() })),
+        selectedIcon
       );
       toast.success("Zestaw fiszek utworzony!");
       setTitle("");
