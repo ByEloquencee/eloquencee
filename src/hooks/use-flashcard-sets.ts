@@ -83,7 +83,7 @@ export function useFlashcardSets() {
 
       const { data: setData, error: setError } = await supabase
         .from("flashcard_sets")
-        .insert({ user_id: user.id, title, description })
+        .insert({ user_id: user.id, title, description, icon } as any)
         .select()
         .single();
 
