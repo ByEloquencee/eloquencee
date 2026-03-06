@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Layers, Trash2, BookOpen, Keyboard, Upload, ChevronRight, X, Clock } from "lucide-react";
+import { Sparkles, Layers, Trash2, BookOpen, Keyboard, ChevronRight, X, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
 
