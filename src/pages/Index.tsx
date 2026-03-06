@@ -82,6 +82,9 @@ const Index = () => {
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [createSetOpen, setCreateSetOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [studySet, setStudySet] = useState<FlashcardSet | null>(null);
+  const [typingSet, setTypingSet] = useState<FlashcardSet | null>(null);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
