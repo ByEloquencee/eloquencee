@@ -459,6 +459,7 @@ const Index = () => {
               <FlashcardCreator
                 onAddWord={() => setAddWordOpen(true)}
                 onCreateSet={() => setCreateSetOpen(true)}
+                onImport={() => setImportOpen(true)}
                 sets={flashcardSets}
                 onDeleteSet={async (id) => {
                   try {
@@ -469,6 +470,8 @@ const Index = () => {
                     toast.error("Nie udało się usunąć zestawu");
                   }
                 }}
+                onStudySet={(set) => setStudySet(set)}
+                onTypingSet={(set) => setTypingSet(set)}
               />
             </div>
           </motion.div>
