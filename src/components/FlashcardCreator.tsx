@@ -1,26 +1,25 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Layers, Trash2, BookOpen, Keyboard, Upload, ChevronRight, X, Clock } from "lucide-react";
+import { Sparkles, Layers, Trash2, BookOpen, Keyboard, ChevronRight, X, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
 
 interface FlashcardCreatorProps {
   onCreateSet: () => void;
-  onImport: () => void;
   sets: FlashcardSet[];
   onDeleteSet: (id: string) => void;
   onStudySet: (set: FlashcardSet) => void;
   onTypingSet: (set: FlashcardSet) => void;
 }
 
-export function FlashcardCreator({ onCreateSet, onImport, sets, onDeleteSet, onStudySet, onTypingSet }: FlashcardCreatorProps) {
+export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, onTypingSet }: FlashcardCreatorProps) {
   const { user } = useAuth();
   const [expandedSet, setExpandedSet] = useState<string | null>(null);
   const [showAllSets, setShowAllSets] = useState(false);
 
   // Sort by created_at descending, show only 3 recent unless "show all"
   const sortedSets = [...sets].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  const recentSets = showAllSets ? sortedSets : sortedSets.slice(0, 3);
+  const recentSets = showAllSets ? sortedSets : sortedSets.slice(0, 2);
 
   return (
     <>
@@ -65,15 +64,6 @@ export function FlashcardCreator({ onCreateSet, onImport, sets, onDeleteSet, onS
                   Nowy zestaw fiszek
                 </motion.button>
 
-                {/* Import */}
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  onClick={onImport}
-                  className="w-full py-3 rounded-xl border border-border text-sm font-medium tracking-wide hover:bg-secondary transition-colors cursor-pointer flex items-center justify-center gap-2 text-foreground"
-                >
-                  <Upload size={16} />
-                  Importuj fiszki
-                </motion.button>
 
                 {/* View all sets button */}
                 {sets.length > 0 && (

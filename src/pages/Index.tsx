@@ -458,7 +458,6 @@ const Index = () => {
             <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
               <FlashcardCreator
                 onCreateSet={() => setCreateSetOpen(true)}
-                onImport={() => setImportOpen(true)}
                 sets={flashcardSets}
                 onDeleteSet={async (id) => {
                   try {
@@ -518,6 +517,7 @@ const Index = () => {
           await createSet(title, description, cards);
           refetchCustom();
         }}
+        onImport={() => setImportOpen(true)}
       />
       <FlashcardImportDialog
         open={importOpen}
