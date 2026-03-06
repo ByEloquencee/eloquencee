@@ -6,7 +6,6 @@ import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
 
 interface FlashcardCreatorProps {
   onCreateSet: () => void;
-  onImport: () => void;
   sets: FlashcardSet[];
   onDeleteSet: (id: string) => void;
   onStudySet: (set: FlashcardSet) => void;
