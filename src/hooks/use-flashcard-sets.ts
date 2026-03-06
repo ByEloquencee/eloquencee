@@ -58,6 +58,7 @@ export function useFlashcardSets() {
           id: s.id,
           title: s.title,
           description: s.description,
+          icon: (s as any).icon || "book-open",
           created_at: s.created_at,
           cards: wordsBySet.get(s.id) || [],
         }))
