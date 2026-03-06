@@ -13,6 +13,8 @@ import { QuizView } from "@/components/QuizView";
 import { DailyProgress } from "@/components/DailyProgress";
 import { WordAIChat } from "@/components/WordAIChat";
 import { FlashcardCreator } from "@/components/FlashcardCreator";
+import { FlashcardSetCreator } from "@/components/FlashcardSetCreator";
+import { useFlashcardSets } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
@@ -66,6 +68,7 @@ const Index = () => {
   const { todayCount, increment: incrementProgress, decrement: decrementProgress } = useDailyProgress();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const { folders, createFolder, deleteFolder, toggleWordInFolder } = useFolders();
+  const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
@@ -75,6 +78,7 @@ const Index = () => {
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
+  const [createSetOpen, setCreateSetOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -438,7 +442,20 @@ const Index = () => {
 
             {/* Page 2: Flashcard creator */}
             <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
-              <FlashcardCreator onAddWord={() => setAddWordOpen(true)} />
+              <FlashcardCreator
+                onAddWord={() => setAddWordOpen(true)}
+                onCreateSet={() => setCreateSetOpen(true)}
+                sets={flashcardSets}
+                onDeleteSet={async (id) => {
+                  try {
+                    await deleteSet(id);
+                    refetchCustom();
+                    toast.success("Zestaw usunięty!");
+                  } catch {
+                    toast.error("Nie udało się usunąć zestawu");
+                  }
+                }}
+              />
             </div>
           </motion.div>
         </div>
@@ -478,6 +495,14 @@ const Index = () => {
         onCreateFolder={() => setCreateFolderOpen(true)}
       />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
+      <FlashcardSetCreator
+        open={createSetOpen}
+        onClose={() => setCreateSetOpen(false)}
+        onCreated={async (title, description, cards) => {
+          await createSet(title, description, cards);
+          refetchCustom();
+        }}
+      />
       <CreateFolderDialog
         open={createFolderOpen}
         onClose={() => setCreateFolderOpen(false)}
