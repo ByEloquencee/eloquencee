@@ -7,6 +7,7 @@ export interface FlashcardSet {
   id: string;
   title: string;
   description: string;
+  icon: string;
   created_at: string;
   cards: PolishWord[];
 }
