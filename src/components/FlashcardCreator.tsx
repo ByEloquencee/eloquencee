@@ -64,15 +64,6 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                   Nowy zestaw fiszek
                 </motion.button>
 
-                {/* Import */}
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  onClick={onImport}
-                  className="w-full py-3 rounded-xl border border-border text-sm font-medium tracking-wide hover:bg-secondary transition-colors cursor-pointer flex items-center justify-center gap-2 text-foreground"
-                >
-                  <Upload size={16} />
-                  Importuj fiszki
-                </motion.button>
 
                 {/* View all sets button */}
                 {sets.length > 0 && (

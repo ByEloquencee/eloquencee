@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Trash2, GripVertical } from "lucide-react";
+import { X, Plus, Trash2, GripVertical, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 interface CardEntry {
@@ -17,6 +17,7 @@ interface FlashcardSetCreatorProps {
     description: string,
     cards: { word: string; definition: string }[]
   ) => Promise<void>;
+  onImport: () => void;
 }
 
 let nextId = 0;
