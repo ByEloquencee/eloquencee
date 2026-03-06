@@ -19,7 +19,7 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
 
   // Sort by created_at descending, show only 3 recent unless "show all"
   const sortedSets = [...sets].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  const recentSets = showAllSets ? sortedSets : sortedSets.slice(0, 3);
+  const recentSets = showAllSets ? sortedSets : sortedSets.slice(0, 2);
 
   return (
     <>
