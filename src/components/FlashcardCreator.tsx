@@ -166,7 +166,7 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                     <div className="flex items-center gap-2">
                       <Clock size={12} className="text-muted-foreground" />
                       <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
-                        Ostatnie
+                        Ostatnio używane
                       </p>
                     </div>
                     <div className="space-y-2">

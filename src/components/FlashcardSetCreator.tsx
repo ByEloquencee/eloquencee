@@ -114,35 +114,31 @@ export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: Flas
           </div>
 
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            {/* Title */}
+            {/* Title with icon picker */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
                 Tytuł zestawu *
               </label>
-              <input
-                type="text"
-                placeholder='np. "Słówka B2" lub "Biologia - rozdział 3"'
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                maxLength={100}
-                className="w-full px-4 py-3 rounded-xl bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-
-            {/* Icon picker */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
-                Ikonka
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowIconPicker((v) => !v)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary border border-border text-sm hover:bg-secondary/80 transition-colors cursor-pointer"
-              >
-                {(() => { const Icon = getFlashcardIcon(selectedIcon); return <Icon size={18} className="text-primary" />; })()}
-                <span className="text-muted-foreground">Zmień ikonkę</span>
-              </button>
+              <div className="flex items-stretch gap-2">
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowIconPicker((v) => !v)}
+                    className="h-full px-3 rounded-xl bg-secondary border border-border hover:bg-secondary/80 transition-colors cursor-pointer flex items-center justify-center"
+                  >
+                    {(() => { const Icon = getFlashcardIcon(selectedIcon); return <Icon size={18} className="text-primary" />; })()}
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  placeholder='np. "Słówka B2" lub "Biologia - rozdział 3"'
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  maxLength={100}
+                  className="flex-1 px-4 py-3 rounded-xl bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
               <AnimatePresence>
                 {showIconPicker && (
                   <motion.div
