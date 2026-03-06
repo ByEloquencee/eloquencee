@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Layers, Trash2, BookOpen, Keyboard, ChevronRight, X, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
+import { getFlashcardIcon } from "@/lib/flashcard-icons";
 
 interface FlashcardCreatorProps {
   onCreateSet: () => void;
@@ -51,7 +52,10 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                       className="flex items-center justify-between gap-3 p-4 hover:bg-secondary/60 transition-colors cursor-pointer"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium truncate">{set.title}</p>
+                        <p className="text-sm font-medium truncate flex items-center gap-1.5">
+                          {(() => { const Icon = getFlashcardIcon(set.icon); return <Icon size={14} className="text-primary flex-shrink-0" />; })()}
+                          {set.title}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           {set.cards.length} {set.cards.length === 1 ? "fiszka" : set.cards.length < 5 ? "fiszki" : "fiszek"}
                           {set.description ? ` · ${set.description}` : ""}
@@ -173,7 +177,10 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                             className="flex items-center justify-between gap-3 p-3 hover:bg-secondary/60 transition-colors cursor-pointer"
                           >
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium truncate">{set.title}</p>
+                              <p className="text-sm font-medium truncate flex items-center gap-1.5">
+                                {(() => { const Icon = getFlashcardIcon(set.icon); return <Icon size={14} className="text-primary flex-shrink-0" />; })()}
+                                {set.title}
+                              </p>
                               <p className="text-xs text-muted-foreground">
                                 {set.cards.length} {set.cards.length === 1 ? "fiszka" : set.cards.length < 5 ? "fiszki" : "fiszek"}
                                 {set.description ? ` · ${set.description}` : ""}

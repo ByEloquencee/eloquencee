@@ -7,6 +7,7 @@ export interface FlashcardSet {
   id: string;
   title: string;
   description: string;
+  icon: string;
   created_at: string;
   cards: PolishWord[];
 }
@@ -57,6 +58,7 @@ export function useFlashcardSets() {
           id: s.id,
           title: s.title,
           description: s.description,
+          icon: (s as any).icon || "book-open",
           created_at: s.created_at,
           cards: wordsBySet.get(s.id) || [],
         }))
@@ -74,13 +76,14 @@ export function useFlashcardSets() {
     async (
       title: string,
       description: string,
-      cards: { word: string; definition: string; partOfSpeech?: string; example?: string; etymology?: string }[]
+      cards: { word: string; definition: string; partOfSpeech?: string; example?: string; etymology?: string }[],
+      icon: string = "book-open"
     ) => {
       if (!user) throw new Error("Not authenticated");
 
       const { data: setData, error: setError } = await supabase
         .from("flashcard_sets")
-        .insert({ user_id: user.id, title, description })
+        .insert({ user_id: user.id, title, description, icon } as any)
         .select()
         .single();
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Trash2, GripVertical, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { FLASHCARD_ICONS, getFlashcardIcon } from "@/lib/flashcard-icons";
 
 interface CardEntry {
   id: string;
@@ -15,7 +16,8 @@ interface FlashcardSetCreatorProps {
   onCreated: (
     title: string,
     description: string,
-    cards: { word: string; definition: string }[]
+    cards: { word: string; definition: string }[],
+    icon: string
   ) => Promise<void>;
   onImport: () => void;
 }
@@ -26,6 +28,8 @@ const makeCard = (): CardEntry => ({ id: `card-${nextId++}`, word: "", definitio
 export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: FlashcardSetCreatorProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedIcon, setSelectedIcon] = useState("book-open");
+  const [showIconPicker, setShowIconPicker] = useState(false);
   const [cards, setCards] = useState<CardEntry[]>([makeCard(), makeCard()]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -58,11 +62,13 @@ export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: Flas
       await onCreated(
         title.trim(),
         description.trim(),
-        validCards.map((c) => ({ word: c.word.trim(), definition: c.definition.trim() }))
+        validCards.map((c) => ({ word: c.word.trim(), definition: c.definition.trim() })),
+        selectedIcon
       );
       toast.success("Zestaw fiszek utworzony!");
       setTitle("");
       setDescription("");
+      setSelectedIcon("book-open");
       setCards([makeCard(), makeCard()]);
       onClose();
     } catch (err: any) {
@@ -124,7 +130,47 @@ export function FlashcardSetCreator({ open, onClose, onCreated, onImport }: Flas
               />
             </div>
 
-            {/* Description */}
+            {/* Icon picker */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
+                Ikonka
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowIconPicker((v) => !v)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary border border-border text-sm hover:bg-secondary/80 transition-colors cursor-pointer"
+              >
+                {(() => { const Icon = getFlashcardIcon(selectedIcon); return <Icon size={18} className="text-primary" />; })()}
+                <span className="text-muted-foreground">Zmień ikonkę</span>
+              </button>
+              <AnimatePresence>
+                {showIconPicker && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="grid grid-cols-10 gap-1 pt-2">
+                      {FLASHCARD_ICONS.map(({ name, icon: Icon }) => (
+                        <button
+                          key={name}
+                          type="button"
+                          onClick={() => { setSelectedIcon(name); setShowIconPicker(false); }}
+                          className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                            selectedIcon === name
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                          }`}
+                        >
+                          <Icon size={16} />
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
                 Opis (opcjonalnie)

@@ -1,0 +1,1 @@
+ALTER TABLE public.flashcard_sets ADD COLUMN icon text NOT NULL DEFAULT 'book-open';
