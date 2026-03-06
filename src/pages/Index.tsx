@@ -228,7 +228,6 @@ const Index = () => {
         onExit={() => setQuizActive(false)}
       />
     );
-    );
   }
 
   return (
