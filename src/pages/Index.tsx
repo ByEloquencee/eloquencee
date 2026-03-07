@@ -33,6 +33,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { useDailyProgress } from "@/hooks/use-daily-progress";
 import { useModerator } from "@/hooks/use-moderator";
 import { useGlobalWords } from "@/hooks/use-global-words";
+import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites";
@@ -78,6 +79,7 @@ const Index = () => {
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
+  const { hiddenIds, overrides } = useStaticWordManagement();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
@@ -155,7 +157,25 @@ const Index = () => {
     setShowOnboarding(false);
   };
 
-  const allWords = useMemo(() => [...words, ...globalPolishWords, ...customWords], [customWords, globalPolishWords]);
+  const allWords = useMemo(() => {
+    // Apply hidden words filter and overrides to built-in words
+    const filteredBuiltIn = words
+      .filter(w => !hiddenIds.has(w.id))
+      .map(w => {
+        const override = overrides.get(w.id);
+        if (!override) return w;
+        return {
+          ...w,
+          word: override.word || w.word,
+          partOfSpeech: override.part_of_speech || w.partOfSpeech,
+          definition: override.definition || w.definition,
+          example: override.example || w.example,
+          etymology: override.etymology || w.etymology,
+          category: (override.category as WordCategory) || w.category,
+        };
+      });
+    return [...filteredBuiltIn, ...globalPolishWords, ...customWords];
+  }, [customWords, globalPolishWords, hiddenIds, overrides]);
 
   const favoriteWords = useMemo(
     () => allWords.filter((w) => favorites.includes(w.id)),
