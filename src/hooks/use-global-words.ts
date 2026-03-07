@@ -31,8 +31,8 @@ export function useGlobalWords() {
     fetch();
   }, [fetch]);
 
-  const addWord = useCallback(async (word: Omit<GlobalWord, "id" | "created_at">) => {
-    const { error } = await supabase.from("global_words").insert(word);
+  const addWord = useCallback(async (word: Omit<GlobalWord, "id" | "created_at"> & { created_by?: string | null }) => {
+    const { error } = await (supabase.from("global_words" as any).insert(word as any) as any);
     if (error) throw error;
     await fetch();
   }, [fetch]);
