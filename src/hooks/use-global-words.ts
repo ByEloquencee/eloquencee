@@ -19,10 +19,10 @@ export function useGlobalWords() {
   const [loading, setLoading] = useState(true);
 
   const fetch = useCallback(async () => {
-    const { data } = await supabase
-      .from("global_words")
+    const { data } = await (supabase
+      .from("global_words" as any)
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false }) as any);
     setGlobalWords((data as GlobalWord[]) || []);
     setLoading(false);
   }, []);
