@@ -133,6 +133,7 @@ const Index = () => {
     }
   }, [isModerator]);
 
+  useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
       setShowOnboarding(true);
     }
