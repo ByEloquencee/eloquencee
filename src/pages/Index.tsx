@@ -287,16 +287,6 @@ const Index = () => {
           </span>
         </div>
         <div className="flex items-center gap-0.5 flex-shrink-0">
-          {user && (
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setPlusMenuOpen(true)}
-              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-              title="Dodaj"
-            >
-              <Plus size={18} />
-            </motion.button>
-          )}
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setQuizModeOpen(true)}
