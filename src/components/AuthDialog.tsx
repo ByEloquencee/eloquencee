@@ -128,6 +128,24 @@ export function AuthDialog({ open, onClose, onAddWord, onCreateFolder }: AuthDia
                   </div>
                 </div>
 
+                {/* Quick actions */}
+                <div className="space-y-1">
+                  <button
+                    onClick={() => { onClose(); onAddWord?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+                  >
+                    <FileText size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Dodaj nowe słowo</span>
+                  </button>
+                  <button
+                    onClick={() => { onClose(); onCreateFolder?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+                  >
+                    <FolderPlus size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Utwórz folder</span>
+                  </button>
+                </div>
+
                 <p className="text-xs text-muted-foreground">
                   Twoje ulubione słowa i własne słowa są synchronizowane z kontem.
                 </p>
