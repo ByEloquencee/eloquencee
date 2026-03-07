@@ -38,7 +38,7 @@ export function useGlobalWords() {
   }, [fetch]);
 
   const deleteWord = useCallback(async (id: string) => {
-    const { error } = await supabase.from("global_words").delete().eq("id", id);
+    const { error } = await (supabase.from("global_words" as any).delete().eq("id", id) as any);
     if (error) throw error;
     await fetch();
   }, [fetch]);

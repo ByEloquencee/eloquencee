@@ -13,12 +13,12 @@ export function useModerator() {
       setLoading(false);
       return;
     }
-    const { data } = await supabase
-      .from("user_roles")
+    const { data } = await (supabase
+      .from("user_roles" as any)
       .select("role")
       .eq("user_id", user.id)
       .eq("role", "moderator")
-      .maybeSingle();
+      .maybeSingle() as any);
 
     setIsModerator(!!data);
     setLoading(false);
