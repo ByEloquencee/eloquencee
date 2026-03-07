@@ -146,7 +146,7 @@ const Index = () => {
     setShowOnboarding(false);
   };
 
-  const allWords = useMemo(() => [...words, ...customWords], [customWords]);
+  const allWords = useMemo(() => [...words, ...globalPolishWords, ...customWords], [customWords, globalPolishWords]);
 
   const favoriteWords = useMemo(
     () => allWords.filter((w) => favorites.includes(w.id)),
