@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN difficulty_level text NOT NULL DEFAULT 'advanced';

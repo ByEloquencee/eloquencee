@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -19,6 +19,7 @@ import { FlashcardStudyView } from "@/components/FlashcardStudyView";
 import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
+import { ExercisesView } from "@/components/ExercisesView";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
@@ -95,6 +96,7 @@ const Index = () => {
   const [activePage, setActivePage] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+  const [exercisesActive, setExercisesActive] = useState(false);
   const [sliderWidth, setSliderWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -230,6 +232,15 @@ const Index = () => {
     );
   }
 
+  if (exercisesActive) {
+    return (
+      <ExercisesView
+        difficulty={profile?.difficulty_level || "advanced"}
+        onExit={() => setExercisesActive(false)}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Nav */}
@@ -262,6 +273,14 @@ const Index = () => {
             title="Sprawdź się"
           >
             <GraduationCap size={18} />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setExercisesActive(true)}
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            title="Ćwiczenia"
+          >
+            <Dumbbell size={18} />
           </motion.button>
           {hasFavorites && (
               <motion.button
@@ -449,6 +468,7 @@ const Index = () => {
                     folders={folders}
                     onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
                     onShare={() => setShareOpen(true)}
+                    difficultyLevel={profile?.difficulty_level || "advanced"}
                   />
                 )
               )}

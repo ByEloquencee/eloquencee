@@ -170,6 +170,7 @@ export type Database = {
           created_at: string
           daily_email_enabled: boolean
           daily_goal: number
+          difficulty_level: string
           id: string
           name: string
           onboarding_done: boolean
@@ -180,6 +181,7 @@ export type Database = {
           created_at?: string
           daily_email_enabled?: boolean
           daily_goal?: number
+          difficulty_level?: string
           id?: string
           name?: string
           onboarding_done?: boolean
@@ -190,6 +192,7 @@ export type Database = {
           created_at?: string
           daily_email_enabled?: boolean
           daily_goal?: number
+          difficulty_level?: string
           id?: string
           name?: string
           onboarding_done?: boolean

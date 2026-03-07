@@ -4,7 +4,9 @@ import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Vo
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 import { SpiderWeb } from "@/components/SpiderWeb";
+import { WordExtraInfo } from "@/components/WordExtraInfo";
 import type { Folder } from "@/hooks/use-folders";
+import type { DifficultyLevel } from "@/hooks/use-profile";
 
 interface WordCardProps {
   word: PolishWord;
@@ -20,9 +22,10 @@ interface WordCardProps {
   onShare?: () => void;
   folders?: Folder[];
   onToggleFolder?: (folderId: string) => void;
+  difficultyLevel?: DifficultyLevel;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced" }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -237,6 +240,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                     „{word.example}"
                   </p>
                 </div>
+                <WordExtraInfo word={word} difficultyLevel={difficultyLevel} />
               </motion.div>
             )}
           </div>
