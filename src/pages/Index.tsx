@@ -118,7 +118,7 @@ const Index = () => {
     return () => observer.disconnect();
   }, []);
 
-  const switchPage = useCallback((nextPage: number) => {
+  const totalPages = isModerator ? 3 : 2;
     if (nextPage === activePage) return;
     setIsPageTransitioning(true);
     setActivePage(nextPage);
