@@ -168,6 +168,14 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                 </motion.div>
               )}
             </AnimatePresence>
+            {word.difficulty && (
+              <span className={`text-[10px] font-medium tracking-wider uppercase mb-1 ${
+                word.difficulty === "beginner" ? "text-green-500" :
+                word.difficulty === "intermediate" ? "text-yellow-500" : "text-red-400"
+              }`}>
+                {word.difficulty === "beginner" ? "łatwe" : word.difficulty === "intermediate" ? "średnie" : "zaawansowane"}
+              </span>
+            )}
             <div className="flex items-center justify-center gap-1.5">
               {word.category === "ciekawi_ludzie" && (
                 <UserRound size={14} className="text-primary" />
