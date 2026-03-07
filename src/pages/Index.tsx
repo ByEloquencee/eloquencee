@@ -460,6 +460,7 @@ const Index = () => {
                     folders={folders}
                     onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
                     onShare={() => setShareOpen(true)}
+                    difficultyLevel={profile?.difficulty_level || "advanced"}
                   />
                 )
               )}
