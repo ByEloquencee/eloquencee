@@ -101,7 +101,7 @@ const Index = () => {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [exercisesActive, setExercisesActive] = useState(false);
