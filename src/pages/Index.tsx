@@ -21,6 +21,7 @@ import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets"
 import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { ExercisesView } from "@/components/ExercisesView";
 import { AdminPanel } from "@/components/AdminPanel";
+import { SuggestWordPanel } from "@/components/SuggestWordPanel";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
