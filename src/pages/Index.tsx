@@ -96,6 +96,7 @@ const Index = () => {
   const [activePage, setActivePage] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+  const [exercisesActive, setExercisesActive] = useState(false);
   const [sliderWidth, setSliderWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
