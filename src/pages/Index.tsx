@@ -449,10 +449,14 @@ const Index = () => {
               }
             }}
           >
-            {/* Page 0: Admin panel (moderators) or Word card (non-moderators) */}
-            {isModerator && (
+            {/* Page 0: Admin panel (moderators) or Suggest word (non-moderators) */}
+            {isModerator ? (
               <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
                 <AdminPanel />
+              </div>
+            ) : (
+              <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
+                <SuggestWordPanel />
               </div>
             )}
             {/* Word card page */}
