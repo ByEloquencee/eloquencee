@@ -157,7 +157,25 @@ const Index = () => {
     setShowOnboarding(false);
   };
 
-  const allWords = useMemo(() => [...words, ...globalPolishWords, ...customWords], [customWords, globalPolishWords]);
+  const allWords = useMemo(() => {
+    // Apply hidden words filter and overrides to built-in words
+    const filteredBuiltIn = words
+      .filter(w => !hiddenIds.has(w.id))
+      .map(w => {
+        const override = overrides.get(w.id);
+        if (!override) return w;
+        return {
+          ...w,
+          word: override.word || w.word,
+          partOfSpeech: override.part_of_speech || w.partOfSpeech,
+          definition: override.definition || w.definition,
+          example: override.example || w.example,
+          etymology: override.etymology || w.etymology,
+          category: (override.category as WordCategory) || w.category,
+        };
+      });
+    return [...filteredBuiltIn, ...globalPolishWords, ...customWords];
+  }, [customWords, globalPolishWords, hiddenIds, overrides]);
 
   const favoriteWords = useMemo(
     () => allWords.filter((w) => favorites.includes(w.id)),
