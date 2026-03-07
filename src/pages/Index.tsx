@@ -19,6 +19,7 @@ import { FlashcardStudyView } from "@/components/FlashcardStudyView";
 import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
+import { ExercisesView } from "@/components/ExercisesView";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
