@@ -558,13 +558,11 @@ const Index = () => {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          {isModerator && activePage === 0
-            ? "Panel moderatora"
-            : activePage === (isModerator ? 2 : 1)
+          {activePage === 0
+            ? (isModerator ? "Panel moderatora" : "Zaproponuj słowo")
+            : activePage === 2
               ? "Fiszki i zestawy"
-              : !isModerator && activePage === 2
-                ? "Zaproponuj słowo"
-                : activeFolderId
+              : activeFolderId
                   ? `${filteredWords.length} słów w folderze`
                   : viewMode === "favorites"
                     ? `Uczysz się z ${filteredWords.length} ulubionych słów`
