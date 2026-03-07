@@ -232,6 +232,15 @@ const Index = () => {
     );
   }
 
+  if (exercisesActive) {
+    return (
+      <ExercisesView
+        difficulty={profile?.difficulty_level || "advanced"}
+        onExit={() => setExercisesActive(false)}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Nav */}
