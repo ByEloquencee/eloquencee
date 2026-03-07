@@ -425,7 +425,7 @@ const Index = () => {
                 <AdminPanel />
               </div>
             )}
-            {/* Page 1: Word card */}
+            {/* Word card page */}
             <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
               {filteredWords.length === 0 ? (
                 <motion.div
