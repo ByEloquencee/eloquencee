@@ -533,6 +533,13 @@ const Index = () => {
                 onTypingSet={(set) => setTypingSet(set)}
               />
             </div>
+
+            {/* Page: Suggest word (non-moderators) or extra page for moderators */}
+            {!isModerator && (
+              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2" style={{ height: "100%", overflow: "hidden" }}>
+                <SuggestWordPanel />
+              </div>
+            )}
           </motion.div>
         </div>
       </main>
