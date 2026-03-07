@@ -21,6 +21,7 @@ import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets"
 import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { ExercisesView } from "@/components/ExercisesView";
 import { AdminPanel } from "@/components/AdminPanel";
+import { SuggestWordPanel } from "@/components/SuggestWordPanel";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
@@ -120,7 +121,7 @@ const Index = () => {
     return () => observer.disconnect();
   }, []);
 
-  const totalPages = isModerator ? 3 : 2;
+  const totalPages = isModerator ? 3 : 3;
 
   const switchPage = useCallback((nextPage: number) => {
     if (nextPage === activePage) return;
@@ -133,7 +134,7 @@ const Index = () => {
     if (isModerator && activePage === 0) {
       setActivePage(1);
     }
-  }, [isModerator]);
+  }, [isModerator]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
@@ -448,14 +449,14 @@ const Index = () => {
               }
             }}
           >
-            {/* Page 0: Admin panel (moderators only) */}
+            {/* Page 0: Admin panel (moderators) or Word card (non-moderators) */}
             {isModerator && (
-              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden" style={{ height: "100%" }}>
+              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2" style={{ height: "100%", overflow: "hidden" }}>
                 <AdminPanel />
               </div>
             )}
             {/* Word card page */}
-            <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
+            <div className="w-full flex-shrink-0 flex items-center justify-center px-4" style={{ height: "100%" }}>
               {filteredWords.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -514,8 +515,8 @@ const Index = () => {
               )}
             </div>
 
-            {/* Page 2: Flashcard creator */}
-            <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
+            {/* Page: Flashcard creator */}
+            <div className="w-full flex-shrink-0 flex items-center justify-center px-4" style={{ height: "100%" }}>
               <FlashcardCreator
                 onCreateSet={() => setCreateSetOpen(true)}
                 sets={flashcardSets}
@@ -532,6 +533,13 @@ const Index = () => {
                 onTypingSet={(set) => setTypingSet(set)}
               />
             </div>
+
+            {/* Page: Suggest word (non-moderators) or extra page for moderators */}
+            {!isModerator && (
+              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2" style={{ height: "100%", overflow: "hidden" }}>
+                <SuggestWordPanel />
+              </div>
+            )}
           </motion.div>
         </div>
       </main>
@@ -555,12 +563,14 @@ const Index = () => {
           {isModerator && activePage === 0
             ? "Panel moderatora"
             : activePage === (isModerator ? 2 : 1)
-              ? "Przesuń w prawo, aby wrócić do słów"
-              : activeFolderId
-                ? `${filteredWords.length} słów w folderze`
-                : viewMode === "favorites"
-                  ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-                  : `${filteredWords.length} słów do nauki`}
+              ? "Fiszki i zestawy"
+              : !isModerator && activePage === 2
+                ? "Zaproponuj słowo"
+                : activeFolderId
+                  ? `${filteredWords.length} słów w folderze`
+                  : viewMode === "favorites"
+                    ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+                    : `${filteredWords.length} słów do nauki`}
         </p>
       </div>
 

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Search, BookOpen, X, Pencil, EyeOff, Eye } from "lucide-react";
+import { Plus, Trash2, Search, BookOpen, X, Pencil, EyeOff, Eye, Sparkles, Inbox, Check } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const editableCategories = categories.filter(c => c.value !== "all" && c.value !== "własne");
@@ -20,11 +21,63 @@ export function AdminPanel() {
   const { user } = useAuth();
   const { globalWords, addWord, deleteWord, loading } = useGlobalWords();
   const { hiddenIds, overrides, hideWord, unhideWord, saveOverride, deleteOverride } = useStaticWordManagement();
-  const [tab, setTab] = useState<"static" | "global">("global");
+  const [tab, setTab] = useState<"static" | "global" | "suggestions">("global");
   const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [editingStatic, setEditingStatic] = useState<PolishWord | null>(null);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiHint, setAiHint] = useState("");
+
+  // Suggestions
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
+
+  const loadSuggestions = async () => {
+    setSuggestionsLoading(true);
+    const { data } = await (supabase.from("word_suggestions" as any).select("*").eq("status", "pending").order("created_at", { ascending: false }) as any);
+    setSuggestions(data || []);
+    setSuggestionsLoading(false);
+    setSuggestionsLoaded(true);
+  };
+
+  const handleTabChange = (newTab: "static" | "global" | "suggestions") => {
+    setTab(newTab);
+    if (newTab === "suggestions" && !suggestionsLoaded) {
+      loadSuggestions();
+    }
+  };
+
+  const approveSuggestion = async (s: any) => {
+    try {
+      await addWord({
+        word: s.word,
+        part_of_speech: s.part_of_speech || "",
+        definition: s.definition || "",
+        example: s.example || "",
+        etymology: s.etymology || null,
+        category: s.category || "ogólne",
+        difficulty: "advanced",
+        created_by: user?.id || null,
+      } as any);
+      await (supabase.from("word_suggestions" as any).update({ status: "approved" }).eq("id", s.id) as any);
+      setSuggestions(prev => prev.filter(x => x.id !== s.id));
+      toast.success(`"${s.word}" dodane do bazy!`);
+    } catch {
+      toast.error("Nie udało się zatwierdzić");
+    }
+  };
+
+  const rejectSuggestion = async (s: any) => {
+    try {
+      await (supabase.from("word_suggestions" as any).update({ status: "rejected" }).eq("id", s.id) as any);
+      setSuggestions(prev => prev.filter(x => x.id !== s.id));
+      toast.success("Propozycja odrzucona");
+    } catch {
+      toast.error("Nie udało się odrzucić");
+    }
+  };
 
   // Add form state
   const [form, setForm] = useState({
@@ -37,6 +90,31 @@ export function AdminPanel() {
     word: "", partOfSpeech: "", definition: "", example: "", etymology: "", category: "",
   });
   const [editSubmitting, setEditSubmitting] = useState(false);
+
+  const handleAIGenerate = async () => {
+    setAiGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-word", {
+        body: { category: form.category, difficulty: form.difficulty, hint: aiHint },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setForm(f => ({
+        ...f,
+        word: data.word || "",
+        part_of_speech: data.part_of_speech || "",
+        definition: data.definition || "",
+        example: data.example || "",
+        etymology: data.etymology || "",
+      }));
+      setAiHint("");
+      toast.success("Słowo wygenerowane przez AI!");
+    } catch (err: any) {
+      toast.error(err.message || "Nie udało się wygenerować słowa");
+    } finally {
+      setAiGenerating(false);
+    }
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,9 +232,9 @@ export function AdminPanel() {
   const visibleStaticCount = words.filter(w => !hiddenIds.has(w.id)).length;
 
   return (
-    <div className="w-full max-w-lg mx-auto h-full flex flex-col">
+    <div className="w-full max-w-lg mx-auto h-full flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="px-1 pb-3 space-y-3">
+      <div className="px-1 pb-3 space-y-3 flex-shrink-0">
         <div className="flex items-center gap-2">
           <BookOpen size={18} className="text-primary" />
           <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
@@ -167,7 +245,7 @@ export function AdminPanel() {
         {/* Tabs */}
         <div className="flex gap-1">
           <button
-            onClick={() => setTab("global")}
+            onClick={() => handleTabChange("global")}
             className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "global" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
@@ -175,42 +253,92 @@ export function AdminPanel() {
             Globalne ({globalWords.length})
           </button>
           <button
-            onClick={() => setTab("static")}
+            onClick={() => handleTabChange("static")}
             className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "static" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
             Wbudowane ({visibleStaticCount}/{words.length})
           </button>
+          <button
+            onClick={() => handleTabChange("suggestions")}
+            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+              tab === "suggestions" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+            }`}
+          >
+            <span className="flex items-center justify-center gap-1">
+              <Inbox size={12} />
+              Propozycje
+            </span>
+          </button>
         </div>
 
         {/* Search + Add */}
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Szukaj słowa..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            />
+        {tab !== "suggestions" && (
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Szukaj słowa..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            {tab === "global" && (
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setAddOpen(true)}
+                className="p-2 rounded-xl bg-primary text-primary-foreground cursor-pointer"
+              >
+                <Plus size={18} />
+              </motion.button>
+            )}
           </div>
-          {tab === "global" && (
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setAddOpen(true)}
-              className="p-2 rounded-xl bg-primary text-primary-foreground cursor-pointer"
-            >
-              <Plus size={18} />
-            </motion.button>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Word list */}
-      <div className="flex-1 overflow-y-auto space-y-1.5 px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {tab === "global" ? (
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        {tab === "suggestions" ? (
+          suggestionsLoading ? (
+            <p className="text-sm text-muted-foreground text-center py-8">Ładowanie...</p>
+          ) : suggestions.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">Brak oczekujących propozycji</p>
+          ) : (
+            suggestions.map((s) => (
+              <div key={s.id} className="p-3 rounded-xl bg-card border border-border space-y-2">
+                <div className="flex items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold">{s.word}</span>
+                      {s.part_of_speech && <span className="text-[10px] text-muted-foreground">{s.part_of_speech}</span>}
+                    </div>
+                    {s.definition && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{s.definition}</p>}
+                    {s.example && <p className="text-xs text-muted-foreground/70 mt-0.5 italic line-clamp-1">{s.example}</p>}
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => approveSuggestion(s)}
+                      className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                      title="Zatwierdź"
+                    >
+                      <Check size={14} />
+                    </button>
+                    <button
+                      onClick={() => rejectSuggestion(s)}
+                      className="p-1.5 rounded-lg text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+                      title="Odrzuć"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )
+        ) : tab === "global" ? (
           loading ? (
             <p className="text-sm text-muted-foreground text-center py-8">Ładowanie...</p>
           ) : filteredGlobal.length === 0 ? (
@@ -349,6 +477,31 @@ export function AdminPanel() {
                 </button>
               </div>
               <form onSubmit={handleAdd} className="p-5 space-y-3">
+                {/* AI Generate section */}
+                <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-medium text-primary">
+                    <Sparkles size={14} />
+                    Wygeneruj słowo przez AI
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Podpowiedź (opcjonalnie)"
+                      value={aiHint}
+                      onChange={(e) => setAiHint(e.target.value)}
+                      className={`${inputClass} text-xs`}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAIGenerate}
+                      disabled={aiGenerating}
+                      className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium whitespace-nowrap cursor-pointer disabled:opacity-50"
+                    >
+                      {aiGenerating ? "..." : "Generuj"}
+                    </button>
+                  </div>
+                </div>
+
                 <input type="text" placeholder="Słowo *" value={form.word} onChange={(e) => setForm(f => ({ ...f, word: e.target.value }))} required maxLength={100} className={inputClass} />
                 <input type="text" placeholder="Część mowy" value={form.part_of_speech} onChange={(e) => setForm(f => ({ ...f, part_of_speech: e.target.value }))} maxLength={50} className={inputClass} />
                 <textarea placeholder="Definicja *" value={form.definition} onChange={(e) => setForm(f => ({ ...f, definition: e.target.value }))} required maxLength={500} rows={3} className={`${inputClass} resize-none`} />
