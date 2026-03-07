@@ -240,6 +240,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                     „{word.example}"
                   </p>
                 </div>
+                <WordExtraInfo word={word} difficultyLevel={difficultyLevel} />
               </motion.div>
             )}
           </div>
