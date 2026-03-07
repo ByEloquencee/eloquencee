@@ -121,7 +121,7 @@ const Index = () => {
     return () => observer.disconnect();
   }, []);
 
-  const totalPages = isModerator ? 3 : 2;
+  const totalPages = isModerator ? 3 : 3;
 
   const switchPage = useCallback((nextPage: number) => {
     if (nextPage === activePage) return;
