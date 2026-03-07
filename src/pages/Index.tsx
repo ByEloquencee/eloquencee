@@ -20,6 +20,7 @@ import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { ExercisesView } from "@/components/ExercisesView";
+import { AdminPanel } from "@/components/AdminPanel";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
@@ -30,6 +31,8 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/hooks/use-profile";
 import { useDailyProgress } from "@/hooks/use-daily-progress";
+import { useModerator } from "@/hooks/use-moderator";
+import { useGlobalWords } from "@/hooks/use-global-words";
 import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites";
@@ -73,6 +76,8 @@ const Index = () => {
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const { folders, createFolder, deleteFolder, toggleWordInFolder } = useFolders();
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
+  const { isModerator } = useModerator();
+  const { asPolishWords: globalPolishWords } = useGlobalWords();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
@@ -113,11 +118,20 @@ const Index = () => {
     return () => observer.disconnect();
   }, []);
 
+  const totalPages = isModerator ? 3 : 2;
+
   const switchPage = useCallback((nextPage: number) => {
     if (nextPage === activePage) return;
     setIsPageTransitioning(true);
     setActivePage(nextPage);
   }, [activePage]);
+
+  // Set default page for moderators (word card = page 1)
+  useEffect(() => {
+    if (isModerator && activePage === 0) {
+      setActivePage(1);
+    }
+  }, [isModerator]);
 
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
@@ -141,7 +155,7 @@ const Index = () => {
     setShowOnboarding(false);
   };
 
-  const allWords = useMemo(() => [...words, ...customWords], [customWords]);
+  const allWords = useMemo(() => [...words, ...globalPolishWords, ...customWords], [customWords, globalPolishWords]);
 
   const favoriteWords = useMemo(
     () => allWords.filter((w) => favorites.includes(w.id)),
@@ -335,7 +349,7 @@ const Index = () => {
 
       {/* Category filter - hidden on page 2 */}
       <AnimatePresence>
-        {activePage === 0 && !isPageTransitioning && (
+        {activePage === (isModerator ? 1 : 0) && !isPageTransitioning && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -403,18 +417,24 @@ const Index = () => {
             onAnimationComplete={() => setIsPageTransitioning(false)}
             drag={sliderWidth > 0 ? "x" : false}
             dragMomentum={false}
-            dragConstraints={{ left: -sliderWidth, right: 0 }}
+            dragConstraints={{ left: -(totalPages - 1) * sliderWidth, right: 0 }}
             dragElastic={0.15}
             onDragEnd={(_, info) => {
               const threshold = 30;
-              if (info.offset.x < -threshold && activePage === 0) {
-                switchPage(1);
-              } else if (info.offset.x > threshold && activePage === 1) {
-                switchPage(0);
+              if (info.offset.x < -threshold && activePage < totalPages - 1) {
+                switchPage(activePage + 1);
+              } else if (info.offset.x > threshold && activePage > 0) {
+                switchPage(activePage - 1);
               }
             }}
           >
-            {/* Page 1: Word card */}
+            {/* Page 0: Admin panel (moderators only) */}
+            {isModerator && (
+              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden" style={{ height: "100%" }}>
+                <AdminPanel />
+              </div>
+            )}
+            {/* Word card page */}
             <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
               {filteredWords.length === 0 ? (
                 <motion.div
@@ -499,7 +519,7 @@ const Index = () => {
       {/* Page indicator dots + footer */}
       <div className="pb-6 flex flex-col items-center gap-2">
         <div className="flex justify-center gap-2">
-          {[0, 1].map((i) => (
+          {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
               onClick={() => switchPage(i)}
@@ -512,13 +532,15 @@ const Index = () => {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          {activePage === 1
-            ? "Przesuń w prawo, aby wrócić do słów"
-            : activeFolderId
-              ? `${filteredWords.length} słów w folderze`
-              : viewMode === "favorites"
-                ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-                : `${filteredWords.length} słów do nauki`}
+          {isModerator && activePage === 0
+            ? "Panel moderatora"
+            : activePage === (isModerator ? 2 : 1)
+              ? "Przesuń w prawo, aby wrócić do słów"
+              : activeFolderId
+                ? `${filteredWords.length} słów w folderze`
+                : viewMode === "favorites"
+                  ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+                  : `${filteredWords.length} słów do nauki`}
         </p>
       </div>
 
