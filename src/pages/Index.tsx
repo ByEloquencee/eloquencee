@@ -408,17 +408,23 @@ const Index = () => {
             onAnimationComplete={() => setIsPageTransitioning(false)}
             drag={sliderWidth > 0 ? "x" : false}
             dragMomentum={false}
-            dragConstraints={{ left: -sliderWidth, right: 0 }}
+            dragConstraints={{ left: -(totalPages - 1) * sliderWidth, right: 0 }}
             dragElastic={0.15}
             onDragEnd={(_, info) => {
               const threshold = 30;
-              if (info.offset.x < -threshold && activePage === 0) {
-                switchPage(1);
-              } else if (info.offset.x > threshold && activePage === 1) {
-                switchPage(0);
+              if (info.offset.x < -threshold && activePage < totalPages - 1) {
+                switchPage(activePage + 1);
+              } else if (info.offset.x > threshold && activePage > 0) {
+                switchPage(activePage - 1);
               }
             }}
           >
+            {/* Page 0: Admin panel (moderators only) */}
+            {isModerator && (
+              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden" style={{ height: "100%" }}>
+                <AdminPanel />
+              </div>
+            )}
             {/* Page 1: Word card */}
             <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
               {filteredWords.length === 0 ? (
