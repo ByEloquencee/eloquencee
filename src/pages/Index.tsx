@@ -538,12 +538,6 @@ const Index = () => {
               />
             </div>
 
-            {/* Page: Suggest word (non-moderators) or extra page for moderators */}
-            {!isModerator && (
-              <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
-                <SuggestWordPanel />
-              </div>
-            )}
           </motion.div>
         </div>
       </main>
