@@ -207,7 +207,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           </div>
 
           {/* Definition area */}
-          <div className="px-6 pb-6">
+          <div className="px-6 pb-6 max-h-[50vh] overflow-y-auto">
             {!revealed && !zenMode ? (
               <motion.button
                 onClick={handleReveal}
