@@ -4,7 +4,9 @@ import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Vo
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 import { SpiderWeb } from "@/components/SpiderWeb";
+import { WordExtraInfo } from "@/components/WordExtraInfo";
 import type { Folder } from "@/hooks/use-folders";
+import type { DifficultyLevel } from "@/hooks/use-profile";
 
 interface WordCardProps {
   word: PolishWord;
