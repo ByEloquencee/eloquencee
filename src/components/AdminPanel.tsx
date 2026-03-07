@@ -232,7 +232,7 @@ export function AdminPanel() {
   const visibleStaticCount = words.filter(w => !hiddenIds.has(w.id)).length;
 
   return (
-    <div className="w-full max-w-lg mx-auto h-full flex flex-col overflow-hidden">
+    <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="px-1 pb-3 space-y-3 flex-shrink-0">
         <div className="flex items-center gap-2">

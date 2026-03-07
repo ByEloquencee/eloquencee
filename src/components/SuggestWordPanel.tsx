@@ -55,7 +55,7 @@ export function SuggestWordPanel() {
   }
 
   return (
-    <div className="w-full max-w-lg mx-auto h-full flex flex-col overflow-hidden">
+    <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
       <div className="px-1 pb-3 space-y-2">
         <div className="flex items-center gap-2">
           <Lightbulb size={18} className="text-primary" />
