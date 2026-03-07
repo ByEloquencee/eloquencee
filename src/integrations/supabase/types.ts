@@ -318,6 +318,45 @@ export type Database = {
         }
         Relationships: []
       }
+      word_suggestions: {
+        Row: {
+          category: string
+          created_at: string
+          definition: string
+          etymology: string | null
+          example: string
+          id: string
+          part_of_speech: string
+          status: string
+          suggested_by: string
+          word: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          definition?: string
+          etymology?: string | null
+          example?: string
+          id?: string
+          part_of_speech?: string
+          status?: string
+          suggested_by: string
+          word: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          definition?: string
+          etymology?: string | null
+          example?: string
+          id?: string
+          part_of_speech?: string
+          status?: string
+          suggested_by?: string
+          word?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
