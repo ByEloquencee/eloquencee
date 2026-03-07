@@ -76,6 +76,8 @@ const Index = () => {
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const { folders, createFolder, deleteFolder, toggleWordInFolder } = useFolders();
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
+  const { isModerator } = useModerator();
+  const { asPolishWords: globalPolishWords } = useGlobalWords();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
