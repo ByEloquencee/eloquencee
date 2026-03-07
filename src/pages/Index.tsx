@@ -101,7 +101,7 @@ const Index = () => {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [exercisesActive, setExercisesActive] = useState(false);
@@ -130,11 +130,7 @@ const Index = () => {
   }, [activePage]);
 
   // Set default page for moderators (word card = page 1)
-  useEffect(() => {
-    if (isModerator && activePage === 0) {
-      setActivePage(1);
-    }
-  }, [isModerator]); // eslint-disable-line react-hooks/exhaustive-deps
+  // No need to redirect — all users start on page 1 (word cards)
 
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
@@ -449,10 +445,14 @@ const Index = () => {
               }
             }}
           >
-            {/* Page 0: Admin panel (moderators) or Word card (non-moderators) */}
-            {isModerator && (
+            {/* Page 0: Admin panel (moderators) or Suggest word (non-moderators) */}
+            {isModerator ? (
               <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
                 <AdminPanel />
+              </div>
+            ) : (
+              <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
+                <SuggestWordPanel />
               </div>
             )}
             {/* Word card page */}
@@ -534,12 +534,6 @@ const Index = () => {
               />
             </div>
 
-            {/* Page: Suggest word (non-moderators) or extra page for moderators */}
-            {!isModerator && (
-              <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
-                <SuggestWordPanel />
-              </div>
-            )}
           </motion.div>
         </div>
       </main>
@@ -560,13 +554,11 @@ const Index = () => {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          {isModerator && activePage === 0
-            ? "Panel moderatora"
-            : activePage === (isModerator ? 2 : 1)
+          {activePage === 0
+            ? (isModerator ? "Panel moderatora" : "Zaproponuj słowo")
+            : activePage === 2
               ? "Fiszki i zestawy"
-              : !isModerator && activePage === 2
-                ? "Zaproponuj słowo"
-                : activeFolderId
+              : activeFolderId
                   ? `${filteredWords.length} słów w folderze`
                   : viewMode === "favorites"
                     ? `Uczysz się z ${filteredWords.length} ulubionych słów`
