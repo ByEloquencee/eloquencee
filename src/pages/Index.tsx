@@ -515,8 +515,8 @@ const Index = () => {
               )}
             </div>
 
-            {/* Page 2: Flashcard creator */}
-            <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
+            {/* Page: Flashcard creator */}
+            <div className="w-full flex-shrink-0 flex items-center justify-center px-4" style={{ height: "100%" }}>
               <FlashcardCreator
                 onCreateSet={() => setCreateSetOpen(true)}
                 sets={flashcardSets}
