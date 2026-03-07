@@ -3,12 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { WordCategory } from "@/data/words";
 
+export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
+
 export interface Profile {
   name: string;
   preferred_categories: WordCategory[];
   onboarding_done: boolean;
   daily_email_enabled: boolean;
   daily_goal: number;
+  difficulty_level: DifficultyLevel;
 }
 
 export function useProfile() {
@@ -24,7 +27,7 @@ export function useProfile() {
     }
     const { data } = await supabase
       .from("profiles")
-      .select("name, preferred_categories, onboarding_done, daily_email_enabled, daily_goal")
+      .select("name, preferred_categories, onboarding_done, daily_email_enabled, daily_goal, difficulty_level")
       .eq("user_id", user.id)
       .single();
 
@@ -35,6 +38,7 @@ export function useProfile() {
         onboarding_done: data.onboarding_done,
         daily_email_enabled: data.daily_email_enabled,
         daily_goal: data.daily_goal ?? 5,
+        difficulty_level: (data.difficulty_level as DifficultyLevel) || "advanced",
       });
     }
     setLoading(false);
@@ -44,7 +48,7 @@ export function useProfile() {
     fetchProfile();
   }, [fetchProfile]);
 
-  const updateProfile = useCallback(async (updates: Partial<Pick<Profile, "name" | "preferred_categories" | "onboarding_done" | "daily_email_enabled" | "daily_goal">>) => {
+  const updateProfile = useCallback(async (updates: Partial<Pick<Profile, "name" | "preferred_categories" | "onboarding_done" | "daily_email_enabled" | "daily_goal" | "difficulty_level">>) => {
     if (!user) return;
     const { error } = await supabase
       .from("profiles")

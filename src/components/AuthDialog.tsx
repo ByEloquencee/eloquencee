@@ -1,15 +1,21 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle } from "lucide-react";
+import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
-import { useProfile } from "@/hooks/use-profile";
+import { useProfile, type DifficultyLevel } from "@/hooks/use-profile";
 import { toast } from "sonner";
 
 interface AuthDialogProps {
   open: boolean;
   onClose: () => void;
 }
+
+const difficultyOptions: { value: DifficultyLevel; label: string; desc: string }[] = [
+  { value: "beginner", label: "Początkujący", desc: "Proste słowa i podstawy" },
+  { value: "intermediate", label: "Średni", desc: "Rozszerzone słownictwo" },
+  { value: "advanced", label: "Zaawansowany", desc: "Pełne bogactwo języka" },
+];
 
 export function AuthDialog({ open, onClose }: AuthDialogProps) {
   const { user, signUp, signIn, signOut } = useAuth();
@@ -66,7 +72,7 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
+          className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-h-[90vh] overflow-y-auto"
         >
           <div className="flex items-center justify-between p-5 border-b border-border">
             <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
@@ -89,6 +95,37 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
                     <span className="text-xs text-muted-foreground truncate">{user.email}</span>
                   </div>
                 </div>
+
+                {/* Difficulty level selector */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <GraduationCap size={16} className="text-muted-foreground" />
+                    Poziom trudności
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {difficultyOptions.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={async () => {
+                          try {
+                            await updateProfile({ difficulty_level: opt.value });
+                            toast.success(`Poziom: ${opt.label}`);
+                          } catch {
+                            toast.error("Nie udało się zmienić poziomu");
+                          }
+                        }}
+                        className={`p-2 rounded-xl text-center transition-colors cursor-pointer border ${
+                          profile?.difficulty_level === opt.value
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-secondary text-secondary-foreground border-transparent hover:bg-secondary/80"
+                        }`}
+                      >
+                        <span className="text-xs font-medium block">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <p className="text-xs text-muted-foreground">
                   Twoje ulubione słowa i własne słowa są synchronizowane z kontem.
                 </p>
