@@ -102,10 +102,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
       >
         <div
           className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden relative select-none"
-          onPointerDown={startHold}
-          onPointerUp={endHold}
-          onPointerLeave={endHold}
-          onPointerCancel={endHold}
         >
           {/* Header */}
           <div className="px-6 pt-8 pb-4 text-center relative">
