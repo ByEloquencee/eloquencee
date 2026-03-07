@@ -556,10 +556,9 @@ const Index = () => {
         </p>
       </div>
 
-      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
-      <PlusMenuDialog
-        open={plusMenuOpen}
-        onClose={() => setPlusMenuOpen(false)}
+      <AuthDialog
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
         onAddWord={() => setAddWordOpen(true)}
         onCreateFolder={() => setCreateFolderOpen(true)}
       />
