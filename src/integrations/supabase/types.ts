@@ -204,6 +204,27 @@ export type Database = {
         }
         Relationships: []
       }
+      hidden_static_words: {
+        Row: {
+          created_at: string
+          hidden_by: string | null
+          id: string
+          word_id: string
+        }
+        Insert: {
+          created_at?: string
+          hidden_by?: string | null
+          id?: string
+          word_id: string
+        }
+        Update: {
+          created_at?: string
+          hidden_by?: string | null
+          id?: string
+          word_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -237,6 +258,45 @@ export type Database = {
           onboarding_done?: boolean
           preferred_categories?: string[]
           user_id?: string
+        }
+        Relationships: []
+      }
+      static_word_overrides: {
+        Row: {
+          category: string | null
+          created_at: string
+          definition: string | null
+          etymology: string | null
+          example: string | null
+          id: string
+          part_of_speech: string | null
+          updated_by: string | null
+          word: string | null
+          word_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          definition?: string | null
+          etymology?: string | null
+          example?: string | null
+          id?: string
+          part_of_speech?: string | null
+          updated_by?: string | null
+          word?: string | null
+          word_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          definition?: string | null
+          etymology?: string | null
+          example?: string | null
+          id?: string
+          part_of_speech?: string | null
+          updated_by?: string | null
+          word?: string | null
+          word_id?: string
         }
         Relationships: []
       }
