@@ -134,7 +134,7 @@ const Index = () => {
     if (isModerator && activePage === 0) {
       setActivePage(1);
     }
-  }, [isModerator]);
+  }, [isModerator]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
