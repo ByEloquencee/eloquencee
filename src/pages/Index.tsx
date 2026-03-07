@@ -130,11 +130,7 @@ const Index = () => {
   }, [activePage]);
 
   // Set default page for moderators (word card = page 1)
-  useEffect(() => {
-    if (isModerator && activePage === 0) {
-      setActivePage(1);
-    }
-  }, [isModerator]); // eslint-disable-line react-hooks/exhaustive-deps
+  // No need to redirect — all users start on page 1 (word cards)
 
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
