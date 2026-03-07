@@ -449,14 +449,14 @@ const Index = () => {
               }
             }}
           >
-            {/* Page 0: Admin panel (moderators only) */}
+            {/* Page 0: Admin panel (moderators) or Word card (non-moderators) */}
             {isModerator && (
-              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden" style={{ height: "100%" }}>
+              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2" style={{ height: "100%", overflow: "hidden" }}>
                 <AdminPanel />
               </div>
             )}
             {/* Word card page */}
-            <div className="w-full flex-shrink-0 flex items-center justify-center px-4">
+            <div className="w-full flex-shrink-0 flex items-center justify-center px-4" style={{ height: "100%" }}>
               {filteredWords.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
