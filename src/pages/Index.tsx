@@ -512,7 +512,7 @@ const Index = () => {
       {/* Page indicator dots + footer */}
       <div className="pb-6 flex flex-col items-center gap-2">
         <div className="flex justify-center gap-2">
-          {[0, 1].map((i) => (
+          {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
               onClick={() => switchPage(i)}
@@ -525,13 +525,15 @@ const Index = () => {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          {activePage === 1
-            ? "Przesuń w prawo, aby wrócić do słów"
-            : activeFolderId
-              ? `${filteredWords.length} słów w folderze`
-              : viewMode === "favorites"
-                ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-                : `${filteredWords.length} słów do nauki`}
+          {isModerator && activePage === 0
+            ? "Panel moderatora"
+            : activePage === (isModerator ? 2 : 1)
+              ? "Przesuń w prawo, aby wrócić do słów"
+              : activeFolderId
+                ? `${filteredWords.length} słów w folderze`
+                : viewMode === "favorites"
+                  ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+                  : `${filteredWords.length} słów do nauki`}
         </p>
       </div>
 
