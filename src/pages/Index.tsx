@@ -563,12 +563,14 @@ const Index = () => {
           {isModerator && activePage === 0
             ? "Panel moderatora"
             : activePage === (isModerator ? 2 : 1)
-              ? "Przesuń w prawo, aby wrócić do słów"
-              : activeFolderId
-                ? `${filteredWords.length} słów w folderze`
-                : viewMode === "favorites"
-                  ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-                  : `${filteredWords.length} słów do nauki`}
+              ? "Fiszki i zestawy"
+              : !isModerator && activePage === 2
+                ? "Zaproponuj słowo"
+                : activeFolderId
+                  ? `${filteredWords.length} słów w folderze`
+                  : viewMode === "favorites"
+                    ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+                    : `${filteredWords.length} słów do nauki`}
         </p>
       </div>
 
