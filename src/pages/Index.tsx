@@ -126,7 +126,13 @@ const Index = () => {
     setActivePage(nextPage);
   }, [activePage]);
 
+  // Set default page for moderators (word card = page 1)
   useEffect(() => {
+    if (isModerator && activePage === 0) {
+      setActivePage(1);
+    }
+  }, [isModerator]);
+
     if (user && profile && !profile.onboarding_done) {
       setShowOnboarding(true);
     }
