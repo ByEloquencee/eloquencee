@@ -33,6 +33,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { useDailyProgress } from "@/hooks/use-daily-progress";
 import { useModerator } from "@/hooks/use-moderator";
 import { useGlobalWords } from "@/hooks/use-global-words";
+import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites";
