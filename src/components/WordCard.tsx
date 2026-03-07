@@ -22,6 +22,7 @@ interface WordCardProps {
   onShare?: () => void;
   folders?: Folder[];
   onToggleFolder?: (folderId: string) => void;
+  difficultyLevel?: DifficultyLevel;
 }
 
 export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder }: WordCardProps) {
