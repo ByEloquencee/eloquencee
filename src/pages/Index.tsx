@@ -277,7 +277,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden">
       {/* Nav */}
       <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between gap-2">
         <div className="flex flex-col min-w-0 flex-shrink-0">
