@@ -8,6 +8,7 @@ export interface PolishWord {
   example: string;
   etymology?: string;
   category: WordCategory;
+  difficulty?: "beginner" | "intermediate" | "advanced";
 }
 
 export const categories: { value: WordCategory | "all"; label: string }[] = [
