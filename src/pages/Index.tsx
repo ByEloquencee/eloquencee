@@ -427,11 +427,11 @@ const Index = () => {
       </AnimatePresence>
 
       {/* Swipeable content area */}
-      <main className="flex-1 flex flex-col overflow-hidden relative" ref={containerRef}>
+      <main className="flex-1 min-h-0 flex flex-col overflow-hidden relative" ref={containerRef}>
 
-        <div className="flex-1 relative overflow-hidden flex items-center">
+        <div className="flex-1 relative overflow-hidden min-h-0">
           <motion.div
-            className="flex min-w-full"
+            className="flex min-w-full h-full"
             style={{ touchAction: "pan-y" }}
             animate={{ x: -activePage * sliderWidth }}
             transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
@@ -451,12 +451,12 @@ const Index = () => {
           >
             {/* Page 0: Admin panel (moderators) or Word card (non-moderators) */}
             {isModerator && (
-              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2" style={{ height: "100%", overflow: "hidden" }}>
+              <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
                 <AdminPanel />
               </div>
             )}
             {/* Word card page */}
-            <div className="w-full flex-shrink-0 flex items-center justify-center px-4" style={{ height: "100%" }}>
+            <div className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden">
               {filteredWords.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -516,7 +516,7 @@ const Index = () => {
             </div>
 
             {/* Page: Flashcard creator */}
-            <div className="w-full flex-shrink-0 flex items-center justify-center px-4" style={{ height: "100%" }}>
+            <div className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden">
               <FlashcardCreator
                 onCreateSet={() => setCreateSetOpen(true)}
                 sets={flashcardSets}
@@ -536,7 +536,7 @@ const Index = () => {
 
             {/* Page: Suggest word (non-moderators) or extra page for moderators */}
             {!isModerator && (
-              <div className="w-full flex-shrink-0 flex items-start justify-center px-4 pt-2" style={{ height: "100%", overflow: "hidden" }}>
+              <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
                 <SuggestWordPanel />
               </div>
             )}
