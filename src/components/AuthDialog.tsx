@@ -9,6 +9,8 @@ import { toast } from "sonner";
 interface AuthDialogProps {
   open: boolean;
   onClose: () => void;
+  onAddWord?: () => void;
+  onCreateFolder?: () => void;
 }
 
 const difficultyOptions: { value: DifficultyLevel; label: string; desc: string }[] = [
