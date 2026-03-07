@@ -275,7 +275,7 @@ const Index = () => {
   return (
     <div className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden">
       {/* Nav */}
-      <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between gap-2">
+      <header className="w-full max-w-lg mx-auto px-4 pt-[max(env(safe-area-inset-top,0.5rem),0.5rem)] pb-4 flex items-center justify-between gap-2">
         <div className="flex flex-col min-w-0 flex-shrink-0">
           <span className="text-xl sm:text-2xl font-semibold tracking-tight whitespace-nowrap" style={{ fontFamily: "var(--font-display)" }}>
             Eloquencee
@@ -287,16 +287,6 @@ const Index = () => {
           </span>
         </div>
         <div className="flex items-center gap-0.5 flex-shrink-0">
-          {user && (
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setPlusMenuOpen(true)}
-              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-              title="Dodaj"
-            >
-              <Plus size={18} />
-            </motion.button>
-          )}
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setQuizModeOpen(true)}
@@ -366,7 +356,7 @@ const Index = () => {
 
       {/* Category filter - hidden on page 2 */}
       <AnimatePresence>
-        {activePage === (isModerator ? 1 : 0) && !isPageTransitioning && (
+        {activePage === 1 && !isPageTransitioning && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -566,10 +556,9 @@ const Index = () => {
         </p>
       </div>
 
-      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
-      <PlusMenuDialog
-        open={plusMenuOpen}
-        onClose={() => setPlusMenuOpen(false)}
+      <AuthDialog
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
         onAddWord={() => setAddWordOpen(true)}
         onCreateFolder={() => setCreateFolderOpen(true)}
       />

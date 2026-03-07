@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap } from "lucide-react";
+import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap, Plus, FileText, FolderPlus } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile, type DifficultyLevel } from "@/hooks/use-profile";
@@ -9,6 +9,8 @@ import { toast } from "sonner";
 interface AuthDialogProps {
   open: boolean;
   onClose: () => void;
+  onAddWord?: () => void;
+  onCreateFolder?: () => void;
 }
 
 const difficultyOptions: { value: DifficultyLevel; label: string; desc: string }[] = [
@@ -17,7 +19,7 @@ const difficultyOptions: { value: DifficultyLevel; label: string; desc: string }
   { value: "advanced", label: "Zaawansowany", desc: "Pełne bogactwo języka" },
 ];
 
-export function AuthDialog({ open, onClose }: AuthDialogProps) {
+export function AuthDialog({ open, onClose, onAddWord, onCreateFolder }: AuthDialogProps) {
   const { user, signUp, signIn, signOut } = useAuth();
   const { profile, updateProfile } = useProfile();
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -124,6 +126,24 @@ export function AuthDialog({ open, onClose }: AuthDialogProps) {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Quick actions */}
+                <div className="space-y-1">
+                  <button
+                    onClick={() => { onClose(); onAddWord?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+                  >
+                    <FileText size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Dodaj nowe słowo</span>
+                  </button>
+                  <button
+                    onClick={() => { onClose(); onCreateFolder?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+                  >
+                    <FolderPlus size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Utwórz folder</span>
+                  </button>
                 </div>
 
                 <p className="text-xs text-muted-foreground">
