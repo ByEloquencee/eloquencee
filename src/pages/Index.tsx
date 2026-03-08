@@ -107,6 +107,14 @@ const Index = () => {
   const [exercisesActive, setExercisesActive] = useState(false);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
+  const sliderControls = useAnimationControls();
+
+  const snapToActivePage = useCallback(() => {
+    void sliderControls.start({
+      x: -activePage * sliderWidth,
+      transition: { type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 },
+    });
+  }, [activePage, sliderWidth, sliderControls]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -120,6 +128,10 @@ const Index = () => {
 
     return () => observer.disconnect();
   }, [studySet, typingSet]);
+
+  useEffect(() => {
+    snapToActivePage();
+  }, [snapToActivePage]);
 
   const totalPages = isModerator ? 3 : 3;
 
