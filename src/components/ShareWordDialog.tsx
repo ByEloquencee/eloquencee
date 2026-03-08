@@ -305,7 +305,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 fontFamily: "'Playfair Display', Georgia, serif",
                 color: t.word,
                 letterSpacing: "-0.02em",
-                marginBottom: 28,
+                marginBottom: 40,
                 textAlign: "center",
                 lineHeight: 1.1,
                 flexShrink: 0,
