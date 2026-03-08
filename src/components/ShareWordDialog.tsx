@@ -92,29 +92,36 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         windowWidth: 1080,
         windowHeight: 1080,
       });
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        const fileName = `eloquencee-${word.word.toLowerCase().replace(/\s+/g, "-")}${isDark ? "-dark" : ""}.png`;
-        const file = new File([blob], fileName, { type: "image/png" });
 
-        // Try Web Share API (saves to Photos on iOS/Android)
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({ files: [file], title: word.word });
-            return;
-          } catch {
-            // user cancelled or share failed — fall through to download
-          }
+      // Wrap toBlob in a Promise so we stay in the async chain —
+      // iOS Safari requires navigator.share() to be called within
+      // the same user-gesture context (broken by callbacks).
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      );
+      if (!blob) return;
+
+      const fileName = `eloquencee-${word.word.toLowerCase().replace(/\s+/g, "-")}${isDark ? "-dark" : ""}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      // Try Web Share API — on iOS this opens the native share sheet
+      // with "Save Image" option (stays in gesture context via await)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: word.word });
+          return;
+        } catch {
+          // user cancelled or share failed — fall through to download
         }
+      }
 
-        // Fallback: download as file
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName;
-        a.click();
-        URL.revokeObjectURL(url);
-      }, "image/png");
+      // Fallback: download as file (desktop)
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
     } catch (e) {
       console.error("Screenshot failed:", e);
     } finally {
