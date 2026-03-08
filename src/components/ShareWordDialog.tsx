@@ -253,8 +253,29 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
               fontFamily: "'DM Sans', system-ui, sans-serif",
               boxSizing: "border-box",
               overflow: "hidden",
+              position: "relative",
             }}
           >
+            {/* Watermark book icon — top right */}
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={isDark ? "hsl(35, 15%, 25%)" : "hsl(35, 20%, 82%)"}
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                position: "absolute",
+                top: 38,
+                right: 42,
+                width: 44,
+                height: 44,
+                opacity: 0.7,
+              }}
+            >
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+            </svg>
+
             {/* Decorative top accent */}
             <div
               style={{
@@ -320,8 +341,8 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
               style={{
                 width: "100%",
                 background: t.defBg,
-                borderRadius: 20,
-                padding: "24px 34px",
+                borderRadius: 24,
+                padding: "30px 40px",
                 marginBottom: 18,
                 flexShrink: 0,
               }}
@@ -344,8 +365,8 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
               style={{
                 width: "100%",
                 border: `1px solid ${t.exampleBorder}`,
-                borderRadius: 20,
-                padding: "22px 34px 28px",
+                borderRadius: 24,
+                padding: "26px 40px 32px",
                 marginBottom: 0,
                 flexShrink: 1,
                 minHeight: 0,
@@ -358,7 +379,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
                   color: t.exampleLabel,
-                  marginBottom: 10,
+                  marginBottom: 12,
                   textAlign: "center",
                 }}
               >
