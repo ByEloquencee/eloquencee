@@ -92,12 +92,26 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         windowWidth: 1080,
         windowHeight: 1080,
       });
-      canvas.toBlob((blob) => {
+      canvas.toBlob(async (blob) => {
         if (!blob) return;
+        const fileName = `eloquencee-${word.word.toLowerCase().replace(/\s+/g, "-")}${isDark ? "-dark" : ""}.png`;
+        const file = new File([blob], fileName, { type: "image/png" });
+
+        // Try Web Share API (saves to Photos on iOS/Android)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: word.word });
+            return;
+          } catch {
+            // user cancelled or share failed — fall through to download
+          }
+        }
+
+        // Fallback: download as file
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `eloquencee-${word.word.toLowerCase().replace(/\s+/g, "-")}${isDark ? "-dark" : ""}.png`;
+        a.download = fileName;
         a.click();
         URL.revokeObjectURL(url);
       }, "image/png");
