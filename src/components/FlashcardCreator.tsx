@@ -163,7 +163,6 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
             )}
           </div>
         </div>
-        </div>
       </div>
       {allSetsOverlay}
     </>
