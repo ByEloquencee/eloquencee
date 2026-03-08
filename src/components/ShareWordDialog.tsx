@@ -257,24 +257,19 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             }}
           >
             {/* Watermark book icon — top right */}
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke={isDark ? "hsl(35, 15%, 25%)" : "hsl(35, 20%, 82%)"}
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <div
               style={{
                 position: "absolute",
-                top: 38,
-                right: 42,
-                width: 44,
-                height: 44,
-                opacity: 0.7,
+                top: 36,
+                right: 40,
+                width: 40,
+                height: 48,
+                borderRadius: "3px 8px 8px 3px",
+                border: `2px solid ${isDark ? "hsl(35, 15%, 28%)" : "hsl(35, 20%, 80%)"}`,
+                borderLeft: `5px solid ${isDark ? "hsl(35, 15%, 28%)" : "hsl(35, 20%, 80%)"}`,
+                opacity: 0.6,
               }}
-            >
-              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
-            </svg>
+            />
 
             {/* Decorative top accent */}
             <div
