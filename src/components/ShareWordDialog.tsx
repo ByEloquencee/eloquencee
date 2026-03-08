@@ -379,7 +379,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     marginBottom: i < examples.length - 1 ? 6 : 0,
                   }}
                 >
-                  {ex.length > 80 ? ex.slice(0, 80) + "…" : ex}
+                  {ex}
                 </p>
               ))}
             </div>
