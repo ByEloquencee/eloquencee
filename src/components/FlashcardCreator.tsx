@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Layers, Trash2, BookOpen, Keyboard, ChevronRight, X, Clock } from "lucide-react";
+import { Sparkles, Layers, Trash2, BookOpen, Keyboard, ChevronRight, X } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { getFlashcardIcon } from "@/lib/flashcard-icons";
