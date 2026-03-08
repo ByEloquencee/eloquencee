@@ -311,7 +311,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   flexShrink: 0,
                 }}
               >
-                {word.etymology.length > 70 ? word.etymology.slice(0, 70) + "…" : word.etymology}
+                {word.etymology}
               </p>
             )}
 
@@ -335,9 +335,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   fontWeight: 400,
                 }}
               >
-                {word.definition.length > 160
-                  ? word.definition.slice(0, 160) + "…"
-                  : word.definition}
+                {word.definition}
               </p>
             </div>
 
@@ -347,11 +345,10 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 width: "100%",
                 border: `1px solid ${t.exampleBorder}`,
                 borderRadius: 20,
-                padding: "20px 34px",
+                padding: "22px 34px 28px",
                 marginBottom: 0,
                 flexShrink: 1,
                 minHeight: 0,
-                overflow: "hidden",
               }}
             >
               <p
@@ -379,7 +376,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     marginBottom: i < examples.length - 1 ? 6 : 0,
                   }}
                 >
-                  {ex.length > 80 ? ex.slice(0, 80) + "…" : ex}
+                  {ex}
                 </p>
               ))}
             </div>
