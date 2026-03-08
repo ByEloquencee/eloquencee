@@ -20,7 +20,6 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
   const [showAllSets, setShowAllSets] = useState(false);
 
   const sortedSets = [...sets].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  const recentSets = sortedSets.slice(0, 2);
 
   const allSetsOverlay = showAllSets
     ? createPortal(
