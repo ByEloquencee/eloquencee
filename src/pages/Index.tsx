@@ -431,8 +431,7 @@ const Index = () => {
           <motion.div
             className="flex min-w-full h-full"
             style={{ touchAction: "pan-y" }}
-            animate={{ x: -activePage * sliderWidth }}
-            transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
+            animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
             drag={sliderWidth > 0 ? "x" : false}
             dragMomentum={false}
@@ -442,9 +441,13 @@ const Index = () => {
               const threshold = 30;
               if (info.offset.x < -threshold && activePage < totalPages - 1) {
                 switchPage(activePage + 1);
-              } else if (info.offset.x > threshold && activePage > 0) {
-                switchPage(activePage - 1);
+                return;
               }
+              if (info.offset.x > threshold && activePage > 0) {
+                switchPage(activePage - 1);
+                return;
+              }
+              snapToActivePage();
             }}
           >
             {/* Page 0: Admin panel (moderators) or Suggest word (non-moderators) */}
