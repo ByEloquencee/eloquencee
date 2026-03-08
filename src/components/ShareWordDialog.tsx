@@ -201,237 +201,63 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             </div>
           )}
 
-        {/* Actions */}
-        <div className="px-8 pb-8 flex flex-col gap-3">
-          <div className="flex gap-3">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleCopy}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
-                isDark
-                  ? "bg-[hsl(30,10%,18%)] text-[hsl(40,25%,88%)] hover:bg-[hsl(30,10%,22%)]"
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-              }`}
-            >
-              {copied ? <Check size={16} /> : <Copy size={16} />}
-              {copied ? "Skopiowano!" : "Kopiuj tekst"}
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleNativeShare}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-            >
-              <Share2 size={16} />
-              Udostępnij
-            </motion.button>
-          </div>
-
-          {isModerator && (
-            <>
-              <div className="flex gap-2">
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setScreenshotTheme("light")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
-                    !isDark
-                      ? "bg-secondary text-secondary-foreground ring-2 ring-primary"
-                      : "bg-[hsl(30,10%,18%)] text-[hsl(35,15%,55%)]"
-                  }`}
-                >
-                  <Sun size={14} />
-                  Jasny
-                </motion.button>
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setScreenshotTheme("dark")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
-                    isDark
-                      ? "bg-[hsl(30,10%,22%)] text-[hsl(40,25%,88%)] ring-2 ring-primary"
-                      : "bg-secondary/50 text-muted-foreground"
-                  }`}
-                >
-                  <Moon size={14} />
-                  Ciemny
-                </motion.button>
-              </div>
-
-              {/* Screenshot preview */}
-              <div
-                className="w-full rounded-xl overflow-hidden border transition-colors duration-300"
-                style={{
-                  borderColor: isDark ? "hsl(30,8%,22%)" : "hsl(32,18%,82%)",
-                  aspectRatio: "1/1",
-                }}
-              >
-                <div
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "8% 10% 6%",
-                    background: t.bg,
-                    fontFamily: "'DM Sans', system-ui, sans-serif",
-                    boxSizing: "border-box",
-                    overflow: "hidden",
-                    position: "relative",
-                    transition: "background 0.3s",
-                  }}
-                >
-                  {/* Accent bar */}
-                  <div
-                    style={{
-                      width: 20,
-                      height: 2,
-                      borderRadius: 1,
-                      background: t.accent,
-                      marginBottom: 4,
-                      flexShrink: 0,
-                    }}
-                  />
-
-                  {/* Part of speech */}
-                  <p
-                    style={{
-                      fontSize: 6,
-                      fontWeight: 500,
-                      letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                      color: t.partOfSpeech,
-                      marginBottom: 2,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {word.partOfSpeech}
-                  </p>
-
-                  {/* Word */}
-                  <h3
-                    style={{
-                      fontSize: word.word.length > 15 ? 16 : word.word.length > 10 ? 20 : 24,
-                      fontWeight: 600,
-                      fontFamily: "'Playfair Display', Georgia, serif",
-                      color: t.word,
-                      letterSpacing: "-0.02em",
-                      marginBottom: 12,
-                      textAlign: "center",
-                      lineHeight: 1.1,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {word.word}
-                  </h3>
-
-                  {/* Etymology */}
-                  {word.etymology && (
-                    <p
-                      style={{
-                        fontSize: 6,
-                        fontStyle: "italic",
-                        color: t.exampleText,
-                        marginBottom: 5,
-                        textAlign: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {word.etymology}
-                    </p>
-                  )}
-
-                  {/* Definition box */}
-                  <div
-                    style={{
-                      width: "100%",
-                      background: t.defBg,
-                      borderRadius: 8,
-                      padding: "6px 12px 8px",
-                      marginBottom: 6,
-                      flexShrink: 0,
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: 8,
-                        lineHeight: 1.45,
-                        color: t.definition,
-                        textAlign: "center",
-                        fontWeight: 400,
-                      }}
-                    >
-                      {word.definition}
-                    </p>
-                  </div>
-
-                  {/* Example box */}
-                  <div
-                    style={{
-                      width: "100%",
-                      border: `1px solid ${t.exampleBorder}`,
-                      borderRadius: 8,
-                      padding: "5px 12px 8px",
-                      marginBottom: 0,
-                      flexShrink: 1,
-                      minHeight: 0,
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: 5,
-                        fontWeight: 500,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        color: t.exampleLabel,
-                        marginBottom: 3,
-                        textAlign: "center",
-                      }}
-                    >
-                      Przykład
-                    </p>
-                    {examples.slice(0, 1).map((ex, i) => (
-                      <p
-                        key={i}
-                        style={{
-                          fontSize: 7,
-                          lineHeight: 1.4,
-                          fontStyle: "italic",
-                          color: t.exampleText,
-                          textAlign: "center",
-                        }}
-                      >
-                        {ex}
-                      </p>
-                    ))}
-                  </div>
-
-                  <div style={{ flex: "1 1 6px", minHeight: 4, maxHeight: 12 }} />
-
-                  <p
-                    style={{
-                      fontSize: 6,
-                      letterSpacing: "0.2em",
-                      color: t.branding,
-                      opacity: 0.45,
-                      flexShrink: 0,
-                    }}
-                  >
-                    ELOQUENCEE
-                  </p>
-                </div>
-              </div>
-
+          {/* Actions */}
+          <div className="px-6 pb-6 pt-4 flex flex-col gap-3">
+            <div className="flex gap-3">
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                onClick={handleScreenshot}
-                disabled={generating}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
+                onClick={handleCopy}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-colors cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
               >
-                <Camera size={16} className={generating ? "animate-pulse" : ""} />
-                {generating ? "Generowanie..." : "Pobierz screenshot (Instagram)"}
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                {copied ? "Skopiowano!" : "Kopiuj tekst"}
               </motion.button>
-            </>
-          )}
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleNativeShare}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                <Share2 size={16} />
+                Udostępnij
+              </motion.button>
+            </div>
+
+            {isModerator && (
+              <>
+                <div className="flex gap-2">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setScreenshotTheme("light")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+                      !isDark ? "bg-secondary text-secondary-foreground ring-2 ring-primary" : "bg-secondary/50 text-muted-foreground"
+                    }`}
+                  >
+                    <Sun size={14} />
+                    Jasny
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setScreenshotTheme("dark")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+                      isDark ? "bg-secondary text-secondary-foreground ring-2 ring-primary" : "bg-secondary/50 text-muted-foreground"
+                    }`}
+                  >
+                    <Moon size={14} />
+                    Ciemny
+                  </motion.button>
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleScreenshot}
+                  disabled={generating}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
+                >
+                  <Camera size={16} className={generating ? "animate-pulse" : ""} />
+                  {generating ? "Generowanie..." : "Pobierz screenshot (Instagram)"}
+                </motion.button>
+              </>
+            )}
+          </div>
         </div>
       </DialogContent>
 
