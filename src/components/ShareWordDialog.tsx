@@ -114,50 +114,92 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent
-        className={`max-w-md p-0 overflow-hidden rounded-2xl border transition-colors duration-300 ${
-          isDark
-            ? "bg-[hsl(30,10%,10%)] border-[hsl(30,8%,20%)] text-[hsl(40,30%,92%)]"
-            : "bg-card border-border text-foreground"
-        }`}
+        className="max-w-md p-0 overflow-hidden rounded-2xl border transition-colors duration-300 bg-card border-border text-foreground"
       >
         <DialogTitle className="sr-only">Udostępnij słówko</DialogTitle>
 
-        {/* Card preview */}
-        <div className="p-8 space-y-6">
-          <div className="text-center space-y-1">
-            <p className={`text-xs font-medium tracking-widest uppercase ${isDark ? "text-[hsl(35,15%,55%)]" : "text-muted-foreground"}`}>
-              {word.partOfSpeech}
-            </p>
-            <h2
-              className="text-3xl md:text-4xl font-semibold tracking-tight"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              {word.word}
-            </h2>
-            {word.etymology && (
-              <p className={`text-sm italic ${isDark ? "text-[hsl(35,12%,55%)]" : "text-muted-foreground"}`}>{word.etymology}</p>
-            )}
-          </div>
+        <div className="max-h-[85vh] overflow-y-auto">
+          {/* Screenshot preview at top (moderator only) */}
+          {isModerator && (
+            <div className="px-6 pt-6">
+              <div
+                className="w-full rounded-xl overflow-hidden border transition-colors duration-300"
+                style={{
+                  borderColor: isDark ? "hsl(30,8%,22%)" : "hsl(32,18%,82%)",
+                  aspectRatio: "1/1",
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "8% 10% 6%",
+                    background: t.bg,
+                    fontFamily: "'DM Sans', system-ui, sans-serif",
+                    boxSizing: "border-box",
+                    overflow: "hidden",
+                    position: "relative",
+                    transition: "background 0.3s",
+                  }}
+                >
+                  <div style={{ width: 20, height: 2, borderRadius: 1, background: t.accent, marginBottom: 4, flexShrink: 0 }} />
+                  <p style={{ fontSize: 6, fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", color: t.partOfSpeech, marginBottom: 2, flexShrink: 0 }}>
+                    {word.partOfSpeech}
+                  </p>
+                  <h3 style={{ fontSize: word.word.length > 15 ? 16 : word.word.length > 10 ? 20 : 24, fontWeight: 600, fontFamily: "'Playfair Display', Georgia, serif", color: t.word, letterSpacing: "-0.02em", marginBottom: 12, textAlign: "center", lineHeight: 1.1, flexShrink: 0 }}>
+                    {word.word}
+                  </h3>
+                  {word.etymology && (
+                    <p style={{ fontSize: 6, fontStyle: "italic", color: t.exampleText, marginBottom: 5, textAlign: "center", flexShrink: 0 }}>
+                      {word.etymology}
+                    </p>
+                  )}
+                  <div style={{ width: "100%", background: t.defBg, borderRadius: 8, padding: "6px 12px 8px", marginBottom: 6, flexShrink: 0 }}>
+                    <p style={{ fontSize: 8, lineHeight: 1.45, color: t.definition, textAlign: "center", fontWeight: 400 }}>
+                      {word.definition}
+                    </p>
+                  </div>
+                  <div style={{ width: "100%", border: `1px solid ${t.exampleBorder}`, borderRadius: 8, padding: "5px 12px 8px", marginBottom: 0, flexShrink: 1, minHeight: 0 }}>
+                    <p style={{ fontSize: 5, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", color: t.exampleLabel, marginBottom: 3, textAlign: "center" }}>
+                      Przykład
+                    </p>
+                    {examples.slice(0, 1).map((ex, i) => (
+                      <p key={i} style={{ fontSize: 7, lineHeight: 1.4, fontStyle: "italic", color: t.exampleText, textAlign: "center" }}>
+                        {ex}
+                      </p>
+                    ))}
+                  </div>
+                  <div style={{ flex: "1 1 6px", minHeight: 4, maxHeight: 12 }} />
+                  <p style={{ fontSize: 6, letterSpacing: "0.2em", color: t.branding, opacity: 0.45, flexShrink: 0 }}>
+                    ELOQUENCEE
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
-          <div className={`p-4 rounded-xl ${isDark ? "bg-[hsl(30,10%,16%)]" : "bg-secondary/50"}`}>
-            <p className="text-base leading-relaxed">
-              {word.definition}
-            </p>
-          </div>
-
-          <div className={`p-4 rounded-xl border ${isDark ? "border-[hsl(30,8%,22%)]" : "border-border"}`}>
-            <p className={`text-xs font-medium tracking-widest uppercase mb-2 ${isDark ? "text-[hsl(35,15%,55%)]" : "text-muted-foreground"}`}>
-              Przykład
-            </p>
-            <p className={`text-sm leading-relaxed italic ${isDark ? "text-[hsl(35,12%,60%)]" : "text-muted-foreground"}`}>
-              '{word.example}'
-            </p>
-          </div>
-
-          <p className={`text-center text-xs tracking-wide ${isDark ? "text-[hsl(35,15%,55%)]/50" : "text-muted-foreground/60"}`}>
-            Eloquencee — ucz się nowych słów każdego dnia
-          </p>
-        </div>
+          {/* Non-moderator card preview */}
+          {!isModerator && (
+            <div className="p-8 space-y-6">
+              <div className="text-center space-y-1">
+                <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground">{word.partOfSpeech}</p>
+                <h2 className="text-3xl md:text-4xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>{word.word}</h2>
+                {word.etymology && <p className="text-sm italic text-muted-foreground">{word.etymology}</p>}
+              </div>
+              <div className="p-4 rounded-xl bg-secondary/50">
+                <p className="text-base leading-relaxed">{word.definition}</p>
+              </div>
+              <div className="p-4 rounded-xl border border-border">
+                <p className="text-xs font-medium tracking-widest uppercase mb-2 text-muted-foreground">Przykład</p>
+                <p className="text-sm leading-relaxed italic text-muted-foreground">'{word.example}'</p>
+              </div>
+              <p className="text-center text-xs tracking-wide text-muted-foreground/60">Eloquencee — ucz się nowych słów każdego dnia</p>
+            </div>
+          )}
 
         {/* Actions */}
         <div className="px-8 pb-8 flex flex-col gap-3">
