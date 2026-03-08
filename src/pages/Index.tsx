@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
 import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
@@ -107,6 +107,14 @@ const Index = () => {
   const [exercisesActive, setExercisesActive] = useState(false);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
+  const sliderControls = useAnimationControls();
+
+  const snapToActivePage = useCallback(() => {
+    void sliderControls.start({
+      x: -activePage * sliderWidth,
+      transition: { type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 },
+    });
+  }, [activePage, sliderWidth, sliderControls]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -120,6 +128,10 @@ const Index = () => {
 
     return () => observer.disconnect();
   }, [studySet, typingSet]);
+
+  useEffect(() => {
+    snapToActivePage();
+  }, [snapToActivePage]);
 
   const totalPages = isModerator ? 3 : 3;
 
@@ -419,8 +431,7 @@ const Index = () => {
           <motion.div
             className="flex min-w-full h-full"
             style={{ touchAction: "pan-y" }}
-            animate={{ x: -activePage * sliderWidth }}
-            transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
+            animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
             drag={sliderWidth > 0 ? "x" : false}
             dragMomentum={false}
@@ -430,9 +441,13 @@ const Index = () => {
               const threshold = 30;
               if (info.offset.x < -threshold && activePage < totalPages - 1) {
                 switchPage(activePage + 1);
-              } else if (info.offset.x > threshold && activePage > 0) {
-                switchPage(activePage - 1);
+                return;
               }
+              if (info.offset.x > threshold && activePage > 0) {
+                switchPage(activePage - 1);
+                return;
+              }
+              snapToActivePage();
             }}
           >
             {/* Page 0: Admin panel (moderators) or Suggest word (non-moderators) */}
