@@ -256,18 +256,17 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
               position: "relative",
             }}
           >
-            {/* Watermark book icon — top right */}
-            <div
+            {/* Watermark favicon — top right */}
+            <img
+              src="/favicon.ico"
+              alt=""
               style={{
                 position: "absolute",
                 top: 36,
                 right: 40,
-                width: 40,
+                width: 48,
                 height: 48,
-                borderRadius: "3px 8px 8px 3px",
-                border: `2px solid ${isDark ? "hsl(35, 15%, 28%)" : "hsl(35, 20%, 80%)"}`,
-                borderLeft: `5px solid ${isDark ? "hsl(35, 15%, 28%)" : "hsl(35, 20%, 80%)"}`,
-                opacity: 0.6,
+                opacity: isDark ? 0.4 : 0.5,
               }}
             />
 
