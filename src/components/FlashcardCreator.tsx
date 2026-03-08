@@ -159,7 +159,10 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                     Moje fiszki ({sets.length})
                   </motion.button>
                 )}
+              </>
+            )}
           </div>
+        </div>
         </div>
       </div>
       {allSetsOverlay}
