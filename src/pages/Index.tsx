@@ -105,7 +105,7 @@ const Index = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [exercisesActive, setExercisesActive] = useState(false);
-  const [sliderWidth, setSliderWidth] = useState(0);
+  const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -119,7 +119,7 @@ const Index = () => {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, []);
+  }, [studySet, typingSet]);
 
   const totalPages = isModerator ? 3 : 3;
 
