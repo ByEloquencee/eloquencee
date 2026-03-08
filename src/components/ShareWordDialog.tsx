@@ -183,10 +183,11 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              padding: 100,
+              padding: "80px 90px",
               background: "linear-gradient(145deg, hsl(40, 33%, 96%), hsl(35, 25%, 90%))",
               fontFamily: "'DM Sans', system-ui, sans-serif",
               boxSizing: "border-box",
+              overflow: "hidden",
             }}
           >
             {/* Decorative top accent */}
@@ -196,19 +197,21 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 height: 4,
                 borderRadius: 2,
                 background: "hsl(32, 80%, 50%)",
-                marginBottom: 40,
+                marginBottom: 28,
+                flexShrink: 0,
               }}
             />
 
             {/* Part of speech */}
             <p
               style={{
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: 500,
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
                 color: "hsl(30, 8%, 50%)",
-                marginBottom: 16,
+                marginBottom: 14,
+                flexShrink: 0,
               }}
             >
               {word.partOfSpeech}
@@ -217,14 +220,15 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             {/* Word */}
             <h1
               style={{
-                fontSize: 72,
+                fontSize: word.word.length > 15 ? 56 : 72,
                 fontWeight: 600,
                 fontFamily: "'Playfair Display', Georgia, serif",
                 color: "hsl(30, 10%, 15%)",
                 letterSpacing: "-0.02em",
-                marginBottom: 12,
+                marginBottom: 10,
                 textAlign: "center",
                 lineHeight: 1.1,
+                flexShrink: 0,
               }}
             >
               {word.word}
@@ -234,14 +238,15 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             {word.etymology && (
               <p
                 style={{
-                  fontSize: 18,
+                  fontSize: 20,
                   fontStyle: "italic",
                   color: "hsl(30, 8%, 50%)",
-                  marginBottom: 32,
+                  marginBottom: 24,
                   textAlign: "center",
+                  flexShrink: 0,
                 }}
               >
-                {word.etymology}
+                {word.etymology.length > 80 ? word.etymology.slice(0, 80) + "…" : word.etymology}
               </p>
             )}
 
@@ -251,20 +256,23 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 width: "100%",
                 background: "hsla(35, 25%, 90%, 0.6)",
                 borderRadius: 20,
-                padding: "28px 36px",
-                marginBottom: 24,
+                padding: "24px 32px",
+                marginBottom: 20,
+                flexShrink: 1,
+                minHeight: 0,
+                overflow: "hidden",
               }}
             >
               <p
                 style={{
-                  fontSize: 22,
-                  lineHeight: 1.6,
+                  fontSize: 24,
+                  lineHeight: 1.5,
                   color: "hsl(30, 10%, 15%)",
                   textAlign: "center",
                 }}
               >
-                {word.definition.length > 200
-                  ? word.definition.slice(0, 200) + "…"
+                {word.definition.length > 160
+                  ? word.definition.slice(0, 160) + "…"
                   : word.definition}
               </p>
             </div>
@@ -275,18 +283,21 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 width: "100%",
                 border: "1px solid hsl(35, 20%, 88%)",
                 borderRadius: 20,
-                padding: "24px 36px",
-                marginBottom: 48,
+                padding: "20px 32px",
+                marginBottom: 32,
+                flexShrink: 1,
+                minHeight: 0,
+                overflow: "hidden",
               }}
             >
               <p
                 style={{
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: 500,
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
                   color: "hsl(30, 8%, 50%)",
-                  marginBottom: 12,
+                  marginBottom: 10,
                   textAlign: "center",
                 }}
               >
@@ -296,15 +307,15 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 <p
                   key={i}
                   style={{
-                    fontSize: 19,
-                    lineHeight: 1.6,
+                    fontSize: 21,
+                    lineHeight: 1.5,
                     fontStyle: "italic",
                     color: "hsl(30, 8%, 50%)",
                     textAlign: "center",
-                    marginBottom: i < examples.length - 1 ? 8 : 0,
+                    marginBottom: i < examples.length - 1 ? 6 : 0,
                   }}
                 >
-                  {ex.length > 120 ? ex.slice(0, 120) + "…" : ex}
+                  {ex.length > 90 ? ex.slice(0, 90) + "…" : ex}
                 </p>
               ))}
             </div>
@@ -312,10 +323,11 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             {/* Branding */}
             <p
               style={{
-                fontSize: 16,
-                letterSpacing: "0.15em",
+                fontSize: 18,
+                letterSpacing: "0.2em",
                 color: "hsl(30, 8%, 50%)",
                 opacity: 0.5,
+                flexShrink: 0,
               }}
             >
               ELOQUENCEE
