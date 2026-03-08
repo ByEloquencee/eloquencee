@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Share2, Copy, Check, Camera } from "lucide-react";
-import { useState, useRef, useCallback } from "react";
+import { Share2, Copy, Check, Camera, Sun, Moon } from "lucide-react";
+import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import type { PolishWord } from "@/data/words";
 import {
@@ -16,9 +16,39 @@ interface ShareWordDialogProps {
   onClose: () => void;
 }
 
+type ScreenshotTheme = "light" | "dark";
+
+const themes = {
+  light: {
+    bg: "linear-gradient(145deg, hsl(40, 33%, 96%), hsl(35, 25%, 90%))",
+    accent: "hsl(32, 80%, 50%)",
+    partOfSpeech: "hsl(30, 8%, 50%)",
+    word: "hsl(30, 10%, 15%)",
+    definition: "hsl(30, 10%, 15%)",
+    defBg: "hsla(35, 25%, 90%, 0.6)",
+    exampleBorder: "hsl(35, 20%, 88%)",
+    exampleLabel: "hsl(30, 8%, 50%)",
+    exampleText: "hsl(30, 8%, 50%)",
+    branding: "hsl(30, 8%, 50%)",
+  },
+  dark: {
+    bg: "linear-gradient(145deg, hsl(30, 10%, 12%), hsl(25, 8%, 8%))",
+    accent: "hsl(32, 80%, 50%)",
+    partOfSpeech: "hsl(35, 15%, 55%)",
+    word: "hsl(40, 30%, 92%)",
+    definition: "hsl(40, 25%, 88%)",
+    defBg: "hsla(30, 10%, 18%, 0.8)",
+    exampleBorder: "hsl(30, 8%, 22%)",
+    exampleLabel: "hsl(35, 15%, 55%)",
+    exampleText: "hsl(35, 12%, 60%)",
+    branding: "hsl(35, 15%, 55%)",
+  },
+};
+
 export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [screenshotTheme, setScreenshotTheme] = useState<ScreenshotTheme>("light");
   const screenshotRef = useRef<HTMLDivElement>(null);
   const { isModerator } = useModerator();
 
@@ -66,7 +96,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `eloquencee-${word.word.toLowerCase().replace(/\s+/g, "-")}.png`;
+        a.download = `eloquencee-${word.word.toLowerCase().replace(/\s+/g, "-")}${screenshotTheme === "dark" ? "-dark" : ""}.png`;
         a.click();
         URL.revokeObjectURL(url);
       }, "image/png");
@@ -79,6 +109,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
 
   // Split examples for the screenshot card
   const examples = word.example.split("\n").filter(Boolean).slice(0, 2);
+  const t = themes[screenshotTheme];
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -87,7 +118,6 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
 
         {/* Card preview */}
         <div className="p-8 space-y-6">
-          {/* Word */}
           <div className="text-center space-y-1">
             <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
               {word.partOfSpeech}
@@ -103,14 +133,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             )}
           </div>
 
-          {/* Definition */}
           <div className="p-4 rounded-xl bg-secondary/50">
             <p className="text-base leading-relaxed text-foreground">
               {word.definition}
             </p>
           </div>
 
-          {/* Example */}
           <div className="p-4 rounded-xl border border-border">
             <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground mb-2">
               Przykład
@@ -120,7 +148,6 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             </p>
           </div>
 
-          {/* Branding */}
           <p className="text-center text-xs text-muted-foreground/60 tracking-wide">
             Eloquencee — ucz się nowych słów każdego dnia
           </p>
@@ -148,15 +175,43 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
           </div>
 
           {isModerator && (
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleScreenshot}
-              disabled={generating}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
-            >
-              <Camera size={16} className={generating ? "animate-pulse" : ""} />
-              {generating ? "Generowanie..." : "Pobierz screenshot (Instagram)"}
-            </motion.button>
+            <>
+              <div className="flex gap-2">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setScreenshotTheme("light")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+                    screenshotTheme === "light"
+                      ? "bg-secondary text-secondary-foreground ring-2 ring-primary"
+                      : "bg-secondary/50 text-muted-foreground"
+                  }`}
+                >
+                  <Sun size={14} />
+                  Jasny
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setScreenshotTheme("dark")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+                    screenshotTheme === "dark"
+                      ? "bg-secondary text-secondary-foreground ring-2 ring-primary"
+                      : "bg-secondary/50 text-muted-foreground"
+                  }`}
+                >
+                  <Moon size={14} />
+                  Ciemny
+                </motion.button>
+              </div>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleScreenshot}
+                disabled={generating}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
+              >
+                <Camera size={16} className={generating ? "animate-pulse" : ""} />
+                {generating ? "Generowanie..." : "Pobierz screenshot (Instagram)"}
+              </motion.button>
+            </>
           )}
         </div>
       </DialogContent>
@@ -182,22 +237,25 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center",
-              padding: "50px 70px",
-              background: "linear-gradient(145deg, hsl(40, 33%, 96%), hsl(35, 25%, 90%))",
+              justifyContent: "flex-start",
+              padding: "60px 70px 40px",
+              background: t.bg,
               fontFamily: "'DM Sans', system-ui, sans-serif",
               boxSizing: "border-box",
               overflow: "hidden",
             }}
           >
+            {/* Top spacer */}
+            <div style={{ flex: "1 1 40px", minHeight: 20, maxHeight: 80 }} />
+
             {/* Decorative top accent */}
             <div
               style={{
                 width: 60,
                 height: 4,
                 borderRadius: 2,
-                background: "hsl(32, 80%, 50%)",
-                marginBottom: 18,
+                background: t.accent,
+                marginBottom: 14,
                 flexShrink: 0,
               }}
             />
@@ -205,12 +263,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             {/* Part of speech */}
             <p
               style={{
-                fontSize: 23,
+                fontSize: 22,
                 fontWeight: 500,
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
-                color: "hsl(30, 8%, 50%)",
-                marginBottom: 10,
+                color: t.partOfSpeech,
+                marginBottom: 6,
                 flexShrink: 0,
               }}
             >
@@ -220,12 +278,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             {/* Word */}
             <h1
               style={{
-                fontSize: word.word.length > 15 ? 64 : 84,
+                fontSize: word.word.length > 15 ? 58 : word.word.length > 10 ? 70 : 80,
                 fontWeight: 600,
                 fontFamily: "'Playfair Display', Georgia, serif",
-                color: "hsl(30, 10%, 15%)",
+                color: t.word,
                 letterSpacing: "-0.02em",
-                marginBottom: 8,
+                marginBottom: 20,
                 textAlign: "center",
                 lineHeight: 1.1,
                 flexShrink: 0,
@@ -238,15 +296,15 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             {word.etymology && (
               <p
                 style={{
-                  fontSize: 23,
+                  fontSize: 20,
                   fontStyle: "italic",
-                  color: "hsl(30, 8%, 50%)",
-                  marginBottom: 18,
+                  color: t.exampleText,
+                  marginBottom: 16,
                   textAlign: "center",
                   flexShrink: 0,
                 }}
               >
-                {word.etymology.length > 80 ? word.etymology.slice(0, 80) + "…" : word.etymology}
+                {word.etymology.length > 70 ? word.etymology.slice(0, 70) + "…" : word.etymology}
               </p>
             )}
 
@@ -254,25 +312,24 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             <div
               style={{
                 width: "100%",
-                background: "hsla(35, 25%, 90%, 0.6)",
+                background: t.defBg,
                 borderRadius: 20,
-                padding: "22px 30px",
-                marginBottom: 16,
-                flexShrink: 1,
-                minHeight: 0,
-                overflow: "hidden",
+                padding: "24px 34px",
+                marginBottom: 18,
+                flexShrink: 0,
               }}
             >
               <p
                 style={{
-                  fontSize: 28,
+                  fontSize: 27,
                   lineHeight: 1.45,
-                  color: "hsl(30, 10%, 15%)",
+                  color: t.definition,
                   textAlign: "center",
+                  fontWeight: 400,
                 }}
               >
-                {word.definition.length > 150
-                  ? word.definition.slice(0, 150) + "…"
+                {word.definition.length > 160
+                  ? word.definition.slice(0, 160) + "…"
                   : word.definition}
               </p>
             </div>
@@ -281,10 +338,10 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             <div
               style={{
                 width: "100%",
-                border: "1px solid hsl(35, 20%, 88%)",
+                border: `1px solid ${t.exampleBorder}`,
                 borderRadius: 20,
-                padding: "18px 30px",
-                marginBottom: 22,
+                padding: "20px 34px",
+                marginBottom: 0,
                 flexShrink: 1,
                 minHeight: 0,
                 overflow: "hidden",
@@ -292,12 +349,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             >
               <p
                 style={{
-                  fontSize: 19,
+                  fontSize: 18,
                   fontWeight: 500,
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
-                  color: "hsl(30, 8%, 50%)",
-                  marginBottom: 8,
+                  color: t.exampleLabel,
+                  marginBottom: 10,
                   textAlign: "center",
                 }}
               >
@@ -307,31 +364,35 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 <p
                   key={i}
                   style={{
-                    fontSize: 25,
-                    lineHeight: 1.45,
+                    fontSize: 24,
+                    lineHeight: 1.4,
                     fontStyle: "italic",
-                    color: "hsl(30, 8%, 50%)",
+                    color: t.exampleText,
                     textAlign: "center",
                     marginBottom: i < examples.length - 1 ? 6 : 0,
                   }}
                 >
-                  {ex.length > 85 ? ex.slice(0, 85) + "…" : ex}
+                  {ex.length > 80 ? ex.slice(0, 80) + "…" : ex}
                 </p>
               ))}
             </div>
 
-            {/* Branding */}
+            {/* Bottom spacer + branding */}
+            <div style={{ flex: "1 1 30px", minHeight: 16, maxHeight: 50 }} />
+
             <p
               style={{
-                fontSize: 21,
+                fontSize: 20,
                 letterSpacing: "0.2em",
-                color: "hsl(30, 8%, 50%)",
-                opacity: 0.5,
+                color: t.branding,
+                opacity: 0.45,
                 flexShrink: 0,
               }}
             >
               ELOQUENCEE
             </p>
+
+            <div style={{ height: 10, flexShrink: 0 }} />
           </div>
         </div>
       )}
