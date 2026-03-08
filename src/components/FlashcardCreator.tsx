@@ -33,7 +33,7 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
           >
             <div className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between">
               <h2 className="text-xl font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-                Wszystkie zestawy ({sets.length})
+                Moje fiszki ({sets.length})
               </h2>
               <button
                 onClick={() => setShowAllSets(false)}
