@@ -124,25 +124,25 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           <p className="text-sm text-muted-foreground">{percentage}% opanowane</p>
 
           <div className="space-y-3 pt-4">
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={restartAll}
-              className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2"
-            >
-              <RotateCcw size={16} />
-              Powtórz cały zestaw
-            </motion.button>
-
             {unknownCount > 0 && (
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={studyUnknown}
-                className="w-full py-3 rounded-xl border border-border text-sm font-medium hover:bg-secondary transition-colors cursor-pointer flex items-center justify-center gap-2 text-foreground"
+                className="w-full py-3 rounded-xl bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
                 <RotateCw size={16} />
                 Ucz się nieznanych ({unknownCount})
               </motion.button>
             )}
+
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={restartAll}
+              className="w-full py-3 rounded-xl border border-border text-sm font-medium hover:bg-secondary transition-colors cursor-pointer flex items-center justify-center gap-2 text-foreground"
+            >
+              <RotateCcw size={16} />
+              Powtórz cały zestaw
+            </motion.button>
 
             <button
               onClick={onExit}
