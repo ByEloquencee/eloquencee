@@ -337,7 +337,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 width: "100%",
                 background: t.defBg,
                 borderRadius: 24,
-                padding: "30px 40px",
+                padding: "24px 40px",
                 marginBottom: 18,
                 flexShrink: 0,
               }}
