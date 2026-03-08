@@ -335,9 +335,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   fontWeight: 400,
                 }}
               >
-                {word.definition.length > 160
-                  ? word.definition.slice(0, 160) + "…"
-                  : word.definition}
+                {word.definition}
               </p>
             </div>
 
