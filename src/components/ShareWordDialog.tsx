@@ -311,7 +311,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   flexShrink: 0,
                 }}
               >
-                {word.etymology.length > 70 ? word.etymology.slice(0, 70) + "…" : word.etymology}
+                {word.etymology}
               </p>
             )}
 
