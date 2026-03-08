@@ -345,11 +345,10 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 width: "100%",
                 border: `1px solid ${t.exampleBorder}`,
                 borderRadius: 20,
-                padding: "20px 34px",
+                padding: "22px 34px 28px",
                 marginBottom: 0,
                 flexShrink: 1,
                 minHeight: 0,
-                overflow: "hidden",
               }}
             >
               <p
