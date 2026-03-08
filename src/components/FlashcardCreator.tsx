@@ -156,81 +156,9 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                     className="w-full py-3 rounded-xl border border-border text-sm font-medium tracking-wide hover:bg-secondary transition-colors cursor-pointer flex items-center justify-center gap-2 text-foreground"
                   >
                     <BookOpen size={16} />
-                    Wszystkie zestawy ({sets.length})
+                    Moje fiszki ({sets.length})
                   </motion.button>
                 )}
-
-                {recentSets.length > 0 && (
-                  <div className="pt-2 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Clock size={12} className="text-muted-foreground" />
-                      <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
-                        Ostatnio używane
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      {recentSets.map((set) => (
-                        <div key={set.id} className="rounded-xl border border-border bg-secondary/30 overflow-hidden">
-                          <div
-                            onClick={() => setExpandedSet(expandedSet === set.id ? null : set.id)}
-                            className="flex items-center justify-between gap-3 p-3 hover:bg-secondary/60 transition-colors cursor-pointer"
-                          >
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium truncate flex items-center gap-1.5">
-                                {(() => { const Icon = getFlashcardIcon(set.icon); return <Icon size={14} className="text-primary flex-shrink-0" />; })()}
-                                {set.title}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {set.cards.length} {set.cards.length === 1 ? "fiszka" : set.cards.length < 5 ? "fiszki" : "fiszek"}
-                                {set.description ? ` · ${set.description}` : ""}
-                              </p>
-                            </div>
-                            <ChevronRight size={14} className={`text-muted-foreground transition-transform ${expandedSet === set.id ? "rotate-90" : ""}`} />
-                          </div>
-                          <AnimatePresence>
-                            {expandedSet === set.id && (
-                              <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                className="border-t border-border overflow-hidden"
-                              >
-                                <div className="p-2 flex gap-2">
-                                  {set.cards.length >= 2 && (
-                                    <>
-                                      <button
-                                        onClick={() => onStudySet(set)}
-                                        className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                                      >
-                                        <BookOpen size={14} />
-                                         Ucz się
-                                      </button>
-                                      <button
-                                        onClick={() => onTypingSet(set)}
-                                        className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                                      >
-                                        <Keyboard size={14} />
-                                        Uzupełnij
-                                      </button>
-                                    </>
-                                  )}
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); onDeleteSet(set.id); }}
-                                    className="py-2 px-3 rounded-lg text-destructive text-xs font-medium hover:bg-destructive/10 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                                  >
-                                    <Trash2 size={14} />
-                                  </button>
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
           </div>
         </div>
       </div>
