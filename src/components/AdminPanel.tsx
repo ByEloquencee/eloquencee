@@ -592,6 +592,8 @@ export function AdminPanel() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ImportWordsDialog open={importOpen} onClose={() => setImportOpen(false)} />
     </div>
   );
 }
