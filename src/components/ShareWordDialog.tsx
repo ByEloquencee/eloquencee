@@ -399,11 +399,11 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             >
               <p
                 style={{
-                  fontSize: 27,
+                  fontSize: 32,
                   lineHeight: 1.45,
                   color: t.definition,
                   textAlign: "center",
-                  fontWeight: 400,
+                  fontWeight: 500,
                 }}
               >
                 {word.definition}
