@@ -129,7 +129,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
     }
   };
 
-  const examples = word.example.split("\n").filter(Boolean).slice(0, 2);
+  const examples = word.example.split("\n").filter(Boolean);
   const t = themes[screenshotTheme];
 
   return (
