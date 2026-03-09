@@ -439,12 +439,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 <p
                   key={i}
                   style={{
-                    fontSize: 24,
-                    lineHeight: 1.4,
+                    fontSize: 28,
+                    lineHeight: 1.45,
                     fontStyle: "italic",
                     color: t.exampleText,
                     textAlign: "center",
-                    marginBottom: i < examples.length - 1 ? 6 : 0,
+                    marginBottom: i < examples.length - 1 ? 8 : 0,
                   }}
                 >
                   {ex}
