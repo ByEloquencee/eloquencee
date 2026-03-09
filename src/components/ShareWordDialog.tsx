@@ -144,11 +144,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
           {isModerator && (
             <div className="px-6 pt-6">
               <div
-                className="w-full rounded-xl overflow-hidden border transition-colors duration-300"
+                className="w-full rounded-xl border transition-colors duration-300"
                 style={{
                   borderColor: isDark ? "hsl(30,8%,22%)" : "hsl(32,18%,82%)",
                   aspectRatio: "1/1",
                   position: "relative",
+                  overflow: "hidden",
                 }}
               >
                 <div
