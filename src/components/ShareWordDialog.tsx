@@ -24,11 +24,11 @@ const themes = {
     accent: "hsl(32, 80%, 50%)",
     partOfSpeech: "hsl(30, 8%, 50%)",
     word: "hsl(30, 10%, 15%)",
-    definition: "hsl(30, 10%, 15%)",
-    defBg: "hsla(32, 20%, 85%, 0.7)",
-    exampleBorder: "hsl(32, 18%, 82%)",
-    exampleLabel: "hsl(30, 8%, 50%)",
-    exampleText: "hsl(30, 8%, 50%)",
+    definition: "hsl(30, 10%, 10%)",
+    defBg: "hsla(32, 15%, 80%, 0.85)",
+    exampleBorder: "hsl(32, 15%, 75%)",
+    exampleLabel: "hsl(30, 8%, 45%)",
+    exampleText: "hsl(30, 8%, 30%)",
     branding: "hsl(30, 8%, 50%)",
   },
   dark: {
@@ -36,11 +36,11 @@ const themes = {
     accent: "hsl(32, 80%, 50%)",
     partOfSpeech: "hsl(35, 15%, 55%)",
     word: "hsl(40, 30%, 92%)",
-    definition: "hsl(40, 25%, 88%)",
-    defBg: "hsla(30, 10%, 18%, 0.8)",
-    exampleBorder: "hsl(30, 8%, 22%)",
-    exampleLabel: "hsl(35, 15%, 55%)",
-    exampleText: "hsl(35, 12%, 60%)",
+    definition: "hsl(40, 25%, 92%)",
+    defBg: "hsla(30, 10%, 22%, 0.9)",
+    exampleBorder: "hsl(30, 8%, 28%)",
+    exampleLabel: "hsl(35, 15%, 60%)",
+    exampleText: "hsl(35, 12%, 75%)",
     branding: "hsl(35, 15%, 55%)",
   },
 };
@@ -399,11 +399,11 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
             >
               <p
                 style={{
-                  fontSize: 27,
+                  fontSize: 32,
                   lineHeight: 1.45,
                   color: t.definition,
                   textAlign: "center",
-                  fontWeight: 400,
+                  fontWeight: 500,
                 }}
               >
                 {word.definition}
@@ -439,12 +439,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 <p
                   key={i}
                   style={{
-                    fontSize: 24,
-                    lineHeight: 1.4,
+                    fontSize: 28,
+                    lineHeight: 1.45,
                     fontStyle: "italic",
                     color: t.exampleText,
                     textAlign: "center",
-                    marginBottom: i < examples.length - 1 ? 6 : 0,
+                    marginBottom: i < examples.length - 1 ? 8 : 0,
                   }}
                 >
                   {ex}
