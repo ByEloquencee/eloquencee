@@ -435,7 +435,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
               >
                 Przykład
               </p>
-              {examples.map((ex, i) => (
+              {examples.slice(0, 2).map((ex, i) => (
                 <p
                   key={i}
                   style={{
