@@ -289,13 +289,23 @@ export function AdminPanel() {
               />
             </div>
             {tab === "global" && (
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setAddOpen(true)}
-                className="p-2 rounded-xl bg-primary text-primary-foreground cursor-pointer"
-              >
-                <Plus size={18} />
-              </motion.button>
+              <div className="flex gap-2">
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setImportOpen(true)}
+                  className="p-2 rounded-xl bg-secondary text-secondary-foreground cursor-pointer"
+                  title="Importuj słowa"
+                >
+                  <Upload size={18} />
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setAddOpen(true)}
+                  className="p-2 rounded-xl bg-primary text-primary-foreground cursor-pointer"
+                >
+                  <Plus size={18} />
+                </motion.button>
+              </div>
             )}
           </div>
         )}
