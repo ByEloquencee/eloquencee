@@ -140,7 +140,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         <DialogTitle className="sr-only">Udostępnij słówko</DialogTitle>
 
         <div className="max-h-[85vh] overflow-y-auto">
-          {/* Screenshot preview at top (moderator only) */}
+          {/* Screenshot preview at top (moderator only) — scaled-down view of actual canvas */}
           {isModerator && (
             <div className="px-6 pt-6">
               <div
@@ -148,54 +148,87 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 style={{
                   borderColor: isDark ? "hsl(30,8%,22%)" : "hsl(32,18%,82%)",
                   aspectRatio: "1/1",
+                  position: "relative",
                 }}
               >
                 <div
                   style={{
-                    width: "100%",
-                    height: "100%",
+                    width: 1080,
+                    height: 1080,
+                    transform: "scale(var(--preview-scale))",
+                    transformOrigin: "top left",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                    padding: "8% 10% 6%",
+                    padding: "30px 70px 40px",
                     background: t.bg,
                     fontFamily: "'DM Sans', system-ui, sans-serif",
                     boxSizing: "border-box",
                     overflow: "hidden",
-                    position: "relative",
-                    transition: "background 0.3s",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    // --preview-scale is set via CSS calc based on container width
+                  } as React.CSSProperties}
+                  ref={(el) => {
+                    if (el) {
+                      const observer = new ResizeObserver((entries) => {
+                        for (const entry of entries) {
+                          const parentWidth = entry.target.parentElement?.clientWidth || 1080;
+                          el.style.setProperty("--preview-scale", String(parentWidth / 1080));
+                        }
+                      });
+                      if (el.parentElement) {
+                        observer.observe(el.parentElement);
+                        const parentWidth = el.parentElement.clientWidth || 1080;
+                        el.style.setProperty("--preview-scale", String(parentWidth / 1080));
+                      }
+                    }
                   }}
                 >
-                  <div style={{ width: 20, height: 2, borderRadius: 1, background: t.accent, marginBottom: 4, flexShrink: 0 }} />
-                  <p style={{ fontSize: 6, fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", color: t.partOfSpeech, marginBottom: 2, flexShrink: 0 }}>
+                  {/* Watermark favicon — top right */}
+                  <img
+                    src="/favicon.ico"
+                    alt=""
+                    style={{
+                      position: "absolute",
+                      top: 36,
+                      right: 40,
+                      width: 48,
+                      height: 48,
+                      opacity: isDark ? 0.4 : 0.5,
+                    }}
+                  />
+                  <div style={{ width: 60, height: 4, borderRadius: 2, background: t.accent, marginBottom: 14, flexShrink: 0 }} />
+                  <p style={{ fontSize: 22, fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", color: t.partOfSpeech, marginBottom: 6, flexShrink: 0 }}>
                     {word.partOfSpeech}
                   </p>
-                  <h3 style={{ fontSize: word.word.length > 15 ? 16 : word.word.length > 10 ? 20 : 24, fontWeight: 600, fontFamily: "'Playfair Display', Georgia, serif", color: t.word, letterSpacing: "-0.02em", marginBottom: 12, textAlign: "center", lineHeight: 1.1, flexShrink: 0 }}>
+                  <h3 style={{ fontSize: word.word.length > 15 ? 58 : word.word.length > 10 ? 70 : 80, fontWeight: 600, fontFamily: "'Playfair Display', Georgia, serif", color: t.word, letterSpacing: "-0.02em", marginBottom: 40, textAlign: "center", lineHeight: 1.1, flexShrink: 0 }}>
                     {word.word}
                   </h3>
                   {word.etymology && (
-                    <p style={{ fontSize: 6, fontStyle: "italic", color: t.exampleText, marginBottom: 5, textAlign: "center", flexShrink: 0 }}>
+                    <p style={{ fontSize: 20, fontStyle: "italic", color: t.exampleText, marginBottom: 16, textAlign: "center", flexShrink: 0 }}>
                       {word.etymology}
                     </p>
                   )}
-                  <div style={{ width: "100%", background: t.defBg, borderRadius: 8, padding: "6px 12px 8px", marginBottom: 6, flexShrink: 0 }}>
-                    <p style={{ fontSize: 8, lineHeight: 1.45, color: t.definition, textAlign: "center", fontWeight: 400 }}>
+                  <div style={{ width: "100%", background: t.defBg, borderRadius: 24, padding: "20px 40px 24px", marginBottom: 18, flexShrink: 0 }}>
+                    <p style={{ fontSize: 32, lineHeight: 1.45, color: t.definition, textAlign: "center", fontWeight: 500 }}>
                       {word.definition}
                     </p>
                   </div>
-                  <div style={{ width: "100%", border: `1px solid ${t.exampleBorder}`, borderRadius: 8, padding: "5px 12px 8px", marginBottom: 0, flexShrink: 1, minHeight: 0 }}>
-                    <p style={{ fontSize: 5, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", color: t.exampleLabel, marginBottom: 3, textAlign: "center" }}>
+                  <div style={{ width: "100%", border: `1px solid ${t.exampleBorder}`, borderRadius: 24, padding: "18px 40px 28px", marginBottom: 0, flexShrink: 1, minHeight: 0 }}>
+                    <p style={{ fontSize: 18, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", color: t.exampleLabel, marginBottom: 12, textAlign: "center" }}>
                       Przykład
                     </p>
-                    {examples.slice(0, 1).map((ex, i) => (
-                      <p key={i} style={{ fontSize: 7, lineHeight: 1.4, fontStyle: "italic", color: t.exampleText, textAlign: "center" }}>
+                    {examples.slice(0, 2).map((ex, i) => (
+                      <p key={i} style={{ fontSize: 28, lineHeight: 1.45, fontStyle: "italic", color: t.exampleText, textAlign: "center", marginBottom: i < examples.length - 1 ? 8 : 0 }}>
                         {ex}
                       </p>
                     ))}
                   </div>
-                  <div style={{ flex: "1 1 6px", minHeight: 4, maxHeight: 12 }} />
-                  <p style={{ fontSize: 6, letterSpacing: "0.2em", color: t.branding, opacity: 0.45, flexShrink: 0 }}>
+                  <div style={{ flex: "1 1 20px", minHeight: 14, maxHeight: 40 }} />
+                  <p style={{ fontSize: 20, letterSpacing: "0.2em", color: t.branding, opacity: 0.45, flexShrink: 0 }}>
                     ELOQUENCEE
                   </p>
                 </div>
