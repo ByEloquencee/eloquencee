@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Search, BookOpen, X, Pencil, EyeOff, Eye, Sparkles, Inbox, Check } from "lucide-react";
+import { Plus, Trash2, Search, BookOpen, X, Pencil, EyeOff, Eye, Sparkles, Inbox, Check, Upload } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
