@@ -29,6 +29,7 @@ export function AdminPanel() {
   const [editingStatic, setEditingStatic] = useState<PolishWord | null>(null);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiHint, setAiHint] = useState("");
+  const [importOpen, setImportOpen] = useState(false);
 
   // Suggestions
   const [suggestions, setSuggestions] = useState<any[]>([]);
