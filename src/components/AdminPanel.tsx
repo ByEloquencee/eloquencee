@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Search, BookOpen, X, Pencil, EyeOff, Eye, Sparkles, Inbox, Check } from "lucide-react";
+import { Plus, Trash2, Search, BookOpen, X, Pencil, EyeOff, Eye, Sparkles, Inbox, Check, Upload } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ImportWordsDialog } from "@/components/ImportWordsDialog";
 
 const editableCategories = categories.filter(c => c.value !== "all" && c.value !== "własne");
 const difficultyOptions = [
@@ -28,6 +29,7 @@ export function AdminPanel() {
   const [editingStatic, setEditingStatic] = useState<PolishWord | null>(null);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiHint, setAiHint] = useState("");
+  const [importOpen, setImportOpen] = useState(false);
 
   // Suggestions
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -287,13 +289,23 @@ export function AdminPanel() {
               />
             </div>
             {tab === "global" && (
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setAddOpen(true)}
-                className="p-2 rounded-xl bg-primary text-primary-foreground cursor-pointer"
-              >
-                <Plus size={18} />
-              </motion.button>
+              <div className="flex gap-2">
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setImportOpen(true)}
+                  className="p-2 rounded-xl bg-secondary text-secondary-foreground cursor-pointer"
+                  title="Importuj słowa"
+                >
+                  <Upload size={18} />
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setAddOpen(true)}
+                  className="p-2 rounded-xl bg-primary text-primary-foreground cursor-pointer"
+                >
+                  <Plus size={18} />
+                </motion.button>
+              </div>
             )}
           </div>
         )}
@@ -580,6 +592,8 @@ export function AdminPanel() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ImportWordsDialog open={importOpen} onClose={() => setImportOpen(false)} />
     </div>
   );
 }
