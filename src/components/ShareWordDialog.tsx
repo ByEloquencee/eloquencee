@@ -62,6 +62,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
     const container = previewContainerRef.current;
     const preview = previewRef.current;
     if (!container || !preview) return;
+    captureRef.current = preview;
 
     const updateScale = () => {
       const parentWidth = container.clientWidth || 1080;
