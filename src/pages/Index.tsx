@@ -116,6 +116,11 @@ const Index = () => {
     });
   }, [activePage, sliderWidth, sliderControls]);
 
+  // Set initial slider position immediately (no animation) to prevent flash
+  useEffect(() => {
+    sliderControls.set({ x: -activePage * sliderWidth });
+  }, []);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -129,9 +134,10 @@ const Index = () => {
     return () => observer.disconnect();
   }, [studySet, typingSet]);
 
+  // Snap slider whenever page changes OR when returning from a fullscreen view
   useEffect(() => {
     snapToActivePage();
-  }, [snapToActivePage]);
+  }, [snapToActivePage, quizActive, exercisesActive, studySet, typingSet]);
 
   const totalPages = isModerator ? 3 : 3;
 
