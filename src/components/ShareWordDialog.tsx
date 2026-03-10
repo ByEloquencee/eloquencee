@@ -271,7 +271,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     left: 0,
                     // --preview-scale is set via CSS calc based on container width
                   } as React.CSSProperties}
-                  ref={previewRef}
+                  ref={previewCallbackRef}
                 >
                   {/* Watermark favicon — top right */}
                   <img
