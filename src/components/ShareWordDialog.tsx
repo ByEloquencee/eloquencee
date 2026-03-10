@@ -189,6 +189,56 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
       setGenerating(false);
     }
   };
+
+  const handlePreviewScreenshot = async () => {
+    if (!captureRef.current || generating) return;
+    setGenerating(true);
+    try {
+      const el = captureRef.current;
+      const prevTransform = el.style.transform;
+      el.style.transform = "none";
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+        width: 1080,
+        height: 1080,
+        x: 0, y: 0, scrollX: 0, scrollY: 0,
+      });
+
+      el.style.transform = prevTransform;
+
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      );
+      if (!blob) return;
+
+      const fileName = `eloquencee-preview-${word.word.toLowerCase().replace(/\s+/g, "-")}${isDark ? "-dark" : ""}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: word.word });
+          return;
+        } catch { /* cancelled */ }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Preview screenshot failed:", e);
+    } finally {
+      setGenerating(false);
+    }
+  };
   const handleCompare = async () => {
     if (compareDataUrl) {
       setCompareDataUrl(null);
