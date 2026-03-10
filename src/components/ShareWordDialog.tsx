@@ -96,6 +96,10 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         height: 1080,
         windowWidth: 1080,
         windowHeight: 1080,
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0,
       });
 
       // Restore preview scale
