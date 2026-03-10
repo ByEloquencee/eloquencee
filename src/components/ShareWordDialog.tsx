@@ -54,9 +54,6 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const { isModerator } = useModerator();
 
-  if (!word) return null;
-
-  const shareText = `✨ ${word.word}\n\n📖 ${word.definition}\n\n💬 '${word.example}'\n\n— Eloquencee`;
   const isDark = screenshotTheme === "dark";
 
   useEffect(() => {
@@ -77,6 +74,10 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
 
     return () => observer.disconnect();
   }, [isModerator, open]);
+
+  if (!word) return null;
+
+  const shareText = `✨ ${word.word}\n\n📖 ${word.definition}\n\n💬 '${word.example}'\n\n— Eloquencee`;
 
   const handleCopy = async () => {
     try {
