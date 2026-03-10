@@ -204,7 +204,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   style={{
                     width: 1080,
                     height: 1080,
-                    transform: "scale(var(--preview-scale))",
+                    transform: "scale(1)",
                     transformOrigin: "top left",
                     display: "flex",
                     flexDirection: "column",
