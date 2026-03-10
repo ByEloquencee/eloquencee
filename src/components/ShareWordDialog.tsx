@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Share2, Copy, Check, Camera, Sun, Moon } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import type { PolishWord } from "@/data/words";
 import {
@@ -49,13 +49,36 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [screenshotTheme, setScreenshotTheme] = useState<ScreenshotTheme>("light");
-  const screenshotRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const captureRef = useRef<HTMLDivElement>(null);
+  const previewContainerRef = useRef<HTMLDivElement>(null);
   const { isModerator } = useModerator();
+
+  const isDark = screenshotTheme === "dark";
+
+  useEffect(() => {
+    if (!isModerator || !open) return;
+
+    const container = previewContainerRef.current;
+    const preview = previewRef.current;
+    if (!container || !preview) return;
+    captureRef.current = preview;
+
+    const updateScale = () => {
+      const parentWidth = container.clientWidth || 1080;
+      preview.style.setProperty("--preview-scale", String(parentWidth / 1080));
+    };
+
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, [isModerator, open]);
 
   if (!word) return null;
 
   const shareText = `✨ ${word.word}\n\n📖 ${word.definition}\n\n💬 '${word.example}'\n\n— Eloquencee`;
-  const isDark = screenshotTheme === "dark";
 
   const handleCopy = async () => {
     try {
@@ -80,13 +103,21 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   };
 
   const handleScreenshot = async () => {
-    if (!screenshotRef.current || generating) return;
+    if (!captureRef.current || generating) return;
     setGenerating(true);
     try {
-      const el = screenshotRef.current;
+      const el = captureRef.current;
       // Temporarily reset scale so html2canvas captures at true 1080×1080
       const prevTransform = el.style.transform;
       el.style.transform = "none";
+
+      // Ensure fonts/layout are fully settled before capture
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      );
 
       const canvas = await html2canvas(el, {
         scale: 2,
@@ -94,8 +125,6 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         backgroundColor: null,
         width: 1080,
         height: 1080,
-        windowWidth: 1080,
-        windowHeight: 1080,
         x: 0,
         y: 0,
         scrollX: 0,
@@ -156,6 +185,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
           {isModerator && (
             <div className="px-6 pt-6">
               <div
+                ref={previewContainerRef}
                 className="w-full rounded-xl border transition-colors duration-300"
                 style={{
                   borderColor: isDark ? "hsl(30,8%,22%)" : "hsl(32,18%,82%)",
@@ -184,23 +214,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     left: 0,
                     // --preview-scale is set via CSS calc based on container width
                   } as React.CSSProperties}
-                  ref={(el) => {
-                    // Merge screenshotRef + ResizeObserver on the same element
-                    (screenshotRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-                    if (el) {
-                      const observer = new ResizeObserver((entries) => {
-                        for (const entry of entries) {
-                          const parentWidth = entry.target.parentElement?.clientWidth || 1080;
-                          el.style.setProperty("--preview-scale", String(parentWidth / 1080));
-                        }
-                      });
-                      if (el.parentElement) {
-                        observer.observe(el.parentElement);
-                        const parentWidth = el.parentElement.clientWidth || 1080;
-                        el.style.setProperty("--preview-scale", String(parentWidth / 1080));
-                      }
-                    }
-                  }}
+                  ref={previewRef}
                 >
                   {/* Watermark favicon — top right */}
                   <img
