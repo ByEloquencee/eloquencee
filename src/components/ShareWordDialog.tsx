@@ -57,24 +57,30 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   const isDark = screenshotTheme === "dark";
 
   useEffect(() => {
-    if (!isModerator || !open) return;
+    if (!isModerator || !open || !word) return;
 
-    const container = previewContainerRef.current;
-    const preview = previewRef.current;
-    if (!container || !preview) return;
-    captureRef.current = preview;
+    // Small delay to ensure refs are mounted after render
+    const timer = setTimeout(() => {
+      const container = previewContainerRef.current;
+      const preview = previewRef.current;
+      if (!container || !preview) return;
+      captureRef.current = preview;
 
-    const updateScale = () => {
-      const parentWidth = container.clientWidth || 1080;
-      preview.style.setProperty("--preview-scale", String(parentWidth / 1080));
-    };
+      const updateScale = () => {
+        const parentWidth = container.clientWidth || 1080;
+        const scale = parentWidth / 1080;
+        preview.style.transform = `scale(${scale})`;
+      };
 
-    updateScale();
-    const observer = new ResizeObserver(updateScale);
-    observer.observe(container);
+      updateScale();
+      const observer = new ResizeObserver(updateScale);
+      observer.observe(container);
 
-    return () => observer.disconnect();
-  }, [isModerator, open]);
+      return () => observer.disconnect();
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [isModerator, open, word]);
 
   if (!word) return null;
 
@@ -198,7 +204,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   style={{
                     width: 1080,
                     height: 1080,
-                    transform: "scale(var(--preview-scale))",
+                    transform: "scale(1)",
                     transformOrigin: "top left",
                     display: "flex",
                     flexDirection: "column",
