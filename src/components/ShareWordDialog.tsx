@@ -52,6 +52,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   const previewRef = useRef<HTMLDivElement>(null);
   const captureRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
+  const { isModerator } = useModerator();
 
   if (!word) return null;
 
