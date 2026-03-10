@@ -270,7 +270,7 @@ const Index = () => {
       <QuizView
         words={quizWords}
         allWords={allWords}
-        onExit={() => setQuizActive(false)}
+        onExit={() => { setQuizActive(false); setActivePage(1); }}
       />
     );
   }
