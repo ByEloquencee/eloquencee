@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Search, BookOpen, X, Pencil, EyeOff, Eye, Sparkles, Inbox, Check, Upload } from "lucide-react";
+import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
@@ -435,17 +435,23 @@ export function AdminPanel() {
                     >
                       <Pencil size={14} />
                     </button>
-                    <button
-                      onClick={() => isHidden ? handleUnhideStatic(w.id) : handleHideStatic(w.id)}
-                      className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                        isHidden
-                          ? "text-primary hover:bg-secondary"
-                          : "text-muted-foreground hover:text-destructive hover:bg-secondary"
-                      }`}
-                      title={isHidden ? "Przywróć" : "Ukryj"}
-                    >
-                      {isHidden ? <Eye size={14} /> : <EyeOff size={14} />}
-                    </button>
+                    {isHidden ? (
+                      <button
+                        onClick={() => handleUnhideStatic(w.id)}
+                        className="p-1.5 rounded-lg text-primary hover:bg-secondary transition-colors cursor-pointer"
+                        title="Przywróć"
+                      >
+                        <Eye size={14} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleHideStatic(w.id)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-secondary transition-colors cursor-pointer"
+                        title="Usuń (ukryj)"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
                     {hasOverride && (
                       <button
                         onClick={() => handleResetOverride(w.id)}
