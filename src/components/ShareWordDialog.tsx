@@ -58,27 +58,35 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
 
   const isDark = screenshotTheme === "dark";
 
-  useEffect(() => {
-    if (!isModerator || !open || !word) return;
+  const observerRef = useRef<ResizeObserver | null>(null);
 
-    const container = previewContainerRef.current;
-    const preview = previewRef.current;
-    if (!container || !preview) return;
+  const previewCallbackRef = useCallback((el: HTMLDivElement | null) => {
+    // Cleanup previous observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
 
-    captureRef.current = preview;
+    (previewRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+
+    if (!el) {
+      captureRef.current = null;
+      return;
+    }
+
+    captureRef.current = el;
+    const container = el.parentElement;
+    if (!container) return;
 
     const updateScale = () => {
       const parentWidth = container.clientWidth || 1080;
-      const scale = parentWidth / 1080;
-      preview.style.transform = `scale(${scale})`;
+      el.style.transform = `scale(${parentWidth / 1080})`;
     };
 
     updateScale();
-    const observer = new ResizeObserver(updateScale);
-    observer.observe(container);
-
-    return () => observer.disconnect();
-  }, [isModerator, open, word]);
+    observerRef.current = new ResizeObserver(updateScale);
+    observerRef.current.observe(container);
+  }, [screenshotTheme]);
 
   if (!word) return null;
 
