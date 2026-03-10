@@ -82,6 +82,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
 
   if (!word) return null;
 
+  const examples = word.example.split("\n").filter(Boolean);
   const shareText = `✨ ${word.word}\n\n📖 ${word.definition}\n\n💬 '${word.example}'\n\n— Eloquencee`;
 
   const handleCopy = async () => {
@@ -219,7 +220,6 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
     }
   };
 
-  const examples = word.example.split("\n").filter(Boolean);
   const t = themes[screenshotTheme];
 
   return (
