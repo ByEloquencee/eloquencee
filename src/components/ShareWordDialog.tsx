@@ -311,7 +311,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                    padding: "30px 70px 40px",
+                    padding: "0px 70px 40px",
                     background: t.bg,
                     fontFamily: "'DM Sans', system-ui, sans-serif",
                     boxSizing: "border-box",
