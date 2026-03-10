@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload } from "lucide-react";
+import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload, CheckSquare, Square } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
-import { useGlobalWords } from "@/hooks/use-global-words";
+import { useGlobalWords, type GlobalWord } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,16 +20,23 @@ const inputClass = "w-full px-3 py-2 rounded-xl bg-secondary border border-borde
 
 export function AdminPanel() {
   const { user } = useAuth();
-  const { globalWords, addWord, deleteWord, loading } = useGlobalWords();
+  const { globalWords, addWord, deleteWord, loading, refetch: refetchGlobal } = useGlobalWords();
   const { hiddenIds, overrides, hideWord, unhideWord, saveOverride, deleteOverride } = useStaticWordManagement();
   const [tab, setTab] = useState<"static" | "global" | "suggestions">("global");
   const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [editingStatic, setEditingStatic] = useState<PolishWord | null>(null);
+  const [editingGlobal, setEditingGlobal] = useState<GlobalWord | null>(null);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiHint, setAiHint] = useState("");
   const [importOpen, setImportOpen] = useState(false);
+
+  // Bulk selection
+  const [selectedStatic, setSelectedStatic] = useState<Set<string>>(new Set());
+  const [selectedGlobal, setSelectedGlobal] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
 
   // Suggestions
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -46,6 +53,9 @@ export function AdminPanel() {
 
   const handleTabChange = (newTab: "static" | "global" | "suggestions") => {
     setTab(newTab);
+    setSelectMode(false);
+    setSelectedStatic(new Set());
+    setSelectedGlobal(new Set());
     if (newTab === "suggestions" && !suggestionsLoaded) {
       loadSuggestions();
     }
@@ -92,6 +102,12 @@ export function AdminPanel() {
     word: "", partOfSpeech: "", definition: "", example: "", etymology: "", category: "",
   });
   const [editSubmitting, setEditSubmitting] = useState(false);
+
+  // Edit global form state
+  const [editGlobalForm, setEditGlobalForm] = useState({
+    word: "", part_of_speech: "", definition: "", example: "", etymology: "", category: "ogólne", difficulty: "advanced",
+  });
+  const [editGlobalSubmitting, setEditGlobalSubmitting] = useState(false);
 
   const handleAIGenerate = async () => {
     setAiGenerating(true);
@@ -175,6 +191,56 @@ export function AdminPanel() {
     }
   };
 
+  // Bulk delete for static (hide multiple)
+  const handleBulkHideStatic = async () => {
+    if (selectedStatic.size === 0) return;
+    setBulkDeleting(true);
+    try {
+      const promises = Array.from(selectedStatic).map(id => hideWord(id, user?.id));
+      await Promise.all(promises);
+      toast.success(`Ukryto ${selectedStatic.size} słów!`);
+      setSelectedStatic(new Set());
+      setSelectMode(false);
+    } catch {
+      toast.error("Nie udało się ukryć słów");
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  // Bulk delete for global
+  const handleBulkDeleteGlobal = async () => {
+    if (selectedGlobal.size === 0) return;
+    setBulkDeleting(true);
+    try {
+      const promises = Array.from(selectedGlobal).map(id => deleteWord(id));
+      await Promise.all(promises);
+      toast.success(`Usunięto ${selectedGlobal.size} słów!`);
+      setSelectedGlobal(new Set());
+      setSelectMode(false);
+    } catch {
+      toast.error("Nie udało się usunąć słów");
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  const toggleStaticSelect = (id: string) => {
+    setSelectedStatic(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleGlobalSelect = (id: string) => {
+    setSelectedGlobal(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
   const openEditStatic = (w: PolishWord) => {
     const override = overrides.get(w.id);
     setEditForm({
@@ -186,6 +252,19 @@ export function AdminPanel() {
       category: override?.category || w.category,
     });
     setEditingStatic(w);
+  };
+
+  const openEditGlobal = (w: GlobalWord) => {
+    setEditGlobalForm({
+      word: w.word,
+      part_of_speech: w.part_of_speech,
+      definition: w.definition,
+      example: w.example,
+      etymology: w.etymology || "",
+      category: w.category,
+      difficulty: w.difficulty,
+    });
+    setEditingGlobal(w);
   };
 
   const handleEditStaticSubmit = async (e: React.FormEvent) => {
@@ -212,6 +291,31 @@ export function AdminPanel() {
     }
   };
 
+  const handleEditGlobalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingGlobal || !editGlobalForm.word.trim() || !editGlobalForm.definition.trim()) return;
+    setEditGlobalSubmitting(true);
+    try {
+      const { error } = await (supabase.from("global_words" as any).update({
+        word: editGlobalForm.word.trim(),
+        part_of_speech: editGlobalForm.part_of_speech.trim(),
+        definition: editGlobalForm.definition.trim(),
+        example: editGlobalForm.example.trim(),
+        etymology: editGlobalForm.etymology.trim() || null,
+        category: editGlobalForm.category,
+        difficulty: editGlobalForm.difficulty,
+      } as any).eq("id", editingGlobal.id) as any);
+      if (error) throw error;
+      await refetchGlobal();
+      toast.success("Słowo zaktualizowane!");
+      setEditingGlobal(null);
+    } catch (err: any) {
+      toast.error(err.message || "Nie udało się zaktualizować");
+    } finally {
+      setEditGlobalSubmitting(false);
+    }
+  };
+
   const handleResetOverride = async (wordId: string) => {
     try {
       await deleteOverride(wordId);
@@ -232,6 +336,17 @@ export function AdminPanel() {
   );
 
   const visibleStaticCount = words.filter(w => !hiddenIds.has(w.id)).length;
+
+  const selectAllStatic = () => {
+    const nonHidden = filteredStatic.filter(w => !hiddenIds.has(w.id));
+    setSelectedStatic(new Set(nonHidden.map(w => w.id)));
+  };
+
+  const selectAllGlobal = () => {
+    setSelectedGlobal(new Set(filteredGlobal.map(w => w.id)));
+  };
+
+  const currentSelected = tab === "static" ? selectedStatic : selectedGlobal;
 
   return (
     <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
@@ -275,7 +390,7 @@ export function AdminPanel() {
           </button>
         </div>
 
-        {/* Search + Add */}
+        {/* Search + Actions */}
         {tab !== "suggestions" && (
           <div className="flex gap-2">
             <div className="flex-1 relative">
@@ -288,6 +403,20 @@ export function AdminPanel() {
                 className="w-full pl-9 pr-3 py-2 rounded-xl bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => {
+                setSelectMode(!selectMode);
+                setSelectedStatic(new Set());
+                setSelectedGlobal(new Set());
+              }}
+              className={`p-2 rounded-xl cursor-pointer transition-colors ${
+                selectMode ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+              }`}
+              title="Tryb zaznaczania"
+            >
+              <CheckSquare size={18} />
+            </motion.button>
             {tab === "global" && (
               <div className="flex gap-2">
                 <motion.button
@@ -306,6 +435,33 @@ export function AdminPanel() {
                   <Plus size={18} />
                 </motion.button>
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Bulk action bar */}
+        {selectMode && tab !== "suggestions" && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={tab === "static" ? selectAllStatic : selectAllGlobal}
+              className="text-xs px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground cursor-pointer hover:bg-accent transition-colors"
+            >
+              Zaznacz wszystkie ({tab === "static" ? filteredStatic.filter(w => !hiddenIds.has(w.id)).length : filteredGlobal.length})
+            </button>
+            {currentSelected.size > 0 && (
+              <>
+                <span className="text-xs text-muted-foreground">
+                  Zaznaczono: {currentSelected.size}
+                </span>
+                <button
+                  onClick={tab === "static" ? handleBulkHideStatic : handleBulkDeleteGlobal}
+                  disabled={bulkDeleting}
+                  className="ml-auto flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-destructive text-destructive-foreground cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  <Trash2 size={12} />
+                  {bulkDeleting ? "Usuwanie..." : `Usuń (${currentSelected.size})`}
+                </button>
+              </>
             )}
           </div>
         )}
@@ -360,6 +516,14 @@ export function AdminPanel() {
           ) : (
             filteredGlobal.map((w) => (
               <div key={w.id} className="flex items-start gap-2 p-3 rounded-xl bg-card border border-border">
+                {selectMode && (
+                  <button
+                    onClick={() => toggleGlobalSelect(w.id)}
+                    className="mt-0.5 flex-shrink-0 cursor-pointer text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {selectedGlobal.has(w.id) ? <CheckSquare size={16} className="text-primary" /> : <Square size={16} />}
+                  </button>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold truncate">{w.word}</span>
@@ -375,16 +539,27 @@ export function AdminPanel() {
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{w.definition}</p>
                 </div>
-                <button
-                  onClick={() => handleDelete(w.id)}
-                  className={`p-1.5 rounded-lg flex-shrink-0 transition-colors cursor-pointer ${
-                    confirmDeleteId === w.id
-                      ? "bg-destructive text-destructive-foreground"
-                      : "text-muted-foreground hover:text-destructive hover:bg-secondary"
-                  }`}
-                >
-                  <Trash2 size={14} />
-                </button>
+                {!selectMode && (
+                  <div className="flex flex-col gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => openEditGlobal(w)}
+                      className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                      title="Edytuj"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(w.id)}
+                      className={`p-1.5 rounded-lg flex-shrink-0 transition-colors cursor-pointer ${
+                        confirmDeleteId === w.id
+                          ? "bg-destructive text-destructive-foreground"
+                          : "text-muted-foreground hover:text-destructive hover:bg-secondary"
+                      }`}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                )}
               </div>
             ))
           )
@@ -407,6 +582,14 @@ export function AdminPanel() {
                     isHidden ? "bg-muted/50 opacity-50" : "bg-card"
                   }`}
                 >
+                  {selectMode && !isHidden && (
+                    <button
+                      onClick={() => toggleStaticSelect(w.id)}
+                      className="mt-0.5 flex-shrink-0 cursor-pointer text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {selectedStatic.has(w.id) ? <CheckSquare size={16} className="text-primary" /> : <Square size={16} />}
+                    </button>
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold truncate">{displayWord}</span>
@@ -427,41 +610,43 @@ export function AdminPanel() {
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{displayDef}</p>
                   </div>
-                  <div className="flex flex-col gap-1 flex-shrink-0">
-                    <button
-                      onClick={() => openEditStatic(w)}
-                      className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
-                      title="Edytuj"
-                    >
-                      <Pencil size={14} />
-                    </button>
-                    {isHidden ? (
+                  {!selectMode && (
+                    <div className="flex flex-col gap-1 flex-shrink-0">
                       <button
-                        onClick={() => handleUnhideStatic(w.id)}
-                        className="p-1.5 rounded-lg text-primary hover:bg-secondary transition-colors cursor-pointer"
-                        title="Przywróć"
+                        onClick={() => openEditStatic(w)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                        title="Edytuj"
                       >
-                        <Eye size={14} />
+                        <Pencil size={14} />
                       </button>
-                    ) : (
-                      <button
-                        onClick={() => handleHideStatic(w.id)}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-secondary transition-colors cursor-pointer"
-                        title="Usuń (ukryj)"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
-                    {hasOverride && (
-                      <button
-                        onClick={() => handleResetOverride(w.id)}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:text-accent-foreground hover:bg-secondary transition-colors cursor-pointer"
-                        title="Przywróć oryginał"
-                      >
-                        <X size={14} />
-                      </button>
-                    )}
-                  </div>
+                      {isHidden ? (
+                        <button
+                          onClick={() => handleUnhideStatic(w.id)}
+                          className="p-1.5 rounded-lg text-primary hover:bg-secondary transition-colors cursor-pointer"
+                          title="Przywróć"
+                        >
+                          <Eye size={14} />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleHideStatic(w.id)}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-secondary transition-colors cursor-pointer"
+                          title="Usuń (ukryj)"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                      {hasOverride && (
+                        <button
+                          onClick={() => handleResetOverride(w.id)}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-accent-foreground hover:bg-secondary transition-colors cursor-pointer"
+                          title="Przywróć oryginał"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })
@@ -592,6 +777,61 @@ export function AdminPanel() {
                 >
                   <Pencil size={16} />
                   {editSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit global word modal */}
+      <AnimatePresence>
+        {editingGlobal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm p-4"
+            onClick={() => setEditingGlobal(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between p-5 border-b border-border">
+                <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+                  Edytuj słowo globalne
+                </h2>
+                <button onClick={() => setEditingGlobal(null)} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
+                  <X size={18} />
+                </button>
+              </div>
+              <form onSubmit={handleEditGlobalSubmit} className="p-5 space-y-3">
+                <input type="text" placeholder="Słowo *" value={editGlobalForm.word} onChange={(e) => setEditGlobalForm(f => ({ ...f, word: e.target.value }))} required maxLength={100} className={inputClass} />
+                <input type="text" placeholder="Część mowy" value={editGlobalForm.part_of_speech} onChange={(e) => setEditGlobalForm(f => ({ ...f, part_of_speech: e.target.value }))} maxLength={50} className={inputClass} />
+                <textarea placeholder="Definicja *" value={editGlobalForm.definition} onChange={(e) => setEditGlobalForm(f => ({ ...f, definition: e.target.value }))} required maxLength={500} rows={3} className={`${inputClass} resize-none`} />
+                <input type="text" placeholder="Przykład użycia" value={editGlobalForm.example} onChange={(e) => setEditGlobalForm(f => ({ ...f, example: e.target.value }))} maxLength={300} className={inputClass} />
+                <input type="text" placeholder="Etymologia (opcjonalnie)" value={editGlobalForm.etymology} onChange={(e) => setEditGlobalForm(f => ({ ...f, etymology: e.target.value }))} maxLength={200} className={inputClass} />
+                <select value={editGlobalForm.category} onChange={(e) => setEditGlobalForm(f => ({ ...f, category: e.target.value }))} className={inputClass}>
+                  {editableCategories.map(c => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
+                </select>
+                <select value={editGlobalForm.difficulty} onChange={(e) => setEditGlobalForm(f => ({ ...f, difficulty: e.target.value }))} className={inputClass}>
+                  {difficultyOptions.map(d => (
+                    <option key={d.value} value={d.value}>{d.label}</option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  disabled={editGlobalSubmitting || !editGlobalForm.word.trim() || !editGlobalForm.definition.trim()}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
+                >
+                  <Pencil size={16} />
+                  {editGlobalSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
                 </button>
               </form>
             </motion.div>
