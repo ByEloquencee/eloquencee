@@ -59,27 +59,23 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   useEffect(() => {
     if (!isModerator || !open || !word) return;
 
-    // Small delay to ensure refs are mounted after render
-    const timer = setTimeout(() => {
-      const container = previewContainerRef.current;
-      const preview = previewRef.current;
-      if (!container || !preview) return;
-      captureRef.current = preview;
+    const container = previewContainerRef.current;
+    const preview = previewRef.current;
+    if (!container || !preview) return;
 
-      const updateScale = () => {
-        const parentWidth = container.clientWidth || 1080;
-        const scale = parentWidth / 1080;
-        preview.style.transform = `scale(${scale})`;
-      };
+    captureRef.current = preview;
 
-      updateScale();
-      const observer = new ResizeObserver(updateScale);
-      observer.observe(container);
+    const updateScale = () => {
+      const parentWidth = container.clientWidth || 1080;
+      const scale = parentWidth / 1080;
+      preview.style.transform = `scale(${scale})`;
+    };
 
-      return () => observer.disconnect();
-    }, 50);
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(container);
 
-    return () => clearTimeout(timer);
+    return () => observer.disconnect();
   }, [isModerator, open, word]);
 
   if (!word) return null;
