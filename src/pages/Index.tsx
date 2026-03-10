@@ -258,11 +258,11 @@ const Index = () => {
   }, [selectedCategories]);
 
   if (studySet) {
-    return <FlashcardStudyView set={studySet} onExit={() => setStudySet(null)} />;
+    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(1); }} />;
   }
 
   if (typingSet) {
-    return <FlashcardTypingView set={typingSet} onExit={() => setTypingSet(null)} />;
+    return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(1); }} />;
   }
 
   if (quizActive) {
@@ -279,7 +279,7 @@ const Index = () => {
     return (
       <ExercisesView
         difficulty={profile?.difficulty_level || "advanced"}
-        onExit={() => setExercisesActive(false)}
+        onExit={() => { setExercisesActive(false); setActivePage(1); }}
       />
     );
   }
