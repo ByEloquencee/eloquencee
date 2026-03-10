@@ -82,10 +82,10 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   };
 
   const handleScreenshot = async () => {
-    if (!screenshotRef.current || generating) return;
+    if (!captureRef.current || generating) return;
     setGenerating(true);
     try {
-      const el = screenshotRef.current;
+      const el = captureRef.current;
       // Temporarily reset scale so html2canvas captures at true 1080×1080
       const prevTransform = el.style.transform;
       el.style.transform = "none";
