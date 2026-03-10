@@ -109,18 +109,19 @@ const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sliderControls = useAnimationControls();
 
-  const snapToActivePage = useCallback(() => {
-    void sliderControls.start({
-      x: -activePage * sliderWidth,
-      transition: { type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 },
-    });
+  const snapToActivePage = useCallback((immediate = false) => {
+    const target = -activePage * sliderWidth;
+    if (immediate) {
+      sliderControls.set({ x: target });
+    } else {
+      void sliderControls.start({
+        x: target,
+        transition: { type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.35 },
+      });
+    }
   }, [activePage, sliderWidth, sliderControls]);
 
-  // Set initial slider position immediately (no animation) to prevent flash
-  useEffect(() => {
-    sliderControls.set({ x: -activePage * sliderWidth });
-  }, []);
-
+  // Measure container width — re-run when ANY fullscreen view toggles
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -132,12 +133,26 @@ const Index = () => {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [studySet, typingSet]);
+  }, [studySet, typingSet, quizActive, exercisesActive]);
 
-  // Snap slider whenever page changes OR when returning from a fullscreen view
+  // After returning from fullscreen, immediately set position then snap
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM has settled after remount
+    const raf = requestAnimationFrame(() => {
+      const container = containerRef.current;
+      if (container) {
+        const w = container.clientWidth;
+        setSliderWidth(w);
+        sliderControls.set({ x: -activePage * w });
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [quizActive, exercisesActive, studySet, typingSet]);
+
+  // Snap slider whenever page or width changes
   useEffect(() => {
     snapToActivePage();
-  }, [snapToActivePage, quizActive, exercisesActive, studySet, typingSet]);
+  }, [snapToActivePage]);
 
   const totalPages = isModerator ? 3 : 3;
 
