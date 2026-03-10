@@ -83,7 +83,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
     if (!screenshotRef.current || generating) return;
     setGenerating(true);
     try {
-      const canvas = await html2canvas(screenshotRef.current, {
+      const el = screenshotRef.current;
+      // Temporarily reset scale so html2canvas captures at true 1080×1080
+      const prevTransform = el.style.transform;
+      el.style.transform = "none";
+
+      const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
         backgroundColor: null,
@@ -92,6 +97,9 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         windowWidth: 1080,
         windowHeight: 1080,
       });
+
+      // Restore preview scale
+      el.style.transform = prevTransform;
 
       // Wrap toBlob in a Promise so we stay in the async chain —
       // iOS Safari requires navigator.share() to be called within
@@ -173,6 +181,8 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     // --preview-scale is set via CSS calc based on container width
                   } as React.CSSProperties}
                   ref={(el) => {
+                    // Merge screenshotRef + ResizeObserver on the same element
+                    (screenshotRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
                     if (el) {
                       const observer = new ResizeObserver((entries) => {
                         for (const entry of entries) {
@@ -316,193 +326,6 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         </div>
       </DialogContent>
 
-      {/* Hidden screenshot canvas */}
-      {isModerator && (
-        <div
-          style={{
-            position: "fixed",
-            left: "-9999px",
-            top: 0,
-            width: 1080,
-            height: 1080,
-            zIndex: -1,
-            pointerEvents: "none",
-          }}
-        >
-          <div
-            ref={screenshotRef}
-            style={{
-              width: 1080,
-              height: 1080,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "30px 70px 40px",
-              background: t.bg,
-              fontFamily: "'DM Sans', system-ui, sans-serif",
-              boxSizing: "border-box",
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            {/* Watermark favicon — top right */}
-            <img
-              src="/favicon.ico"
-              alt=""
-              style={{
-                position: "absolute",
-                top: 36,
-                right: 40,
-                width: 48,
-                height: 48,
-                opacity: isDark ? 0.4 : 0.5,
-              }}
-            />
-
-            {/* Decorative top accent */}
-            <div
-              style={{
-                width: 60,
-                height: 4,
-                borderRadius: 2,
-                background: t.accent,
-                marginBottom: 14,
-                flexShrink: 0,
-              }}
-            />
-
-            {/* Part of speech */}
-            <p
-              style={{
-                fontSize: 22,
-                fontWeight: 500,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: t.partOfSpeech,
-                marginBottom: 6,
-                flexShrink: 0,
-              }}
-            >
-              {word.partOfSpeech}
-            </p>
-
-            {/* Word */}
-            <h1
-              style={{
-                fontSize: word.word.length > 15 ? 58 : word.word.length > 10 ? 70 : 80,
-                fontWeight: 600,
-                fontFamily: "'Playfair Display', Georgia, serif",
-                color: t.word,
-                letterSpacing: "-0.02em",
-                marginBottom: 40,
-                textAlign: "center",
-                lineHeight: 1.1,
-                flexShrink: 0,
-              }}
-            >
-              {word.word}
-            </h1>
-
-            {/* Etymology */}
-            {word.etymology && (
-              <p
-                style={{
-                  fontSize: 20,
-                  fontStyle: "italic",
-                  color: t.exampleText,
-                  marginBottom: 16,
-                  textAlign: "center",
-                  flexShrink: 0,
-                }}
-              >
-                {word.etymology}
-              </p>
-            )}
-
-            {/* Definition box */}
-            <div
-              style={{
-                width: "100%",
-                background: t.defBg,
-                borderRadius: 24,
-                padding: "20px 40px 24px",
-                marginBottom: 18,
-                flexShrink: 0,
-              }}
-            >
-              <p
-                style={{
-                  fontSize: 32,
-                  lineHeight: 1.45,
-                  color: t.definition,
-                  textAlign: "center",
-                  fontWeight: 500,
-                }}
-              >
-                {word.definition}
-              </p>
-            </div>
-
-            {/* Example box */}
-            <div
-              style={{
-                width: "100%",
-                border: `1px solid ${t.exampleBorder}`,
-                borderRadius: 24,
-                padding: "18px 40px 28px",
-                marginBottom: 0,
-                flexShrink: 1,
-                minHeight: 0,
-              }}
-            >
-              <p
-                style={{
-                  fontSize: 18,
-                  fontWeight: 500,
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  color: t.exampleLabel,
-                  marginBottom: 12,
-                  textAlign: "center",
-                }}
-              >
-                Przykład
-              </p>
-              {examples.slice(0, 2).map((ex, i) => (
-                <p
-                  key={i}
-                  style={{
-                    fontSize: 28,
-                    lineHeight: 1.45,
-                    fontStyle: "italic",
-                    color: t.exampleText,
-                    textAlign: "center",
-                    marginBottom: i < examples.length - 1 ? 8 : 0,
-                  }}
-                >
-                  {ex}
-                </p>
-              ))}
-            </div>
-
-            {/* Branding */}
-            <div style={{ flex: "1 1 20px", minHeight: 14, maxHeight: 40 }} />
-
-            <p
-              style={{
-                fontSize: 20,
-                letterSpacing: "0.2em",
-                color: t.branding,
-                opacity: 0.45,
-                flexShrink: 0,
-              }}
-            >
-              ELOQUENCEE
-            </p>
-          </div>
-        </div>
-      )}
     </Dialog>
   );
 }
