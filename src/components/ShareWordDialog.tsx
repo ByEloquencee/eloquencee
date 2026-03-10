@@ -469,15 +469,26 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     Ciemny
                   </motion.button>
                 </div>
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleScreenshot}
-                  disabled={generating}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
-                >
-                  <Camera size={16} className={generating ? "animate-pulse" : ""} />
-                  {generating ? "Generowanie..." : "Pobierz screenshot (Instagram)"}
-                </motion.button>
+                <div className="flex gap-2">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleScreenshot}
+                    disabled={generating}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
+                  >
+                    <Camera size={16} className={generating ? "animate-pulse" : ""} />
+                    {generating ? "..." : "Screenshot"}
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handlePreviewScreenshot}
+                    disabled={generating}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
+                  >
+                    <Monitor size={16} className={generating ? "animate-pulse" : ""} />
+                    {generating ? "..." : "Pobierz podgląd"}
+                  </motion.button>
+                </div>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={handleCompare}
