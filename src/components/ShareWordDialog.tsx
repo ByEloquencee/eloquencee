@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Share2, Copy, Check, Camera, Sun, Moon } from "lucide-react";
+import { Share2, Copy, Check, Camera, Sun, Moon, Layers } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import type { PolishWord } from "@/data/words";
