@@ -1,1 +1,4 @@
 project_id = "vcovontzkazhhatxyzsu"
+
+[functions.classify-words]
+verify_jwt = false
