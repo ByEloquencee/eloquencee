@@ -340,7 +340,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   <p style={{ fontSize: 22, fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", color: t.partOfSpeech, marginBottom: 6, flexShrink: 0 }}>
                     {word.partOfSpeech}
                   </p>
-                  <h3 style={{ fontSize: word.word.length > 15 ? 58 : word.word.length > 10 ? 70 : 80, fontWeight: 600, fontFamily: "'Playfair Display', Georgia, serif", color: t.word, letterSpacing: "-0.02em", marginBottom: 24, textAlign: "center", lineHeight: 1.1, flexShrink: 0 }}>
+                  <h3 style={{ fontSize: word.word.length > 15 ? 58 : word.word.length > 10 ? 70 : 80, fontWeight: 600, fontFamily: "'Playfair Display', Georgia, serif", color: t.word, letterSpacing: "-0.02em", marginBottom: 24, textAlign: "center", lineHeight: 1.1, flexShrink: 0, transform: "translateY(-10px)" }}>
                     {word.word}
                   </h3>
                   {word.etymology && (
@@ -349,7 +349,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     </p>
                   )}
                   <div style={{ width: "100%", background: t.defBg, borderRadius: 24, padding: "20px 40px 24px", marginBottom: 18, flexShrink: 0 }}>
-                    <p style={{ fontSize: 32, lineHeight: 1.45, color: t.definition, textAlign: "center", fontWeight: 500 }}>
+                    <p style={{ fontSize: 32, lineHeight: 1.45, color: t.definition, textAlign: "center", fontWeight: 500, transform: "translateY(-8px)" }}>
                       {word.definition}
                     </p>
                   </div>
