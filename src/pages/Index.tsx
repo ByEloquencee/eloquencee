@@ -645,6 +645,14 @@ const Index = () => {
           }
           setQuizActive(true);
         }}
+        onStartRandomQuiz={(difficulty) => {
+          setQuizModeOpen(false);
+          const filtered = allWords.filter((w) => w.difficulty === difficulty);
+          const pool = filtered.length >= 8 ? filtered : allWords;
+          const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 8);
+          setQuizWords(shuffled);
+          setQuizActive(true);
+        }}
         hasFavorites={hasEnoughForQuiz}
         folders={folders}
       />
