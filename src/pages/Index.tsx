@@ -116,6 +116,11 @@ const Index = () => {
     });
   }, [activePage, sliderWidth, sliderControls]);
 
+  // Set initial slider position immediately (no animation) to prevent flash
+  useEffect(() => {
+    sliderControls.set({ x: -activePage * sliderWidth });
+  }, []);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
