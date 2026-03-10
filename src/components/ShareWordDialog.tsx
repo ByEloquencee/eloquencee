@@ -186,23 +186,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     left: 0,
                     // --preview-scale is set via CSS calc based on container width
                   } as React.CSSProperties}
-                  ref={(el) => {
-                    // Merge screenshotRef + ResizeObserver on the same element
-                    (screenshotRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-                    if (el) {
-                      const observer = new ResizeObserver((entries) => {
-                        for (const entry of entries) {
-                          const parentWidth = entry.target.parentElement?.clientWidth || 1080;
-                          el.style.setProperty("--preview-scale", String(parentWidth / 1080));
-                        }
-                      });
-                      if (el.parentElement) {
-                        observer.observe(el.parentElement);
-                        const parentWidth = el.parentElement.clientWidth || 1080;
-                        el.style.setProperty("--preview-scale", String(parentWidth / 1080));
-                      }
-                    }
-                  }}
+                  ref={previewRef}
                 >
                   {/* Watermark favicon — top right */}
                   <img
