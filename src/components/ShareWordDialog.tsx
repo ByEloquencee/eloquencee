@@ -430,6 +430,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 >
                   <Layers size={14} />
                   {compareDataUrl ? "Ukryj porównanie" : "Porównaj podgląd vs PNG"}
+                </motion.button>
               </>
             )}
           </div>
