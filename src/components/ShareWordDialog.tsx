@@ -173,6 +173,8 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     // --preview-scale is set via CSS calc based on container width
                   } as React.CSSProperties}
                   ref={(el) => {
+                    // Merge screenshotRef + ResizeObserver on the same element
+                    (screenshotRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
                     if (el) {
                       const observer = new ResizeObserver((entries) => {
                         for (const entry of entries) {
