@@ -310,7 +310,40 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     ELOQUENCEE
                   </p>
                 </div>
+                {/* Compare overlay */}
+                {compareDataUrl && (
+                  <img
+                    src={compareDataUrl}
+                    alt="Screenshot comparison"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      opacity: compareOpacity,
+                      pointerEvents: "none",
+                      mixBlendMode: "difference",
+                    }}
+                  />
+                )}
               </div>
+              {/* Opacity slider for compare */}
+              {compareDataUrl && (
+                <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>PNG</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={compareOpacity}
+                    onChange={(e) => setCompareOpacity(Number(e.target.value))}
+                    className="flex-1 h-1.5 accent-primary"
+                  />
+                  <span>Podgląd</span>
+                </div>
+              )}
             </div>
           )}
 
