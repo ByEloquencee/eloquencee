@@ -49,8 +49,9 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [screenshotTheme, setScreenshotTheme] = useState<ScreenshotTheme>("light");
-  const screenshotRef = useRef<HTMLDivElement>(null);
-  const { isModerator } = useModerator();
+  const previewRef = useRef<HTMLDivElement>(null);
+  const captureRef = useRef<HTMLDivElement>(null);
+  const previewContainerRef = useRef<HTMLDivElement>(null);
 
   if (!word) return null;
 
