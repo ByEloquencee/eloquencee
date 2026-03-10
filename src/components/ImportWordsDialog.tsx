@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, ChevronRight, ChevronLeft, AlertCircle } from "lucide-react";
+import { Upload, X, ChevronRight, ChevronLeft, AlertCircle, Sparkles, Loader2 } from "lucide-react";
 import { categories, type WordCategory } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const editableCategories = categories.filter(c => c.value !== "all" && c.value !== "własne");
@@ -16,6 +17,8 @@ const partOfSpeechOptions = [
   { value: "rzeczownik", label: "Rzeczownik" },
   { value: "przymiotnik", label: "Przymiotnik" },
   { value: "czasownik", label: "Czasownik" },
+  { value: "przysłówek", label: "Przysłówek" },
+  { value: "wyrażenie", label: "Wyrażenie" },
 ];
 
 const inputClass = "w-full px-2 py-1.5 rounded-lg bg-secondary border border-border text-xs focus:outline-none focus:ring-2 focus:ring-ring";
@@ -45,6 +48,7 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
   const [wordsWithMeta, setWordsWithMeta] = useState<WordWithMeta[]>([]);
   const [importing, setImporting] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
+  const [classifying, setClassifying] = useState(false);
 
   const parseText = () => {
     const lines = rawText.trim().split("\n").filter(Boolean);
@@ -60,18 +64,47 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
     return words;
   };
 
-  const handleNext = () => {
+  const classifyWithAI = async (words: ParsedWord[]): Promise<WordWithMeta[]> => {
+    setClassifying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("classify-words", {
+        body: { words },
+      });
+
+      if (error) throw error;
+
+      const classifications = data?.classifications || [];
+      return words.map((w, i) => {
+        const c = classifications.find((cl: any) => cl.index === i);
+        return {
+          ...w,
+          part_of_speech: c?.part_of_speech || "rzeczownik",
+          category: c?.category || "ogólne",
+          difficulty: c?.difficulty || "advanced",
+        };
+      });
+    } catch (e) {
+      console.error("AI classification failed:", e);
+      toast.error("AI nie mogło sklasyfikować słów — ustawiono domyślne wartości");
+      return words.map(w => ({
+        ...w,
+        part_of_speech: "rzeczownik",
+        category: "ogólne",
+        difficulty: "advanced",
+      }));
+    } finally {
+      setClassifying(false);
+    }
+  };
+
+  const handleNext = async () => {
     const words = parseText();
     if (words.length === 0) {
       toast.error("Nie znaleziono żadnych słów. Użyj formatu: słowo | definicja | przykład");
       return;
     }
-    setWordsWithMeta(words.map(w => ({
-      ...w,
-      part_of_speech: "rzeczownik",
-      category: "ogólne",
-      difficulty: "advanced",
-    })));
+    const classified = await classifyWithAI(words);
+    setWordsWithMeta(classified);
     setStep("metadata");
   };
 
@@ -146,7 +179,7 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
           >
             <div className="flex items-center justify-between p-5 border-b border-border flex-shrink-0">
               <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-                {step === "paste" ? "Importuj słowa" : "Uzupełnij dane"}
+                {step === "paste" ? "Importuj słowa" : "Sprawdź klasyfikację AI"}
               </h2>
               <button onClick={handleClose} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
                 <X size={18} />
@@ -175,11 +208,20 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
                 </p>
                 <button
                   onClick={handleNext}
-                  disabled={!rawText.trim()}
+                  disabled={!rawText.trim() || classifying}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
                 >
-                  Dalej
-                  <ChevronRight size={16} />
+                  {classifying ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      AI klasyfikuje słowa...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={16} />
+                      Klasyfikuj z AI i dalej
+                    </>
+                  )}
                 </button>
               </div>
             ) : (
@@ -192,8 +234,14 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
                     <ChevronLeft size={14} />
                     Wróć do edycji
                   </button>
+                  <div className="flex items-start gap-2 p-3 rounded-xl bg-primary/5 border border-primary/20">
+                    <Sparkles size={14} className="text-primary mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-muted-foreground">
+                      AI automatycznie dopasowało część mowy, kategorię i trudność. Sprawdź i popraw jeśli trzeba.
+                    </p>
+                  </div>
                   <p className="text-sm text-muted-foreground">
-                    Ustaw dane dla każdego z <span className="font-semibold text-foreground">{wordsWithMeta.length}</span> słów:
+                    Słowa do importu: <span className="font-semibold text-foreground">{wordsWithMeta.length}</span>
                   </p>
 
                   {/* Apply to all */}
