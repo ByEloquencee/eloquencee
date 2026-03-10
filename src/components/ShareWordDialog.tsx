@@ -420,6 +420,16 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                   <Camera size={16} className={generating ? "animate-pulse" : ""} />
                   {generating ? "Generowanie..." : "Pobierz screenshot (Instagram)"}
                 </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleCompare}
+                  disabled={generating}
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 ${
+                    compareDataUrl ? "bg-destructive text-destructive-foreground" : "bg-secondary/50 text-muted-foreground hover:bg-secondary"
+                  }`}
+                >
+                  <Layers size={14} />
+                  {compareDataUrl ? "Ukryj porównanie" : "Porównaj podgląd vs PNG"}
               </>
             )}
           </div>
