@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Share2, Copy, Check, Camera, Sun, Moon } from "lucide-react";
+import { Share2, Copy, Check, Camera, Sun, Moon, Layers } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import type { PolishWord } from "@/data/words";
@@ -49,6 +49,8 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [screenshotTheme, setScreenshotTheme] = useState<ScreenshotTheme>("light");
+  const [compareDataUrl, setCompareDataUrl] = useState<string | null>(null);
+  const [compareOpacity, setCompareOpacity] = useState(0.5);
   const previewRef = useRef<HTMLDivElement>(null);
   const captureRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
@@ -178,6 +180,44 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
       setGenerating(false);
     }
   };
+  const handleCompare = async () => {
+    if (compareDataUrl) {
+      setCompareDataUrl(null);
+      return;
+    }
+    if (!captureRef.current) return;
+    setGenerating(true);
+    try {
+      const sourceEl = captureRef.current;
+      const cloneEl = sourceEl.cloneNode(true) as HTMLDivElement;
+      cloneEl.style.transform = "none";
+      cloneEl.style.position = "fixed";
+      cloneEl.style.top = "0";
+      cloneEl.style.left = "-99999px";
+      cloneEl.style.margin = "0";
+      cloneEl.style.zIndex = "-1";
+      cloneEl.style.pointerEvents = "none";
+      document.body.appendChild(cloneEl);
+
+      if (document.fonts?.ready) await document.fonts.ready;
+      await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+
+      const canvas = await html2canvas(cloneEl, {
+        scale: 1,
+        useCORS: true,
+        backgroundColor: null,
+        width: 1080,
+        height: 1080,
+        x: 0, y: 0, scrollX: 0, scrollY: 0,
+      });
+      cloneEl.remove();
+      setCompareDataUrl(canvas.toDataURL("image/png"));
+    } catch (e) {
+      console.error("Compare failed:", e);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   const examples = word.example.split("\n").filter(Boolean);
   const t = themes[screenshotTheme];
@@ -270,7 +310,40 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     ELOQUENCEE
                   </p>
                 </div>
+                {/* Compare overlay */}
+                {compareDataUrl && (
+                  <img
+                    src={compareDataUrl}
+                    alt="Screenshot comparison"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      opacity: compareOpacity,
+                      pointerEvents: "none",
+                      mixBlendMode: "difference",
+                    }}
+                  />
+                )}
               </div>
+              {/* Opacity slider for compare */}
+              {compareDataUrl && (
+                <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>PNG</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={compareOpacity}
+                    onChange={(e) => setCompareOpacity(Number(e.target.value))}
+                    className="flex-1 h-1.5 accent-primary"
+                  />
+                  <span>Podgląd</span>
+                </div>
+              )}
             </div>
           )}
 
@@ -346,6 +419,17 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                 >
                   <Camera size={16} className={generating ? "animate-pulse" : ""} />
                   {generating ? "Generowanie..." : "Pobierz screenshot (Instagram)"}
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleCompare}
+                  disabled={generating}
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 ${
+                    compareDataUrl ? "bg-destructive text-destructive-foreground" : "bg-secondary/50 text-muted-foreground hover:bg-secondary"
+                  }`}
+                >
+                  <Layers size={14} />
+                  {compareDataUrl ? "Ukryj porównanie" : "Porównaj podgląd vs PNG"}
                 </motion.button>
               </>
             )}
