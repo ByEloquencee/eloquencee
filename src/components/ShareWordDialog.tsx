@@ -110,14 +110,20 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
       const prevTransform = el.style.transform;
       el.style.transform = "none";
 
+      // Ensure fonts/layout are fully settled before capture
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      );
+
       const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
         backgroundColor: null,
         width: 1080,
         height: 1080,
-        windowWidth: 1080,
-        windowHeight: 1080,
         x: 0,
         y: 0,
         scrollX: 0,
