@@ -59,6 +59,25 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   const shareText = `✨ ${word.word}\n\n📖 ${word.definition}\n\n💬 '${word.example}'\n\n— Eloquencee`;
   const isDark = screenshotTheme === "dark";
 
+  useEffect(() => {
+    if (!isModerator || !open) return;
+
+    const container = previewContainerRef.current;
+    const preview = previewRef.current;
+    if (!container || !preview) return;
+
+    const updateScale = () => {
+      const parentWidth = container.clientWidth || 1080;
+      preview.style.setProperty("--preview-scale", String(parentWidth / 1080));
+    };
+
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, [isModerator, open]);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(shareText);
