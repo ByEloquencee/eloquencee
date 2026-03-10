@@ -83,7 +83,12 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
     if (!screenshotRef.current || generating) return;
     setGenerating(true);
     try {
-      const canvas = await html2canvas(screenshotRef.current, {
+      const el = screenshotRef.current;
+      // Temporarily reset scale so html2canvas captures at true 1080×1080
+      const prevTransform = el.style.transform;
+      el.style.transform = "none";
+
+      const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
         backgroundColor: null,
@@ -92,6 +97,9 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         windowWidth: 1080,
         windowHeight: 1080,
       });
+
+      // Restore preview scale
+      el.style.transform = prevTransform;
 
       // Wrap toBlob in a Promise so we stay in the async chain —
       // iOS Safari requires navigator.share() to be called within
