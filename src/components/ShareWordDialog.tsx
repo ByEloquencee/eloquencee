@@ -180,8 +180,46 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
       setGenerating(false);
     }
   };
+  const handleCompare = async () => {
+    if (compareDataUrl) {
+      setCompareDataUrl(null);
+      return;
+    }
+    if (!captureRef.current) return;
+    setGenerating(true);
+    try {
+      const sourceEl = captureRef.current;
+      const cloneEl = sourceEl.cloneNode(true) as HTMLDivElement;
+      cloneEl.style.transform = "none";
+      cloneEl.style.position = "fixed";
+      cloneEl.style.top = "0";
+      cloneEl.style.left = "-99999px";
+      cloneEl.style.margin = "0";
+      cloneEl.style.zIndex = "-1";
+      cloneEl.style.pointerEvents = "none";
+      document.body.appendChild(cloneEl);
 
-  const examples = word.example.split("\n").filter(Boolean);
+      if (document.fonts?.ready) await document.fonts.ready;
+      await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+
+      const canvas = await html2canvas(cloneEl, {
+        scale: 1,
+        useCORS: true,
+        backgroundColor: null,
+        width: 1080,
+        height: 1080,
+        x: 0, y: 0, scrollX: 0, scrollY: 0,
+      });
+      cloneEl.remove();
+      setCompareDataUrl(canvas.toDataURL("image/png"));
+    } catch (e) {
+      console.error("Compare failed:", e);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+
   const t = themes[screenshotTheme];
 
   return (
