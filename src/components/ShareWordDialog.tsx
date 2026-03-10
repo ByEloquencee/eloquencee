@@ -59,27 +59,23 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
   useEffect(() => {
     if (!isModerator || !open || !word) return;
 
-    // Small delay to ensure refs are mounted after render
-    const timer = setTimeout(() => {
-      const container = previewContainerRef.current;
-      const preview = previewRef.current;
-      if (!container || !preview) return;
-      captureRef.current = preview;
+    const container = previewContainerRef.current;
+    const preview = previewRef.current;
+    if (!container || !preview) return;
 
-      const updateScale = () => {
-        const parentWidth = container.clientWidth || 1080;
-        const scale = parentWidth / 1080;
-        preview.style.transform = `scale(${scale})`;
-      };
+    captureRef.current = preview;
 
-      updateScale();
-      const observer = new ResizeObserver(updateScale);
-      observer.observe(container);
+    const updateScale = () => {
+      const parentWidth = container.clientWidth || 1080;
+      const scale = parentWidth / 1080;
+      preview.style.transform = `scale(${scale})`;
+    };
 
-      return () => observer.disconnect();
-    }, 50);
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(container);
 
-    return () => clearTimeout(timer);
+    return () => observer.disconnect();
   }, [isModerator, open, word]);
 
   if (!word) return null;
@@ -112,10 +108,18 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
     if (!captureRef.current || generating) return;
     setGenerating(true);
     try {
-      const el = captureRef.current;
-      // Temporarily reset scale so html2canvas captures at true 1080×1080
-      const prevTransform = el.style.transform;
-      el.style.transform = "none";
+      const sourceEl = captureRef.current;
+      const cloneEl = sourceEl.cloneNode(true) as HTMLDivElement;
+
+      cloneEl.style.transform = "none";
+      cloneEl.style.position = "fixed";
+      cloneEl.style.top = "0";
+      cloneEl.style.left = "-99999px";
+      cloneEl.style.margin = "0";
+      cloneEl.style.zIndex = "-1";
+      cloneEl.style.pointerEvents = "none";
+
+      document.body.appendChild(cloneEl);
 
       // Ensure fonts/layout are fully settled before capture
       if (document.fonts?.ready) {
@@ -125,7 +129,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
       );
 
-      const canvas = await html2canvas(el, {
+      const canvas = await html2canvas(cloneEl, {
         scale: 2,
         useCORS: true,
         backgroundColor: null,
@@ -137,8 +141,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
         scrollY: 0,
       });
 
-      // Restore preview scale
-      el.style.transform = prevTransform;
+      cloneEl.remove();
 
       // Wrap toBlob in a Promise so we stay in the async chain —
       // iOS Safari requires navigator.share() to be called within
