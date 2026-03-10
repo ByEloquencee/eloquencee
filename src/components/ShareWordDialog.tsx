@@ -349,7 +349,7 @@ export function ShareWordDialog({ word, open, onClose }: ShareWordDialogProps) {
                     </p>
                   )}
                   <div style={{ width: "100%", background: t.defBg, borderRadius: 24, padding: "20px 40px 24px", marginBottom: 18, flexShrink: 0 }}>
-                    <p style={{ fontSize: 32, lineHeight: 1.45, color: t.definition, textAlign: "center", fontWeight: 500, transform: "translateY(-8px)" }}>
+                    <p style={{ fontSize: 32, lineHeight: 1.45, color: t.definition, textAlign: "center", fontWeight: 500, transform: "translateY(-16px)" }}>
                       {word.definition}
                     </p>
                   </div>
