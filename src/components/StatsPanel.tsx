@@ -291,6 +291,9 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites }: StatsPanel
             </div>
           </motion.div>
 
+          {/* Daily notification card */}
+          <NotificationCard />
+
         </motion.div>
       </div>
     </div>
