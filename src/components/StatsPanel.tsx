@@ -206,7 +206,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
 
           {/* Projection */}
           <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4">
-            <p className="text-sm font-semibold mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="text-sm font-semibold mb-1.5">
               Prognoza nauki
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
