@@ -36,7 +36,7 @@ function NotificationCard() {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-sm font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="text-sm font-semibold">
               Przypomnienia
             </p>
             <button
