@@ -603,6 +603,7 @@ const Index = () => {
         onClose={() => setAuthOpen(false)}
         onAddWord={() => setAddWordOpen(true)}
         onCreateFolder={() => setCreateFolderOpen(true)}
+        onSuggestWord={() => setSuggestWordOpen(true)}
       />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <FlashcardSetCreator
