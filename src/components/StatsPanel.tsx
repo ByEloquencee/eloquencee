@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Flame, Target, BookOpen, TrendingUp, Trophy, Bell, Smartphone } from "lucide-react";
 import { useState } from "react";
 import type { DayRecord } from "@/hooks/use-learning-history";
+import { AchievementsBadges } from "@/components/AchievementsBadges";
 
 interface StatsPanelProps {
   todayCount: number;
