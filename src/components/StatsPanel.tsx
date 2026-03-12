@@ -100,7 +100,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
   return (
     <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
       <div className="px-1 pb-3">
-        <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+        <h2 className="text-lg font-semibold">
           Twój progres
         </h2>
         <p className="text-xs text-muted-foreground">Statystyki nauki słówek</p>
