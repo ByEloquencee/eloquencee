@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -71,6 +71,7 @@ function pickWeightedWord(
 }
 
 const Index = () => {
+  const [page0Tab, setPage0Tab] = useState<"stats" | "admin">("stats");
   const { isDark, toggle: toggleTheme } = useTheme();
   const { user } = useAuth();
   const { profile, updateProfile } = useProfile();
@@ -473,20 +474,46 @@ const Index = () => {
               snapToActivePage();
             }}
           >
-            {/* Page 0: Stats panel (or Admin for moderators) */}
-            {isModerator ? (
-              <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
-                <AdminPanel />
+            {/* Page 0: Stats panel with optional Admin tab for moderators */}
+            <div className="w-full h-full min-h-0 flex-shrink-0 flex flex-col items-center px-4 pt-2 overflow-hidden">
+              {isModerator && (
+                <div className="w-full max-w-lg flex gap-2 mb-3">
+                  <button
+                    onClick={() => setPage0Tab("stats")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
+                      page0Tab === "stats"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    <BarChart3 size={16} />
+                    Twój progres
+                  </button>
+                  <button
+                    onClick={() => setPage0Tab("admin")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
+                      page0Tab === "admin"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    <Shield size={16} />
+                    Panel moderatora
+                  </button>
+                </div>
+              )}
+              <div className="flex-1 w-full min-h-0 flex items-start justify-center overflow-hidden">
+                {isModerator && page0Tab === "admin" ? (
+                  <AdminPanel />
+                ) : (
+                  <StatsPanel
+                    todayCount={todayCount}
+                    dailyGoal={profile?.daily_goal ?? 5}
+                    totalFavorites={favoriteWords.length}
+                  />
+                )}
               </div>
-            ) : (
-              <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
-                <StatsPanel
-                  todayCount={todayCount}
-                  dailyGoal={profile?.daily_goal ?? 5}
-                  totalFavorites={favoriteWords.length}
-                />
-              </div>
-            )}
+            </div>
             {/* Word card page */}
             <div className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden">
               {filteredWords.length === 0 ? (
@@ -587,7 +614,7 @@ const Index = () => {
         </div>
         <p className="text-xs text-muted-foreground">
           {activePage === 0
-            ? (isModerator ? "Panel moderatora" : "Twój progres")
+            ? (isModerator && page0Tab === "admin" ? "Panel moderatora" : "Twój progres")
             : activePage === 2
               ? "Fiszki i zestawy"
               : activeFolderId
