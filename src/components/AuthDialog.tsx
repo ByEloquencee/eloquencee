@@ -145,6 +145,13 @@ export function AuthDialog({ open, onClose, onAddWord, onCreateFolder, onSuggest
                     <FolderPlus size={16} className="text-primary flex-shrink-0" />
                     <span className="text-sm font-medium">Utwórz folder</span>
                   </button>
+                  <button
+                    onClick={() => { onClose(); onSuggestWord?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+                  >
+                    <Lightbulb size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Zaproponuj słowo</span>
+                  </button>
                 </div>
 
                 <p className="text-xs text-muted-foreground">
