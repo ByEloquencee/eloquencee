@@ -198,7 +198,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
                 <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
                   <Icon size={14} className="text-muted-foreground" />
                 </div>
-                <p className="text-lg font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>{value}</p>
+                <p className="text-lg font-bold text-foreground">{value}</p>
                 <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
               </div>
             ))}
