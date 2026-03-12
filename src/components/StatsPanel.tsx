@@ -132,7 +132,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">Dziś</span>
               </div>
-              <p className="text-3xl font-bold" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="text-3xl font-bold">
                 <span className="text-foreground">{todayCount}</span>
                 <span className="text-base text-muted-foreground font-normal">/{dailyGoal}</span>
               </p>
