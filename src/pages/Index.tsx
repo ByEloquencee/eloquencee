@@ -614,7 +614,7 @@ const Index = () => {
         </div>
         <p className="text-xs text-muted-foreground">
           {activePage === 0
-            ? (isModerator ? "Panel moderatora" : "Twój progres")
+            ? (isModerator && page0Tab === "admin" ? "Panel moderatora" : "Twój progres")
             : activePage === 2
               ? "Fiszki i zestawy"
               : activeFolderId
