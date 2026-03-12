@@ -99,6 +99,7 @@ const Index = () => {
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [quizModeOpen, setQuizModeOpen] = useState(false);
+  const [suggestWordOpen, setSuggestWordOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
