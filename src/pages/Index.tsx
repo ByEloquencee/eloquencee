@@ -78,6 +78,7 @@ const Index = () => {
   const { profile, updateProfile } = useProfile();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { todayCount, increment: incrementProgress, decrement: decrementProgress } = useDailyProgress();
+  const { weekData, streak, recordToday } = useLearningHistory();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const { folders, createFolder, deleteFolder, toggleWordInFolder } = useFolders();
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
