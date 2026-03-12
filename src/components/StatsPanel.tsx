@@ -1,11 +1,23 @@
 import { motion } from "framer-motion";
-import { Smartphone } from "lucide-react";
+import { Flame, Target, BookOpen, TrendingUp, Trophy, Bell, Smartphone } from "lucide-react";
 import { useState } from "react";
+import type { DayRecord } from "@/hooks/use-learning-history";
 
 interface StatsPanelProps {
   todayCount: number;
   dailyGoal: number;
   totalFavorites: number;
+  weekData?: DayRecord[];
+  streak?: number;
+}
+
+const DAY_LABELS = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Ndz"];
+
+function getDayLabel(dateStr: string) {
+  const d = new Date(dateStr + "T12:00:00");
+  // JS getDay(): 0=Sun, 1=Mon...
+  const jsDay = d.getDay();
+  return DAY_LABELS[jsDay === 0 ? 6 : jsDay - 1];
 }
 
 function NotificationCard() {
@@ -13,19 +25,15 @@ function NotificationCard() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.5 }}
-      className="rounded-2xl bg-gradient-to-br from-primary/8 via-card to-accent/8 border-[3px] border-foreground/15 p-4 mt-4 shadow-[4px_4px_0px_0px_hsl(var(--foreground)/0.08)]"
+      transition={{ duration: 0.3, delay: 0.4 }}
+      className="rounded-2xl bg-card border border-border p-4 mt-3"
     >
       <div className="flex items-start gap-3">
-        <motion.div
-          animate={enabled ? { rotate: [0, -10, 10, -5, 0] } : {}}
-          transition={{ duration: 0.6, repeat: enabled ? Infinity : 0, repeatDelay: 2.5 }}
-          className="text-3xl flex-shrink-0"
-        >
-          🔔
-        </motion.div>
+        <div className="p-2 rounded-xl bg-secondary">
+          <Bell size={18} className="text-muted-foreground" />
+        </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
             <p className="text-sm font-semibold" style={{ fontFamily: "var(--font-display)" }}>
@@ -33,13 +41,13 @@ function NotificationCard() {
             </p>
             <button
               onClick={() => setEnabled(!enabled)}
-              className={`relative w-11 h-6 rounded-full border-[2.5px] border-foreground/20 transition-colors duration-300 cursor-pointer ${
+              className={`relative w-10 h-[22px] rounded-full transition-colors duration-300 cursor-pointer ${
                 enabled ? "bg-primary" : "bg-muted"
               }`}
             >
               <motion.div
-                className="absolute top-[1px] w-[17px] h-[17px] rounded-full bg-background border-2 border-foreground/15 shadow-sm"
-                animate={{ left: enabled ? 20 : 1 }}
+                className="absolute top-[2px] w-[18px] h-[18px] rounded-full bg-background shadow-sm"
+                animate={{ left: enabled ? 19 : 2 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
             </button>
@@ -47,7 +55,7 @@ function NotificationCard() {
           <p className="text-xs text-muted-foreground leading-relaxed">
             {enabled
               ? "Będziesz otrzymywać codzienne przypomnienia o nauce!"
-              : "Włącz codzienne powiadomienia, aby nie zapomnieć o nauce słówek."}
+              : "Włącz powiadomienia, aby nie zapomnieć o nauce."}
           </p>
           {enabled && (
             <motion.div
@@ -55,8 +63,8 @@ function NotificationCard() {
               animate={{ opacity: 1, height: "auto" }}
               className="mt-2 flex items-center gap-1.5 text-[10px] text-primary font-medium"
             >
-              <Smartphone size={12} />
-              <span>Powiadomienia będą dostępne w wersji mobilnej</span>
+              <Smartphone size={11} />
+              <span>Dostępne w wersji mobilnej</span>
             </motion.div>
           )}
         </div>
@@ -65,173 +73,149 @@ function NotificationCard() {
   );
 }
 
-export function StatsPanel({ todayCount, dailyGoal, totalFavorites }: StatsPanelProps) {
-  const weeklyData = [
-    { day: "Pon", count: 4 },
-    { day: "Wt", count: 7 },
-    { day: "Śr", count: 3 },
-    { day: "Czw", count: 5 },
-    { day: "Pt", count: 6 },
-    { day: "Sob", count: 2 },
-    { day: "Ndz", count: todayCount },
-  ];
-  const maxCount = Math.max(...weeklyData.map(d => d.count), dailyGoal);
-  const weeklyTotal = weeklyData.reduce((s, d) => s + d.count, 0);
+export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [], streak = 0 }: StatsPanelProps) {
+  const displayData = weekData.length > 0
+    ? weekData
+    : Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        return { date: d.toISOString().slice(0, 10), count: 0 };
+      });
+
+  const weeklyTotal = displayData.reduce((s, d) => s + d.count, 0);
+  const maxCount = Math.max(...displayData.map(d => d.count), dailyGoal, 1);
   const avgDaily = Math.round(weeklyTotal / 7 * 10) / 10;
-  const streak = 5;
   const monthProjection = Math.round(avgDaily * 30);
+  const goalPercent = Math.min((todayCount / dailyGoal) * 100, 100);
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
   };
   const itemVariants = {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+    hidden: { opacity: 0, y: 12 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
-
-  const goalPercent = Math.min((todayCount / dailyGoal) * 100, 100);
-
-  // Shared cartoon card style
-  const cardClass = "rounded-2xl border-[3px] border-foreground/15 shadow-[4px_4px_0px_0px_hsl(var(--foreground)/0.08)]";
 
   return (
     <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
       <div className="px-1 pb-3">
-        <div className="flex items-center gap-2.5">
-          <span className="text-2xl">📊</span>
-          <div>
-            <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-              Twój progres
-            </h2>
-            <p className="text-xs text-muted-foreground">Statystyki nauki słówek</p>
-          </div>
-        </div>
+        <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+          Twój progres
+        </h2>
+        <p className="text-xs text-muted-foreground">Statystyki nauki słówek</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-1 pb-4 space-y-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex-1 overflow-y-auto px-1 pb-4 space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
 
-          {/* Streak + Today */}
-          <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 mb-4">
-            <div className={`relative overflow-hidden bg-gradient-to-br from-primary/12 to-primary/4 p-4 ${cardClass}`}>
-              <span className="absolute -top-1 -right-1 text-4xl opacity-80">🔥</span>
-              <p className="text-3xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>{streak}</p>
-              <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">Dni z rzędu</p>
+          {/* Streak + Today's goal */}
+          <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 mb-3">
+            <div className="rounded-2xl bg-card border border-border p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-lg bg-primary/10">
+                  <Flame size={16} className="text-primary" />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium">Seria</span>
+              </div>
+              <p className="text-3xl font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
+                {streak}
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {streak === 1 ? "dzień" : streak >= 2 && streak <= 4 ? "dni z rzędu" : "dni z rzędu"}
+              </p>
             </div>
-            <div className={`relative overflow-hidden bg-gradient-to-br from-accent/12 to-accent/4 p-4 ${cardClass}`}>
-              <span className="absolute -top-1 -right-1 text-4xl opacity-70">🎯</span>
+            <div className="rounded-2xl bg-card border border-border p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-lg bg-primary/10">
+                  <Target size={16} className="text-primary" />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium">Dziś</span>
+              </div>
               <p className="text-3xl font-bold" style={{ fontFamily: "var(--font-display)" }}>
-                <span className="text-primary">{todayCount}</span>
+                <span className="text-foreground">{todayCount}</span>
                 <span className="text-base text-muted-foreground font-normal">/{dailyGoal}</span>
               </p>
-              <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">Dzisiejszy cel</p>
-              {/* Progress bar with thick outline */}
-              <div className="mt-2 h-3 rounded-full bg-secondary border-[2.5px] border-foreground/10 overflow-hidden">
+              <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${goalPercent}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  className="h-full rounded-full bg-primary"
                 />
               </div>
             </div>
           </motion.div>
 
           {/* Weekly chart */}
-          <motion.div variants={itemVariants} className={`bg-card p-4 mb-4 ${cardClass}`}>
+          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mb-3">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-semibold">📅 Ten tydzień</span>
-              <span className="text-xs text-muted-foreground font-medium bg-secondary border-2 border-foreground/10 px-2 py-0.5 rounded-full">{weeklyTotal} słów</span>
+              <span className="text-sm font-semibold" style={{ fontFamily: "var(--font-display)" }}>Ten tydzień</span>
+              <span className="text-xs text-muted-foreground font-medium bg-secondary px-2 py-0.5 rounded-full tabular-nums">
+                {weeklyTotal} słów
+              </span>
             </div>
-            <div className="flex items-end gap-2.5 h-28">
-              {weeklyData.map((d, i) => {
+            <div className="flex items-end gap-2 h-24">
+              {displayData.map((d, i) => {
                 const height = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
-                const isToday = i === weeklyData.length - 1;
+                const isToday = i === displayData.length - 1;
                 return (
-                  <div key={d.day} className="flex-1 flex flex-col items-center gap-1.5">
-                    <motion.span
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.08 + 0.3 }}
-                      className="text-[10px] font-bold text-muted-foreground"
-                    >
-                      {d.count}
-                    </motion.span>
-                    <div className="w-full relative rounded-xl overflow-hidden bg-secondary/60 border-[2.5px] border-foreground/8" style={{ height: "100%" }}>
+                  <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
+                    <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
+                      {d.count > 0 ? d.count : ""}
+                    </span>
+                    <div className="w-full relative rounded-lg bg-secondary/50" style={{ height: "100%" }}>
                       <motion.div
                         initial={{ height: 0 }}
-                        animate={{ height: `${Math.max(height, 6)}%` }}
-                        transition={{ duration: 0.7, delay: i * 0.08, ease: [0.34, 1.56, 0.64, 1] }}
+                        animate={{ height: `${Math.max(height, 4)}%` }}
+                        transition={{ duration: 0.5, delay: i * 0.05, ease: "easeOut" }}
                         className={`absolute bottom-0 w-full rounded-lg ${
-                          isToday
-                            ? "bg-gradient-to-t from-primary via-primary/80 to-accent/60"
-                            : "bg-gradient-to-t from-primary/35 to-primary/15"
+                          isToday ? "bg-primary" : "bg-primary/25"
                         }`}
                       />
                     </div>
-                    <span className={`text-[10px] font-semibold ${isToday ? "text-primary" : "text-muted-foreground"}`}>
-                      {d.day}
+                    <span className={`text-[10px] font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}>
+                      {getDayLabel(d.date)}
                     </span>
                   </div>
                 );
               })}
             </div>
             <div className="mt-3 flex items-center gap-1.5">
-              <div className="h-px flex-1 border-t-[2.5px] border-dashed border-primary/25" />
-              <span className="text-[10px] text-primary/60 font-semibold">cel: {dailyGoal}/dzień</span>
+              <div className="h-px flex-1 border-t border-dashed border-border" />
+              <span className="text-[10px] text-muted-foreground">cel: {dailyGoal}/dzień</span>
             </div>
           </motion.div>
 
-          {/* Stats cards */}
-          <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2.5 mb-4">
-            <motion.div
-              whileHover={{ y: -2, scale: 1.02 }}
-              className={`bg-card p-3 text-center ${cardClass}`}
-            >
-              <span className="text-2xl block mb-1">📚</span>
-              <p className="text-xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>{totalFavorites}</p>
-              <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-wider">Nauczone</p>
-            </motion.div>
-            <motion.div
-              whileHover={{ y: -2, scale: 1.02 }}
-              className={`bg-card p-3 text-center ${cardClass}`}
-            >
-              <span className="text-2xl block mb-1">📈</span>
-              <p className="text-xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>{avgDaily}</p>
-              <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-wider">Śr. dziennie</p>
-            </motion.div>
-            <motion.div
-              whileHover={{ y: -2, scale: 1.02 }}
-              className={`bg-card p-3 text-center ${cardClass}`}
-            >
-              <span className="text-2xl block mb-1">🏆</span>
-              <p className="text-xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>{monthProjection}</p>
-              <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-wider">Prognoza/mies.</p>
-            </motion.div>
-          </motion.div>
-
-          {/* Projection card */}
-          <motion.div variants={itemVariants} className={`bg-gradient-to-br from-primary/10 via-card to-accent/10 p-4 ${cardClass}`}>
-            <div className="flex items-start gap-3">
-              <motion.div
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                className="text-3xl flex-shrink-0"
-              >
-                🚀
-              </motion.div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold mb-1.5" style={{ fontFamily: "var(--font-display)" }}>Prognoza nauki</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Przy obecnym tempie ({avgDaily} słów/dzień) nauczysz się{" "}
-                  <span className="font-bold text-primary">{monthProjection} słów</span>{" "}
-                  w tym miesiącu i{" "}
-                  <span className="font-bold text-primary">{Math.round(avgDaily * 365)} słów</span>{" "}
-                  w ciągu roku!
-                </p>
+          {/* Summary stats */}
+          <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 mb-3">
+            {[
+              { icon: BookOpen, value: totalFavorites, label: "Nauczone" },
+              { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
+              { icon: Trophy, value: monthProjection, label: "Prognoza/mies." },
+            ].map(({ icon: Icon, value, label }) => (
+              <div key={label} className="rounded-2xl bg-card border border-border p-3 text-center">
+                <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
+                  <Icon size={14} className="text-muted-foreground" />
+                </div>
+                <p className="text-lg font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>{value}</p>
+                <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
               </div>
-            </div>
+            ))}
+          </motion.div>
+
+          {/* Projection */}
+          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4">
+            <p className="text-sm font-semibold mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
+              Prognoza nauki
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Przy obecnym tempie ({avgDaily} słów/dzień) nauczysz się{" "}
+              <span className="font-semibold text-foreground">{monthProjection} słów</span>{" "}
+              w tym miesiącu i{" "}
+              <span className="font-semibold text-foreground">{Math.round(avgDaily * 365)} słów</span>{" "}
+              w ciągu roku.
+            </p>
           </motion.div>
 
           <NotificationCard />

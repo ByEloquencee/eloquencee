@@ -225,6 +225,30 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_history: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          user_id: string
+          words_learned: number
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          user_id: string
+          words_learned?: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          user_id?: string
+          words_learned?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

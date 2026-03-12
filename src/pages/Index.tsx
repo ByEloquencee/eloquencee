@@ -36,6 +36,7 @@ import { useDailyProgress } from "@/hooks/use-daily-progress";
 import { useModerator } from "@/hooks/use-moderator";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
+import { useLearningHistory } from "@/hooks/use-learning-history";
 import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites";
@@ -77,6 +78,7 @@ const Index = () => {
   const { profile, updateProfile } = useProfile();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { todayCount, increment: incrementProgress, decrement: decrementProgress } = useDailyProgress();
+  const { weekData, streak, recordToday } = useLearningHistory();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const { folders, createFolder, deleteFolder, toggleWordInFolder } = useFolders();
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
@@ -167,6 +169,13 @@ const Index = () => {
 
   // Set default page for moderators (word card = page 1)
   // No need to redirect — all users start on page 1 (word cards)
+
+  // Sync todayCount to learning_history
+  useEffect(() => {
+    if (todayCount > 0) {
+      recordToday(todayCount);
+    }
+  }, [todayCount, recordToday]);
 
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
@@ -510,6 +519,8 @@ const Index = () => {
                     todayCount={todayCount}
                     dailyGoal={profile?.daily_goal ?? 5}
                     totalFavorites={favoriteWords.length}
+                    weekData={weekData}
+                    streak={streak}
                   />
                 )}
               </div>
