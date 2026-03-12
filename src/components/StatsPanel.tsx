@@ -36,7 +36,7 @@ function NotificationCard() {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-sm font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="text-sm font-semibold">
               Przypomnienia
             </p>
             <button
@@ -100,7 +100,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
   return (
     <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
       <div className="px-1 pb-3">
-        <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+        <h2 className="text-lg font-semibold">
           Twój progres
         </h2>
         <p className="text-xs text-muted-foreground">Statystyki nauki słówek</p>
@@ -118,7 +118,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">Seria</span>
               </div>
-              <p className="text-3xl font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="text-3xl font-bold text-foreground">
                 {streak}
               </p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
@@ -132,7 +132,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">Dziś</span>
               </div>
-              <p className="text-3xl font-bold" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="text-3xl font-bold">
                 <span className="text-foreground">{todayCount}</span>
                 <span className="text-base text-muted-foreground font-normal">/{dailyGoal}</span>
               </p>
@@ -150,7 +150,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
           {/* Weekly chart */}
           <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mb-3">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-semibold" style={{ fontFamily: "var(--font-display)" }}>Ten tydzień</span>
+              <span className="text-sm font-semibold">Ten tydzień</span>
               <span className="text-xs text-muted-foreground font-medium bg-secondary px-2 py-0.5 rounded-full tabular-nums">
                 {weeklyTotal} słów
               </span>
@@ -198,7 +198,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
                 <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
                   <Icon size={14} className="text-muted-foreground" />
                 </div>
-                <p className="text-lg font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>{value}</p>
+                <p className="text-lg font-bold text-foreground">{value}</p>
                 <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
               </div>
             ))}
@@ -206,7 +206,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
 
           {/* Projection */}
           <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4">
-            <p className="text-sm font-semibold mb-1.5" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="text-sm font-semibold mb-1.5">
               Prognoza nauki
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
