@@ -134,7 +134,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites }: StatsPanel
   };
   const itemVariants = {
     hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
 
   const goalPercent = Math.min((todayCount / dailyGoal) * 100, 100);
