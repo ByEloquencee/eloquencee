@@ -114,6 +114,82 @@ const RocketCartoon = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
+const BellCartoon = ({ className = "" }: { className?: string }) => (
+  <svg viewBox="0 0 48 48" className={className} fill="none">
+    <ellipse cx="24" cy="42" rx="8" ry="2" fill="hsl(var(--primary) / 0.15)" />
+    <path d="M14 30 Q14 18 24 14 Q34 18 34 30 L36 34 H12 L14 30z" fill="hsl(var(--primary) / 0.25)" stroke="hsl(var(--primary) / 0.6)" strokeWidth="1.5" strokeLinejoin="round" />
+    <rect x="10" y="34" width="28" height="3" rx="1.5" fill="hsl(var(--primary) / 0.4)" stroke="hsl(var(--primary) / 0.6)" strokeWidth="1" />
+    <path d="M20 37 Q20 41 24 41 Q28 41 28 37" stroke="hsl(var(--primary) / 0.5)" strokeWidth="1.5" fill="none" />
+    <line x1="24" y1="10" x2="24" y2="14" stroke="hsl(var(--primary) / 0.5)" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="24" cy="9" r="2" fill="hsl(var(--primary) / 0.6)" />
+    {/* Cartoon eyes */}
+    <circle cx="21" cy="26" r="1.5" fill="hsl(var(--foreground))" />
+    <circle cx="27" cy="26" r="1.5" fill="hsl(var(--foreground))" />
+    <circle cx="21.5" cy="25.5" r="0.6" fill="white" />
+    <circle cx="27.5" cy="25.5" r="0.6" fill="white" />
+    <path d="M22 30 Q24 31.5 26 30" stroke="hsl(var(--foreground))" strokeWidth="1" strokeLinecap="round" fill="none" />
+    {/* Sound waves */}
+    <path d="M36 24 Q38 24 38 22" stroke="hsl(var(--primary) / 0.4)" strokeWidth="1" strokeLinecap="round" fill="none" />
+    <path d="M37 28 Q40 28 40 25" stroke="hsl(var(--primary) / 0.3)" strokeWidth="1" strokeLinecap="round" fill="none" />
+  </svg>
+);
+
+function NotificationCard() {
+  const [enabled, setEnabled] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.5 }}
+      className="rounded-2xl bg-gradient-to-br from-primary/8 via-card to-accent/8 border-2 border-border p-4 mt-4"
+    >
+      <div className="flex items-start gap-3">
+        <motion.div
+          animate={enabled ? { rotate: [0, -10, 10, -5, 0] } : {}}
+          transition={{ duration: 0.6, repeat: enabled ? Infinity : 0, repeatDelay: 2.5 }}
+        >
+          <BellCartoon className="w-12 h-12 flex-shrink-0" />
+        </motion.div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-sm font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+              Przypomnienia 🔔
+            </p>
+            <button
+              onClick={() => setEnabled(!enabled)}
+              className={`relative w-11 h-6 rounded-full transition-colors duration-300 cursor-pointer ${
+                enabled ? "bg-primary" : "bg-muted"
+              }`}
+            >
+              <motion.div
+                className="absolute top-0.5 w-5 h-5 rounded-full bg-background shadow-md"
+                animate={{ left: enabled ? 22 : 2 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {enabled
+              ? "Będziesz otrzymywać codzienne przypomnienia o nauce!"
+              : "Włącz codzienne powiadomienia, aby nie zapomnieć o nauce słówek."}
+          </p>
+          {enabled && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="mt-2 flex items-center gap-1.5 text-[10px] text-primary font-medium"
+            >
+              <Smartphone size={12} />
+              <span>Powiadomienia będą dostępne w wersji mobilnej</span>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function StatsPanel({ todayCount, dailyGoal, totalFavorites }: StatsPanelProps) {
   const weeklyData = [
     { day: "Pon", count: 4 },
