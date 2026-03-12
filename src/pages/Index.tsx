@@ -71,6 +71,7 @@ function pickWeightedWord(
 }
 
 const Index = () => {
+  const [page0Tab, setPage0Tab] = useState<"stats" | "admin">("stats");
   const { isDark, toggle: toggleTheme } = useTheme();
   const { user } = useAuth();
   const { profile, updateProfile } = useProfile();
