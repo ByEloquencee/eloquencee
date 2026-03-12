@@ -20,7 +20,7 @@ const difficultyOptions: { value: DifficultyLevel; label: string; desc: string }
   { value: "advanced", label: "Zaawansowany", desc: "Pełne bogactwo języka" },
 ];
 
-export function AuthDialog({ open, onClose, onAddWord, onCreateFolder }: AuthDialogProps) {
+export function AuthDialog({ open, onClose, onAddWord, onCreateFolder, onSuggestWord }: AuthDialogProps) {
   const { user, signUp, signIn, signOut } = useAuth();
   const { profile, updateProfile } = useProfile();
   const [mode, setMode] = useState<"login" | "register">("login");
