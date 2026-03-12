@@ -11,6 +11,7 @@ interface AuthDialogProps {
   onClose: () => void;
   onAddWord?: () => void;
   onCreateFolder?: () => void;
+  onSuggestWord?: () => void;
 }
 
 const difficultyOptions: { value: DifficultyLevel; label: string; desc: string }[] = [
