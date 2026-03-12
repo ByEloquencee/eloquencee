@@ -473,14 +473,18 @@ const Index = () => {
               snapToActivePage();
             }}
           >
-            {/* Page 0: Admin panel (moderators) or Suggest word (non-moderators) */}
+            {/* Page 0: Stats panel (or Admin for moderators) */}
             {isModerator ? (
               <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
                 <AdminPanel />
               </div>
             ) : (
               <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
-                <SuggestWordPanel />
+                <StatsPanel
+                  todayCount={todayCount}
+                  dailyGoal={profile?.daily_goal ?? 5}
+                  totalFavorites={favoriteWords.length}
+                />
               </div>
             )}
             {/* Word card page */}
