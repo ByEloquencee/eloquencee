@@ -170,6 +170,13 @@ const Index = () => {
   // Set default page for moderators (word card = page 1)
   // No need to redirect — all users start on page 1 (word cards)
 
+  // Sync todayCount to learning_history
+  useEffect(() => {
+    if (todayCount > 0) {
+      recordToday(todayCount);
+    }
+  }, [todayCount, recordToday]);
+
   useEffect(() => {
     if (user && profile && !profile.onboarding_done) {
       setShowOnboarding(true);
