@@ -219,6 +219,11 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
             </p>
           </motion.div>
 
+          {/* Achievements */}
+          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mt-3">
+            <AchievementsBadges totalWords={totalFavorites} streak={streak} />
+          </motion.div>
+
           <NotificationCard />
 
         </motion.div>
