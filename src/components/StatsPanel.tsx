@@ -118,7 +118,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">Seria</span>
               </div>
-              <p className="text-3xl font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="text-3xl font-bold text-foreground">
                 {streak}
               </p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
