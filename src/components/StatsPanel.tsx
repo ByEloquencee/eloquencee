@@ -150,7 +150,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
           {/* Weekly chart */}
           <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mb-3">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-semibold" style={{ fontFamily: "var(--font-display)" }}>Ten tydzień</span>
+              <span className="text-sm font-semibold">Ten tydzień</span>
               <span className="text-xs text-muted-foreground font-medium bg-secondary px-2 py-0.5 rounded-full tabular-nums">
                 {weeklyTotal} słów
               </span>
