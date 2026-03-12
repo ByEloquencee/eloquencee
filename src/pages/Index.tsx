@@ -21,7 +21,8 @@ import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets"
 import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { ExercisesView } from "@/components/ExercisesView";
 import { AdminPanel } from "@/components/AdminPanel";
-import { SuggestWordPanel } from "@/components/SuggestWordPanel";
+import { SuggestWordDialog } from "@/components/SuggestWordDialog";
+import { StatsPanel } from "@/components/StatsPanel";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
@@ -98,6 +99,7 @@ const Index = () => {
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [quizModeOpen, setQuizModeOpen] = useState(false);
+  const [suggestWordOpen, setSuggestWordOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
@@ -471,14 +473,18 @@ const Index = () => {
               snapToActivePage();
             }}
           >
-            {/* Page 0: Admin panel (moderators) or Suggest word (non-moderators) */}
+            {/* Page 0: Stats panel (or Admin for moderators) */}
             {isModerator ? (
               <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
                 <AdminPanel />
               </div>
             ) : (
               <div className="w-full h-full min-h-0 flex-shrink-0 flex items-start justify-center px-4 pt-2 overflow-hidden">
-                <SuggestWordPanel />
+                <StatsPanel
+                  todayCount={todayCount}
+                  dailyGoal={profile?.daily_goal ?? 5}
+                  totalFavorites={favoriteWords.length}
+                />
               </div>
             )}
             {/* Word card page */}
@@ -581,7 +587,7 @@ const Index = () => {
         </div>
         <p className="text-xs text-muted-foreground">
           {activePage === 0
-            ? (isModerator ? "Panel moderatora" : "Zaproponuj słowo")
+            ? (isModerator ? "Panel moderatora" : "Twój progres")
             : activePage === 2
               ? "Fiszki i zestawy"
               : activeFolderId
@@ -597,6 +603,7 @@ const Index = () => {
         onClose={() => setAuthOpen(false)}
         onAddWord={() => setAddWordOpen(true)}
         onCreateFolder={() => setCreateFolderOpen(true)}
+        onSuggestWord={() => setSuggestWordOpen(true)}
       />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <FlashcardSetCreator
@@ -670,6 +677,7 @@ const Index = () => {
           />
         </>
       )}
+      <SuggestWordDialog open={suggestWordOpen} onClose={() => setSuggestWordOpen(false)} />
     </div>
   );
 };

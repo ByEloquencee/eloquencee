@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap, Plus, FileText, FolderPlus } from "lucide-react";
+import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap, Plus, FileText, FolderPlus, Lightbulb } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile, type DifficultyLevel } from "@/hooks/use-profile";
@@ -11,6 +11,7 @@ interface AuthDialogProps {
   onClose: () => void;
   onAddWord?: () => void;
   onCreateFolder?: () => void;
+  onSuggestWord?: () => void;
 }
 
 const difficultyOptions: { value: DifficultyLevel; label: string; desc: string }[] = [
@@ -19,7 +20,7 @@ const difficultyOptions: { value: DifficultyLevel; label: string; desc: string }
   { value: "advanced", label: "Zaawansowany", desc: "Pełne bogactwo języka" },
 ];
 
-export function AuthDialog({ open, onClose, onAddWord, onCreateFolder }: AuthDialogProps) {
+export function AuthDialog({ open, onClose, onAddWord, onCreateFolder, onSuggestWord }: AuthDialogProps) {
   const { user, signUp, signIn, signOut } = useAuth();
   const { profile, updateProfile } = useProfile();
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -143,6 +144,13 @@ export function AuthDialog({ open, onClose, onAddWord, onCreateFolder }: AuthDia
                   >
                     <FolderPlus size={16} className="text-primary flex-shrink-0" />
                     <span className="text-sm font-medium">Utwórz folder</span>
+                  </button>
+                  <button
+                    onClick={() => { onClose(); onSuggestWord?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+                  >
+                    <Lightbulb size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Zaproponuj słowo</span>
                   </button>
                 </div>
 
