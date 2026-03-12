@@ -677,6 +677,7 @@ const Index = () => {
           />
         </>
       )}
+      <SuggestWordDialog open={suggestWordOpen} onClose={() => setSuggestWordOpen(false)} />
     </div>
   );
 };
