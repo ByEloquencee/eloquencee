@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Flame, Target, BookOpen, TrendingUp, Trophy, Bell, Smartphone } from "lucide-react";
 import { useState } from "react";
 import type { DayRecord } from "@/hooks/use-learning-history";
-import { AchievementsBadges } from "@/components/AchievementsBadges";
 
 interface StatsPanelProps {
   todayCount: number;
@@ -217,11 +216,6 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
               <span className="font-semibold text-foreground">{Math.round(avgDaily * 365)} słów</span>{" "}
               w ciągu roku.
             </p>
-          </motion.div>
-
-          {/* Achievements */}
-          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mt-3">
-            <AchievementsBadges totalWords={totalFavorites} streak={streak} />
           </motion.div>
 
           <NotificationCard />
