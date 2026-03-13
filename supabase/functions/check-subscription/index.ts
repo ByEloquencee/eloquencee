@@ -38,6 +38,24 @@ serve(async (req) => {
 
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    // Check DB first for manually granted premium (no Stripe needed)
+    const { data: dbSub } = await supabaseClient
+      .from("subscriptions")
+      .select("status, plan, current_period_end, stripe_customer_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (dbSub && dbSub.status === "active" && dbSub.plan === "premium" && !dbSub.stripe_customer_id) {
+      logStep("Manual premium found in DB");
+      return new Response(JSON.stringify({
+        subscribed: true,
+        plan: "premium",
+        subscription_end: dbSub.current_period_end,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
 
