@@ -172,7 +172,7 @@ function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => v
   );
 }
 
-export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [], streak = 0 }: StatsPanelProps) {
+export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed, weekData = [], streak = 0 }: StatsPanelProps) {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const displayData = weekData.length > 0
