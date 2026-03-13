@@ -258,8 +258,14 @@ const Index = () => {
 
   const preferredCategories = profile?.preferred_categories || [];
 
+  const dailyLimitReached = !isPremium && todayCount >= FREE_DAILY_LIMIT;
+
   const handleNext = useCallback(() => {
     if (filteredWords.length === 0) return;
+    if (!isPremium && todayCount >= FREE_DAILY_LIMIT) {
+      setPremiumOpen(true);
+      return;
+    }
     setHistory((prev) => [...prev, currentIndex]);
     setTotalViewed((prev: number) => {
       const next = prev + 1;
