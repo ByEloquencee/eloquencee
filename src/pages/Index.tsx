@@ -90,6 +90,12 @@ const Index = () => {
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [history, setHistory] = useState<number[]>([]);
+  const [totalViewed, setTotalViewed] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("eloquencee-total-viewed") || "0");
+      return typeof stored === "number" ? stored : 0;
+    } catch { return 0; }
+  });
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
