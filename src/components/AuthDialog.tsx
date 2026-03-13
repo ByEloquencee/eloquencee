@@ -175,6 +175,13 @@ export function AuthDialog({ open, onClose, onAddWord, onCreateFolder, onSuggest
                   />
                 </div>
                 <button
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+                  onClick={() => toast("Funkcja Premium będzie dostępna wkrótce!")}
+                >
+                  <Crown size={16} />
+                  Przejdź na Premium
+                </button>
+                <button
                   onClick={handleSignOut}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
                 >
