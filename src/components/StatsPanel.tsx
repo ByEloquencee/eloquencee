@@ -251,7 +251,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-semibold">Ten tydzień</span>
               <span className="text-xs text-muted-foreground font-medium bg-secondary px-2 py-0.5 rounded-full tabular-nums">
-                {weeklyTotal} słów
+                {weeklyTotal} polubionych
               </span>
             </div>
             <div className="flex items-end gap-2 h-24">
