@@ -37,6 +37,9 @@ import { useModerator } from "@/hooks/use-moderator";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { useLearningHistory } from "@/hooks/use-learning-history";
+import { useSubscription } from "@/hooks/use-subscription";
+import { PremiumDialog } from "@/components/PremiumDialog";
+import { WordLimitOverlay } from "@/components/WordLimitOverlay";
 import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites";
@@ -85,6 +88,10 @@ const Index = () => {
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
   const { hiddenIds, overrides } = useStaticWordManagement();
+  const { isPremium, loading: subLoading } = useSubscription();
+  const [premiumOpen, setPremiumOpen] = useState(false);
+
+  const FREE_DAILY_LIMIT = 15;
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
@@ -251,8 +258,14 @@ const Index = () => {
 
   const preferredCategories = profile?.preferred_categories || [];
 
+  const dailyLimitReached = !isPremium && todayCount >= FREE_DAILY_LIMIT;
+
   const handleNext = useCallback(() => {
     if (filteredWords.length === 0) return;
+    if (!isPremium && todayCount >= FREE_DAILY_LIMIT) {
+      setPremiumOpen(true);
+      return;
+    }
     setHistory((prev) => [...prev, currentIndex]);
     setTotalViewed((prev: number) => {
       const next = prev + 1;
@@ -264,7 +277,7 @@ const Index = () => {
     } else {
       setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
     }
-  }, [filteredWords, selectedCategories, preferredCategories, currentIndex]);
+  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount]);
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
@@ -538,7 +551,8 @@ const Index = () => {
               </div>
             </div>
             {/* Word card page */}
-            <div className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden">
+            <div className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden relative">
+              <WordLimitOverlay show={dailyLimitReached} onUpgrade={() => setPremiumOpen(true)} />
               {filteredWords.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -654,7 +668,10 @@ const Index = () => {
         onAddWord={() => setAddWordOpen(true)}
         onCreateFolder={() => setCreateFolderOpen(true)}
         onSuggestWord={() => setSuggestWordOpen(true)}
+        onOpenPremium={() => { setAuthOpen(false); setPremiumOpen(true); }}
+        isPremium={isPremium}
       />
+      <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <FlashcardSetCreator
         open={createSetOpen}
