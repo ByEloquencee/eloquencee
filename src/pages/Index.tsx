@@ -668,7 +668,10 @@ const Index = () => {
         onAddWord={() => setAddWordOpen(true)}
         onCreateFolder={() => setCreateFolderOpen(true)}
         onSuggestWord={() => setSuggestWordOpen(true)}
+        onOpenPremium={() => { setAuthOpen(false); setPremiumOpen(true); }}
+        isPremium={isPremium}
       />
+      <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <FlashcardSetCreator
         open={createSetOpen}
