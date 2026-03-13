@@ -32,7 +32,7 @@ function generateQuestion(word: PolishWord, pool: PolishWord[]) {
   return { definition: word.definition, correctId: word.id, options };
 }
 
-export function QuizView({ words, allWords, onExit }: QuizViewProps) {
+export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps) {
   const questions = useMemo(() => {
     const pool = allWords.length >= 4 ? allWords : words;
     return shuffle(words).map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
