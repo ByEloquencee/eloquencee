@@ -177,8 +177,8 @@ function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => v
 export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed, weekData = [], weekFavData = [], streak = 0, masteredCount = 0 }: StatsPanelProps) {
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const displayData = weekData.length > 0
-    ? weekData
+  const displayData = weekFavData.length > 0
+    ? weekFavData
     : Array.from({ length: 7 }, (_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - (6 - i));
