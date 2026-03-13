@@ -13,6 +13,7 @@ interface QuizViewProps {
   words: PolishWord[];
   allWords: PolishWord[];
   onExit: () => void;
+  onComplete?: (correctCount: number) => void;
 }
 
 function shuffle<T>(arr: T[]): T[] {
