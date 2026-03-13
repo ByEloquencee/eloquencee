@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Target, BookOpen, TrendingUp, Trophy, Bell, Clock, Crown, X } from "lucide-react";
+import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X } from "lucide-react";
 import { useState } from "react";
 import type { DayRecord } from "@/hooks/use-learning-history";
 
