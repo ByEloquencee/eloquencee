@@ -91,7 +91,7 @@ const Index = () => {
   const { isPremium, loading: subLoading } = useSubscription();
   const [premiumOpen, setPremiumOpen] = useState(false);
 
-  const FREE_DAILY_LIMIT = 15;
+  const FREE_DAILY_LIMIT = 10;
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
