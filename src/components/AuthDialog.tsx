@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap, Plus, FileText, FolderPlus, Lightbulb } from "lucide-react";
+import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap, Plus, FileText, FolderPlus, Lightbulb, Crown } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile, type DifficultyLevel } from "@/hooks/use-profile";
@@ -174,6 +174,13 @@ export function AuthDialog({ open, onClose, onAddWord, onCreateFolder, onSuggest
                     }}
                   />
                 </div>
+                <button
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+                  onClick={() => toast("Funkcja Premium będzie dostępna wkrótce!")}
+                >
+                  <Crown size={16} />
+                  Przejdź na Premium
+                </button>
                 <button
                   onClick={handleSignOut}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
