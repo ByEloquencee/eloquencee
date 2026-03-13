@@ -7,7 +7,7 @@ interface WordLimitOverlayProps {
 }
 
 const PERKS = [
-  { icon: Infinity, text: "Bez limitu słów dziennie" },
+  { icon: InfinityIcon, text: "Bez limitu słów dziennie" },
   { icon: GraduationCap, text: "Quizy i ćwiczenia bez ograniczeń" },
   { icon: Sparkles, text: "AI Chat do nauki słów" },
 ];

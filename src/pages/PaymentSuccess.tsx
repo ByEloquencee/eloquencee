@@ -79,7 +79,7 @@ export default function PaymentSuccess() {
             "Zaawansowane powiadomienia",
           ].map((benefit) => (
             <div key={benefit} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
+              <CheckCircle size={14} className="text-primary flex-shrink-0" />
               <span>{benefit}</span>
             </div>
           ))}
