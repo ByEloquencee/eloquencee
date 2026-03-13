@@ -530,6 +530,7 @@ const Index = () => {
                     todayCount={todayCount}
                     dailyGoal={profile?.daily_goal ?? 5}
                     totalFavorites={favoriteWords.length}
+                    totalViewed={totalViewed}
                     weekData={weekData}
                     streak={streak}
                   />
