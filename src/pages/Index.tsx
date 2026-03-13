@@ -551,7 +551,9 @@ const Index = () => {
                     totalFavorites={favoriteWords.length}
                     totalViewed={totalViewed}
                     weekData={weekData}
+                    weekFavData={weekFavData}
                     streak={streak}
+                    masteredCount={masteredCount}
                   />
                 )}
               </div>
