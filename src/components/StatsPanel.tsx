@@ -300,7 +300,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
           {/* Summary stats */}
           <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 mb-3">
             {[
-              { icon: BookOpen, value: totalFavorites, label: "Nauczone" },
+              { icon: BookOpen, value: masteredCount, label: "Nauczone" },
               { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
               { icon: Eye, value: totalViewed, label: "Przejrzane" },
             ].map(({ icon: Icon, value, label }) => (
