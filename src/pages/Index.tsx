@@ -277,7 +277,7 @@ const Index = () => {
     } else {
       setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
     }
-  }, [filteredWords, selectedCategories, preferredCategories, currentIndex]);
+  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount]);
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
