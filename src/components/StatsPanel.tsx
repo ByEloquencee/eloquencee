@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { Flame, Target, BookOpen, TrendingUp, Trophy, Bell, Smartphone } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Flame, Target, BookOpen, TrendingUp, Trophy, Bell, Clock, Crown, X } from "lucide-react";
 import { useState } from "react";
 import type { DayRecord } from "@/hooks/use-learning-history";
 
@@ -15,65 +15,165 @@ const DAY_LABELS = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Ndz"];
 
 function getDayLabel(dateStr: string) {
   const d = new Date(dateStr + "T12:00:00");
-  // JS getDay(): 0=Sun, 1=Mon...
   const jsDay = d.getDay();
   return DAY_LABELS[jsDay === 0 ? 6 : jsDay - 1];
 }
 
-function NotificationCard() {
-  const [enabled, setEnabled] = useState(false);
-
+function PremiumDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null;
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: 0.4 }}
-      className="rounded-2xl bg-card border border-border p-4 mt-3"
-    >
-      <div className="flex items-start gap-3">
-        <div className="p-2 rounded-xl bg-secondary">
-          <Bell size={18} className="text-muted-foreground" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
-            <p className="text-sm font-semibold">
-              Przypomnienia
-            </p>
-            <button
-              onClick={() => setEnabled(!enabled)}
-              className={`relative w-10 h-[22px] rounded-full transition-colors duration-300 cursor-pointer ${
-                enabled ? "bg-primary" : "bg-muted"
-              }`}
-            >
-              <motion.div
-                className="absolute top-[2px] w-[18px] h-[18px] rounded-full bg-background shadow-sm"
-                animate={{ left: enabled ? 19 : 2 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              />
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          onClick={(e) => e.stopPropagation()}
+          className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
+        >
+          <div className="flex items-center justify-between p-5 border-b border-border">
+            <div className="flex items-center gap-2">
+              <Crown size={18} className="text-primary" />
+              <h2 className="text-lg font-semibold">Premium</h2>
+            </div>
+            <button onClick={onClose} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
+              <X size={18} />
             </button>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {enabled
-              ? "Będziesz otrzymywać codzienne przypomnienia o nauce!"
-              : "Włącz powiadomienia, aby nie zapomnieć o nauce."}
-          </p>
-          {enabled && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className="mt-2 flex items-center gap-1.5 text-[10px] text-primary font-medium"
+          <div className="p-5 space-y-4">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Ta funkcja jest dostępna tylko dla użytkowników <span className="font-semibold text-foreground">Premium</span>. 
+              Wiele powiadomień dziennie oraz personalizacja godzin przypomnień to funkcje premium.
+            </p>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2">
+                <Bell size={14} className="text-primary" />
+                <span>Do 5 powiadomień dziennie</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock size={14} className="text-primary" />
+                <span>Ustawienie godzin powiadomień</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Crown size={14} className="text-primary" />
+                <span>Więcej funkcji wkrótce...</span>
+              </div>
+            </div>
+            <button
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+              onClick={onClose}
             >
-              <Smartphone size={11} />
-              <span>Dostępne w wersji mobilnej</span>
-            </motion.div>
-          )}
-        </div>
-      </div>
-    </motion.div>
+              Wkrótce dostępne
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [selectedCount, setSelectedCount] = useState(1);
+  const [premiumOpen, setPremiumOpen] = useState(false);
+  const countOptions = [1, 2, 3, 5];
+
+  if (!open) return null;
+
+  return (
+    <>
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
+          >
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <div className="flex items-center gap-2">
+                <Bell size={18} className="text-primary" />
+                <h2 className="text-lg font-semibold">Przypomnienia</h2>
+              </div>
+              <button onClick={onClose} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <p className="text-sm font-medium mb-2">Ile razy dziennie?</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {countOptions.map((count) => (
+                    <button
+                      key={count}
+                      onClick={() => {
+                        if (count > 1) {
+                          setPremiumOpen(true);
+                        } else {
+                          setSelectedCount(count);
+                        }
+                      }}
+                      className={`relative py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer border ${
+                        selectedCount === count
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-secondary text-secondary-foreground border-transparent hover:bg-secondary/80"
+                      }`}
+                    >
+                      {count}×
+                      {count > 1 && (
+                        <Crown size={10} className="absolute top-1 right-1 text-primary" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <button
+                  onClick={() => setPremiumOpen(true)}
+                  className="w-full flex items-center justify-between p-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} className="text-muted-foreground" />
+                    <span className="text-sm font-medium">Ustaw godzinę</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Crown size={12} className="text-primary" />
+                    <span className="text-xs text-muted-foreground">Premium</span>
+                  </div>
+                </button>
+              </div>
+
+              <button
+                onClick={onClose}
+                className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                Zapisz
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+      <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
+    </>
   );
 }
 
 export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [], streak = 0 }: StatsPanelProps) {
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const displayData = weekData.length > 0
     ? weekData
     : Array.from({ length: 7 }, (_, i) => {
@@ -100,9 +200,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
   return (
     <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
       <div className="px-1 pb-3">
-        <h2 className="text-lg font-semibold">
-          Twój progres
-        </h2>
+        <h2 className="text-lg font-semibold">Twój progres</h2>
         <p className="text-xs text-muted-foreground">Statystyki nauki słówek</p>
       </div>
 
@@ -118,11 +216,9 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">Seria</span>
               </div>
-              <p className="text-3xl font-bold text-foreground">
-                {streak}
-              </p>
+              <p className="text-3xl font-bold text-foreground">{streak}</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                {streak === 1 ? "dzień" : streak >= 2 && streak <= 4 ? "dni z rzędu" : "dni z rzędu"}
+                {streak === 1 ? "dzień" : "dni z rzędu"}
               </p>
             </div>
             <div className="rounded-2xl bg-card border border-border p-4">
@@ -205,23 +301,35 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
           </motion.div>
 
           {/* Projection */}
-          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4">
-            <p className="text-sm font-semibold mb-1.5">
-              Prognoza nauki
-            </p>
+          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mb-3">
+            <p className="text-sm font-semibold mb-1.5">Prognoza nauki</p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Przy obecnym tempie ({avgDaily} słów/dzień) nauczysz się{" "}
-              <span className="font-semibold text-foreground">{monthProjection} słów</span>{" "}
-              w tym miesiącu i{" "}
-              <span className="font-semibold text-foreground">{Math.round(avgDaily * 365)} słów</span>{" "}
-              w ciągu roku.
+              <span className="font-semibold text-foreground">{monthProjection} słów</span> w tym miesiącu i{" "}
+              <span className="font-semibold text-foreground">{Math.round(avgDaily * 365)} słów</span> w ciągu roku.
             </p>
           </motion.div>
 
-          <NotificationCard />
+          {/* Notification button */}
+          <motion.div variants={itemVariants}>
+            <button
+              onClick={() => setNotifOpen(true)}
+              className="w-full rounded-2xl bg-card border border-border p-4 flex items-center gap-3 hover:bg-secondary/50 transition-colors cursor-pointer text-left"
+            >
+              <div className="p-2 rounded-xl bg-primary/10">
+                <Bell size={18} className="text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">Przypomnienia</p>
+                <p className="text-xs text-muted-foreground">Ustaw powiadomienia o nauce</p>
+              </div>
+            </button>
+          </motion.div>
 
         </motion.div>
       </div>
+
+      <NotificationDialog open={notifOpen} onClose={() => setNotifOpen(false)} />
     </div>
   );
 }
