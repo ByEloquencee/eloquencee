@@ -289,7 +289,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
             {[
               { icon: BookOpen, value: totalFavorites, label: "Nauczone" },
               { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
-              { icon: Trophy, value: monthProjection, label: "Prognoza/mies." },
+              { icon: Trophy, value: totalViewed, label: "Przejrzane" },
             ].map(({ icon: Icon, value, label }) => (
               <div key={label} className="rounded-2xl bg-card border border-border p-3 text-center">
                 <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
