@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Target, BookOpen, TrendingUp, Trophy, Bell, Clock, Crown, X } from "lucide-react";
+import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X } from "lucide-react";
 import { useState } from "react";
 import type { DayRecord } from "@/hooks/use-learning-history";
 
@@ -7,6 +7,7 @@ interface StatsPanelProps {
   todayCount: number;
   dailyGoal: number;
   totalFavorites: number;
+  totalViewed: number;
   weekData?: DayRecord[];
   streak?: number;
 }
@@ -171,7 +172,7 @@ function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => v
   );
 }
 
-export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [], streak = 0 }: StatsPanelProps) {
+export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed, weekData = [], streak = 0 }: StatsPanelProps) {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const displayData = weekData.length > 0
@@ -288,7 +289,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, weekData = [
             {[
               { icon: BookOpen, value: totalFavorites, label: "Nauczone" },
               { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
-              { icon: Trophy, value: monthProjection, label: "Prognoza/mies." },
+              { icon: Eye, value: totalViewed, label: "Przejrzane" },
             ].map(({ icon: Icon, value, label }) => (
               <div key={label} className="rounded-2xl bg-card border border-border p-3 text-center">
                 <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">

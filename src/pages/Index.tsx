@@ -90,6 +90,12 @@ const Index = () => {
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [history, setHistory] = useState<number[]>([]);
+  const [totalViewed, setTotalViewed] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("eloquencee-total-viewed") || "0");
+      return typeof stored === "number" ? stored : 0;
+    } catch { return 0; }
+  });
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
@@ -248,6 +254,11 @@ const Index = () => {
   const handleNext = useCallback(() => {
     if (filteredWords.length === 0) return;
     setHistory((prev) => [...prev, currentIndex]);
+    setTotalViewed((prev: number) => {
+      const next = prev + 1;
+      localStorage.setItem("eloquencee-total-viewed", JSON.stringify(next));
+      return next;
+    });
     if (selectedCategories.includes("all") && preferredCategories.length > 0) {
       setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
     } else {
@@ -519,6 +530,7 @@ const Index = () => {
                     todayCount={todayCount}
                     dailyGoal={profile?.daily_goal ?? 5}
                     totalFavorites={favoriteWords.length}
+                    totalViewed={totalViewed}
                     weekData={weekData}
                     streak={streak}
                   />
