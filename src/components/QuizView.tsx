@@ -56,7 +56,9 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
       if (correct) setScore((s) => s + 1);
       setTimeout(() => {
         if (current + 1 >= questions.length) {
+          const finalScore = correct ? score + 1 : score;
           setFinished(true);
+          onComplete?.(finalScore);
         } else {
           const next = current + 1;
           setCurrent(next);
