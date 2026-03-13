@@ -38,7 +38,7 @@ export default function PaymentSuccess() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.5, type: "spring" }}
-            className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center"
+            className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-primary flex items-center justify-center"
           >
             <CheckCircle size={18} className="text-primary-foreground" />
           </motion.div>
