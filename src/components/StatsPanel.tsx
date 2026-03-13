@@ -260,9 +260,20 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 const isToday = i === displayData.length - 1;
                 return (
                   <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
-                      {d.count > 0 ? d.count : ""}
-                    </span>
+                    <div className="relative flex items-center justify-center">
+                      {d.count > 0 && (
+                        <div
+                          className={`absolute rounded-md ${isToday ? "bg-primary/15" : "bg-primary/8"}`}
+                          style={{
+                            width: `${Math.max(20, Math.min(32, 16 + d.count * 3))}px`,
+                            height: `${Math.max(16, Math.min(24, 14 + d.count * 2))}px`,
+                          }}
+                        />
+                      )}
+                      <span className="text-[10px] font-medium text-muted-foreground tabular-nums relative z-10">
+                        {d.count > 0 ? d.count : ""}
+                      </span>
+                    </div>
                     <div className="w-full relative rounded-lg bg-secondary/50" style={{ height: "100%" }}>
                       <motion.div
                         initial={{ height: 0 }}
