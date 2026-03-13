@@ -176,13 +176,20 @@ export function AuthDialog({ open, onClose, onAddWord, onCreateFolder, onSuggest
                     }}
                   />
                 </div>
-                <button
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-                  onClick={() => toast("Funkcja Premium będzie dostępna wkrótce!")}
-                >
-                  <Crown size={16} />
-                  Przejdź na Premium
-                </button>
+                {isPremium ? (
+                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-primary/10 border border-primary/20">
+                    <Crown size={16} className="text-primary" />
+                    <span className="text-sm font-medium text-primary">Premium aktywne</span>
+                  </div>
+                ) : (
+                  <button
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+                    onClick={onOpenPremium}
+                  >
+                    <Crown size={16} />
+                    Przejdź na Premium — 5,99 zł/mies.
+                  </button>
+                )}
                 <button
                   onClick={handleSignOut}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
