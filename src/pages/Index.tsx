@@ -551,7 +551,8 @@ const Index = () => {
               </div>
             </div>
             {/* Word card page */}
-            <div className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden">
+            <div className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden relative">
+              <WordLimitOverlay show={dailyLimitReached} onUpgrade={() => setPremiumOpen(true)} />
               {filteredWords.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
