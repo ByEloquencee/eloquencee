@@ -9,7 +9,9 @@ interface StatsPanelProps {
   totalFavorites: number;
   totalViewed: number;
   weekData?: DayRecord[];
+  weekFavData?: DayRecord[];
   streak?: number;
+  masteredCount?: number;
 }
 
 const DAY_LABELS = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Ndz"];
@@ -172,11 +174,11 @@ function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => v
   );
 }
 
-export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed, weekData = [], streak = 0 }: StatsPanelProps) {
+export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed, weekData = [], weekFavData = [], streak = 0, masteredCount = 0 }: StatsPanelProps) {
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const displayData = weekData.length > 0
-    ? weekData
+  const displayData = weekFavData.length > 0
+    ? weekFavData
     : Array.from({ length: 7 }, (_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - (6 - i));
@@ -249,7 +251,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-semibold">Ten tydzień</span>
               <span className="text-xs text-muted-foreground font-medium bg-secondary px-2 py-0.5 rounded-full tabular-nums">
-                {weeklyTotal} słów
+                {weeklyTotal} polubionych
               </span>
             </div>
             <div className="flex items-end gap-2 h-24">
@@ -258,9 +260,20 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 const isToday = i === displayData.length - 1;
                 return (
                   <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
-                      {d.count > 0 ? d.count : ""}
-                    </span>
+                    <div className="relative flex items-center justify-center">
+                      {d.count > 0 && (
+                        <div
+                          className={`absolute rounded-md ${isToday ? "bg-primary/15" : "bg-primary/8"}`}
+                          style={{
+                            width: `${Math.max(20, Math.min(32, 16 + d.count * 3))}px`,
+                            height: `${Math.max(16, Math.min(24, 14 + d.count * 2))}px`,
+                          }}
+                        />
+                      )}
+                      <span className="text-[10px] font-medium text-muted-foreground tabular-nums relative z-10">
+                        {d.count > 0 ? d.count : ""}
+                      </span>
+                    </div>
                     <div className="w-full relative rounded-lg bg-secondary/50" style={{ height: "100%" }}>
                       <motion.div
                         initial={{ height: 0 }}
@@ -287,7 +300,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
           {/* Summary stats */}
           <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 mb-3">
             {[
-              { icon: BookOpen, value: totalFavorites, label: "Nauczone" },
+              { icon: BookOpen, value: masteredCount, label: "Nauczone" },
               { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
               { icon: Eye, value: totalViewed, label: "Przejrzane" },
             ].map(({ icon: Icon, value, label }) => (

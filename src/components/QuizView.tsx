@@ -13,6 +13,7 @@ interface QuizViewProps {
   words: PolishWord[];
   allWords: PolishWord[];
   onExit: () => void;
+  onComplete?: (correctCount: number) => void;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -31,7 +32,7 @@ function generateQuestion(word: PolishWord, pool: PolishWord[]) {
   return { definition: word.definition, correctId: word.id, options };
 }
 
-export function QuizView({ words, allWords, onExit }: QuizViewProps) {
+export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps) {
   const questions = useMemo(() => {
     const pool = allWords.length >= 4 ? allWords : words;
     return shuffle(words).map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
@@ -55,7 +56,9 @@ export function QuizView({ words, allWords, onExit }: QuizViewProps) {
       if (correct) setScore((s) => s + 1);
       setTimeout(() => {
         if (current + 1 >= questions.length) {
+          const finalScore = correct ? score + 1 : score;
           setFinished(true);
+          onComplete?.(finalScore);
         } else {
           const next = current + 1;
           setCurrent(next);

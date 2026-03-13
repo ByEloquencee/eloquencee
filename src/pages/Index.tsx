@@ -37,6 +37,8 @@ import { useModerator } from "@/hooks/use-moderator";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { useLearningHistory } from "@/hooks/use-learning-history";
+import { useWeeklyFavorites } from "@/hooks/use-weekly-favorites";
+import { useMasteredWords } from "@/hooks/use-mastered-words";
 import { useSubscription } from "@/hooks/use-subscription";
 import { PremiumDialog } from "@/components/PremiumDialog";
 import { WordLimitOverlay } from "@/components/WordLimitOverlay";
@@ -82,6 +84,8 @@ const Index = () => {
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { todayCount, increment: incrementProgress, decrement: decrementProgress } = useDailyProgress();
   const { weekData, streak, recordToday } = useLearningHistory();
+  const { weekFavData } = useWeeklyFavorites();
+  const { masteredCount, addMastered } = useMasteredWords();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const { folders, createFolder, deleteFolder, toggleWordInFolder } = useFolders();
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
@@ -329,6 +333,7 @@ const Index = () => {
         words={quizWords}
         allWords={allWords}
         onExit={() => { setQuizActive(false); setActivePage(1); }}
+        onComplete={(correctCount) => addMastered(correctCount)}
       />
     );
   }
@@ -546,7 +551,9 @@ const Index = () => {
                     totalFavorites={favoriteWords.length}
                     totalViewed={totalViewed}
                     weekData={weekData}
+                    weekFavData={weekFavData}
                     streak={streak}
+                    masteredCount={masteredCount}
                   />
                 )}
               </div>
