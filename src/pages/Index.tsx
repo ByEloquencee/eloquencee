@@ -37,6 +37,8 @@ import { useModerator } from "@/hooks/use-moderator";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { useLearningHistory } from "@/hooks/use-learning-history";
+import { useWeeklyFavorites } from "@/hooks/use-weekly-favorites";
+import { useMasteredWords } from "@/hooks/use-mastered-words";
 import { useSubscription } from "@/hooks/use-subscription";
 import { PremiumDialog } from "@/components/PremiumDialog";
 import { WordLimitOverlay } from "@/components/WordLimitOverlay";
