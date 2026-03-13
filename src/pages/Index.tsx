@@ -88,6 +88,10 @@ const Index = () => {
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
   const { hiddenIds, overrides } = useStaticWordManagement();
+  const { isPremium, loading: subLoading } = useSubscription();
+  const [premiumOpen, setPremiumOpen] = useState(false);
+
+  const FREE_DAILY_LIMIT = 15;
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
