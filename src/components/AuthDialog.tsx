@@ -75,7 +75,7 @@ export function AuthDialog({ open, onClose, onAddWord, onCreateFolder, onSuggest
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-h-[90vh] overflow-y-auto"
+          className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           <div className="flex items-center justify-between p-5 border-b border-border">
             <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
