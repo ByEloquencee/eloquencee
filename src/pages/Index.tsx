@@ -254,6 +254,11 @@ const Index = () => {
   const handleNext = useCallback(() => {
     if (filteredWords.length === 0) return;
     setHistory((prev) => [...prev, currentIndex]);
+    setTotalViewed((prev: number) => {
+      const next = prev + 1;
+      localStorage.setItem("eloquencee-total-viewed", JSON.stringify(next));
+      return next;
+    });
     if (selectedCategories.includes("all") && preferredCategories.length > 0) {
       setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
     } else {
