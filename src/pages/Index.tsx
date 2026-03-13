@@ -266,6 +266,7 @@ const Index = () => {
       setPremiumOpen(true);
       return;
     }
+    incrementProgress();
     setHistory((prev) => [...prev, currentIndex]);
     setTotalViewed((prev: number) => {
       const next = prev + 1;
@@ -277,7 +278,7 @@ const Index = () => {
     } else {
       setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
     }
-  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount]);
+  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress]);
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
