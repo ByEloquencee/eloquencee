@@ -9,7 +9,9 @@ interface StatsPanelProps {
   totalFavorites: number;
   totalViewed: number;
   weekData?: DayRecord[];
+  weekFavData?: DayRecord[];
   streak?: number;
+  masteredCount?: number;
 }
 
 const DAY_LABELS = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Ndz"];
