@@ -7,6 +7,7 @@ interface StatsPanelProps {
   todayCount: number;
   dailyGoal: number;
   totalFavorites: number;
+  totalViewed: number;
   weekData?: DayRecord[];
   streak?: number;
 }
