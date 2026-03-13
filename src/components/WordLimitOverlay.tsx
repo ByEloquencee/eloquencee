@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Infinity, GraduationCap, Sparkles, Zap } from "lucide-react";
+import { Crown, Infinity as InfinityIcon, GraduationCap, Sparkles, Zap } from "lucide-react";
 
 interface WordLimitOverlayProps {
   show: boolean;
