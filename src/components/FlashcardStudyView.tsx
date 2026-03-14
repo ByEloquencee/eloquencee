@@ -235,7 +235,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           >
             <motion.button
               onClick={() => setFlipped((f) => !f)}
-              className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card shadow-sm p-6 flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-shadow overflow-hidden text-center"
+              className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card shadow-sm p-5 flex flex-col cursor-pointer hover:shadow-md transition-shadow overflow-y-auto text-center"
               whileTap={{ scale: 0.98 }}
             >
               <AnimatePresence mode="wait">
@@ -245,24 +245,24 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
                   animate={{ opacity: 1, rotateY: 0 }}
                   exit={{ opacity: 0, rotateY: -90 }}
                   transition={{ duration: 0.2 }}
-                  className="flex flex-col items-center gap-3 w-full"
+                  className="flex flex-col items-center gap-2 w-full flex-1"
                 >
                   <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
                     {flipped ? "Definicja" : "Termin"}
                   </span>
                   <p
-                    className="font-semibold leading-snug text-center break-words w-full"
+                    className="font-semibold leading-relaxed text-center break-words w-full flex-1"
                     style={{
                       fontFamily: "var(--font-display)",
                       fontSize: flipped
-                        ? `clamp(0.75rem, ${Math.max(0.75, 1.5 - card.definition.length / 200)}rem, 1.5rem)`
+                        ? `clamp(0.7rem, ${Math.max(0.7, 1.4 - card.definition.length / 180)}rem, 1.4rem)`
                         : `clamp(1rem, ${Math.max(1, 1.875 - card.word.length / 80)}rem, 1.875rem)`,
                     }}
                   >
                     {flipped ? card.definition : card.word}
                   </p>
                   {!flipped && (
-                    <span className="text-xs text-muted-foreground mt-2">
+                    <span className="text-xs text-muted-foreground mt-auto pt-2">
                       Stuknij, aby obrócić
                     </span>
                   )}
