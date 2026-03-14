@@ -322,7 +322,7 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
         className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full relative"
       >
         <AnimatePresence mode="wait">
-          <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full">
+          <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full relative z-10">
             {mode === "multiple-choice" ? (
               <MultipleChoiceQuestion question={question} selected={selected} onSelect={handleSelect} onInspect={setInspectWord} />
             ) : (
@@ -345,6 +345,15 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
             </AnimatePresence>
           </motion.div>
         </AnimatePresence>
+
+        {/* Invisible advance overlay behind the content — clicking empty space advances */}
+        {isAnswered && (
+          <div
+            className="absolute inset-0 cursor-pointer"
+            style={{ zIndex: 0 }}
+            onClick={handleAdvance}
+          />
+        )}
       </main>
 
       <InspectDialog word={inspectWord} onClose={() => setInspectWord(null)} />
