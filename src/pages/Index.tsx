@@ -9,7 +9,7 @@ import { AddWordDialog } from "@/components/AddWordDialog";
 import { EditWordDialog } from "@/components/EditWordDialog";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { QuizModeDialog } from "@/components/QuizModeDialog";
-import { QuizView } from "@/components/QuizView";
+import { QuizView, type QuizMode } from "@/components/QuizView";
 import { DailyProgress } from "@/components/DailyProgress";
 import { WordAIChat } from "@/components/WordAIChat";
 import { FlashcardCreator } from "@/components/FlashcardCreator";
@@ -123,6 +123,7 @@ const Index = () => {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
+  const [quizMode, setQuizMode] = useState<QuizMode>("multiple-choice");
   const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
@@ -334,6 +335,7 @@ const Index = () => {
         allWords={allWords}
         onExit={() => { setQuizActive(false); setActivePage(1); }}
         onComplete={(correctCount) => addMastered(correctCount)}
+        mode={quizMode}
       />
     );
   }
@@ -715,7 +717,7 @@ const Index = () => {
       <QuizModeDialog
         open={quizModeOpen}
         onClose={() => setQuizModeOpen(false)}
-        onStartQuiz={(source) => {
+        onStartQuiz={(source, mode) => {
           setQuizModeOpen(false);
           if (source === "favorites") {
             setQuizWords(favoriteWords);
@@ -725,14 +727,16 @@ const Index = () => {
               setQuizWords(allWords.filter((w) => folder.wordIds.includes(w.id)));
             }
           }
+          setQuizMode(mode);
           setQuizActive(true);
         }}
-        onStartRandomQuiz={(difficulty) => {
+        onStartRandomQuiz={(difficulty, mode) => {
           setQuizModeOpen(false);
           const filtered = allWords.filter((w) => w.difficulty === difficulty);
           const pool = filtered.length >= 8 ? filtered : allWords;
           const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 8);
           setQuizWords(shuffled);
+          setQuizMode(mode);
           setQuizActive(true);
         }}
         hasFavorites={hasEnoughForQuiz}
