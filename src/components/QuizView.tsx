@@ -141,12 +141,11 @@ function MultipleChoiceQuestion({
           else classes += "bg-secondary border-border text-foreground hover:bg-secondary/80 cursor-pointer";
 
           return (
-            <motion.button
+            <div
               key={opt.id}
-              whileTap={!selected ? { scale: 0.97 } : {}}
-              onClick={(e) => { e.stopPropagation(); onSelect(opt.id); }}
-              disabled={!!selected}
+              onClick={(e) => { if (!selected) { e.stopPropagation(); onSelect(opt.id); } }}
               className={classes}
+              style={{ cursor: selected ? "default" : "pointer" }}
             >
               <span className="flex items-center justify-between">
                 <span>{opt.word}</span>
