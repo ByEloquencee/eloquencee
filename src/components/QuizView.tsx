@@ -156,7 +156,11 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
         <span className="text-sm font-semibold text-primary">{score} pkt</span>
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full">
+      <main
+        className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full"
+        onClick={selected !== null ? handleAdvance : undefined}
+        style={{ cursor: selected !== null ? "pointer" : undefined }}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
@@ -194,7 +198,10 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
                   <motion.button
                     key={opt.id}
                     whileTap={!selected ? { scale: 0.97 } : {}}
-                    onClick={() => handleSelect(opt.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelect(opt.id);
+                    }}
                     disabled={!!selected}
                     className={classes}
                   >
@@ -224,6 +231,18 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
                 );
               })}
             </div>
+
+            <AnimatePresence>
+              {selected !== null && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center text-xs text-muted-foreground mt-4"
+                >
+                  Kliknij aby przejść dalej
+                </motion.p>
+              )}
+            </AnimatePresence>
           </motion.div>
         </AnimatePresence>
       </main>
