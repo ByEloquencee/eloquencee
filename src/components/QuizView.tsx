@@ -65,22 +65,44 @@ function ResultsScreen({ score, total, onExit, onRestart }: { score: number; tot
 function InspectDialog({ word, onClose }: { word: PolishWord | null; onClose: () => void }) {
   return (
     <Dialog open={!!word} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-sm rounded-2xl">
+      <DialogContent className="max-w-sm rounded-2xl overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>{word?.word}</DialogTitle>
         </DialogHeader>
         {word && (
-          <div className="space-y-3">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="space-y-3"
+          >
             <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">{word.partOfSpeech}</span>
-            <div className="p-4 rounded-xl bg-secondary/50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.05, duration: 0.2 }}
+              className="p-4 rounded-xl bg-secondary/50"
+            >
               <p className="text-sm leading-relaxed text-foreground">{word.definition}</p>
-            </div>
-            <div className="p-4 rounded-xl border border-border">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.2 }}
+              className="p-4 rounded-xl border border-border"
+            >
               <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground mb-2">Przykład</p>
               <p className="text-sm leading-relaxed text-muted-foreground italic">„{word.example}"</p>
-            </div>
-            {word.etymology && <p className="text-xs text-muted-foreground italic">{word.etymology}</p>}
-          </div>
+            </motion.div>
+            {word.etymology && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15, duration: 0.2 }}
+                className="text-xs text-muted-foreground italic"
+              >{word.etymology}</motion.p>
+            )}
+          </motion.div>
         )}
       </DialogContent>
     </Dialog>
