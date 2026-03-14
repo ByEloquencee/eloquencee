@@ -54,20 +54,21 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
       setAnswers((prev) => ({ ...prev, [current]: id }));
       const correct = id === question.correctId;
       if (correct) setScore((s) => s + 1);
-      setTimeout(() => {
-        if (current + 1 >= questions.length) {
-          const finalScore = correct ? score + 1 : score;
-          setFinished(true);
-          onComplete?.(finalScore);
-        } else {
-          const next = current + 1;
-          setCurrent(next);
-          setMaxReached((m) => Math.max(m, next));
-        }
-      }, 1200);
     },
-    [answers, current, question, questions.length]
+    [answers, current, question]
   );
+
+  const handleAdvance = useCallback(() => {
+    if (answers[current] === undefined) return;
+    if (current + 1 >= questions.length) {
+      setFinished(true);
+      onComplete?.(score);
+    } else {
+      const next = current + 1;
+      setCurrent(next);
+      setMaxReached((m) => Math.max(m, next));
+    }
+  }, [answers, current, questions.length, score, onComplete]);
 
   const canGoBack = current > 0;
   const canGoForward = current < maxReached;
@@ -155,7 +156,11 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
         <span className="text-sm font-semibold text-primary">{score} pkt</span>
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full">
+      <main
+        className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full"
+        onClick={selected !== null ? handleAdvance : undefined}
+        style={{ cursor: selected !== null ? "pointer" : undefined }}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
@@ -193,7 +198,10 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
                   <motion.button
                     key={opt.id}
                     whileTap={!selected ? { scale: 0.97 } : {}}
-                    onClick={() => handleSelect(opt.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelect(opt.id);
+                    }}
                     disabled={!!selected}
                     className={classes}
                   >
@@ -223,6 +231,18 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
                 );
               })}
             </div>
+
+            <AnimatePresence>
+              {selected !== null && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center text-xs text-muted-foreground mt-4"
+                >
+                  Kliknij aby przejść dalej
+                </motion.p>
+              )}
+            </AnimatePresence>
           </motion.div>
         </AnimatePresence>
       </main>
