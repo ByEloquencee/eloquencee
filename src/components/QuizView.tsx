@@ -65,22 +65,44 @@ function ResultsScreen({ score, total, onExit, onRestart }: { score: number; tot
 function InspectDialog({ word, onClose }: { word: PolishWord | null; onClose: () => void }) {
   return (
     <Dialog open={!!word} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-sm rounded-2xl">
+      <DialogContent className="max-w-sm rounded-2xl overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>{word?.word}</DialogTitle>
         </DialogHeader>
         {word && (
-          <div className="space-y-3">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="space-y-3"
+          >
             <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">{word.partOfSpeech}</span>
-            <div className="p-4 rounded-xl bg-secondary/50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.05, duration: 0.2 }}
+              className="p-4 rounded-xl bg-secondary/50"
+            >
               <p className="text-sm leading-relaxed text-foreground">{word.definition}</p>
-            </div>
-            <div className="p-4 rounded-xl border border-border">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.2 }}
+              className="p-4 rounded-xl border border-border"
+            >
               <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground mb-2">Przykład</p>
               <p className="text-sm leading-relaxed text-muted-foreground italic">„{word.example}"</p>
-            </div>
-            {word.etymology && <p className="text-xs text-muted-foreground italic">{word.etymology}</p>}
-          </div>
+            </motion.div>
+            {word.etymology && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15, duration: 0.2 }}
+                className="text-xs text-muted-foreground italic"
+              >{word.etymology}</motion.p>
+            )}
+          </motion.div>
         )}
       </DialogContent>
     </Dialog>
@@ -119,12 +141,11 @@ function MultipleChoiceQuestion({
           else classes += "bg-secondary border-border text-foreground hover:bg-secondary/80 cursor-pointer";
 
           return (
-            <motion.button
+            <div
               key={opt.id}
-              whileTap={!selected ? { scale: 0.97 } : {}}
-              onClick={(e) => { e.stopPropagation(); onSelect(opt.id); }}
-              disabled={!!selected}
+              onClick={(e) => { if (!selected) { e.stopPropagation(); onSelect(opt.id); } }}
               className={classes}
+              style={{ cursor: selected ? "default" : "pointer" }}
             >
               <span className="flex items-center justify-between">
                 <span>{opt.word}</span>
@@ -147,7 +168,7 @@ function MultipleChoiceQuestion({
                   )}
                 </span>
               </span>
-            </motion.button>
+            </div>
           );
         })}
       </div>
@@ -319,12 +340,10 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
       </header>
 
       <main
-        className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full"
-        onClick={isAnswered ? handleAdvance : undefined}
-        style={{ cursor: isAnswered ? "pointer" : undefined }}
+        className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full relative"
       >
         <AnimatePresence mode="wait">
-          <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full">
+          <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full relative z-10">
             {mode === "multiple-choice" ? (
               <MultipleChoiceQuestion question={question} selected={selected} onSelect={handleSelect} onInspect={setInspectWord} />
             ) : (
@@ -347,6 +366,15 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
             </AnimatePresence>
           </motion.div>
         </AnimatePresence>
+
+        {/* Invisible advance overlay behind the content — clicking empty space advances */}
+        {isAnswered && (
+          <div
+            className="absolute inset-0 cursor-pointer"
+            style={{ zIndex: 0 }}
+            onClick={handleAdvance}
+          />
+        )}
       </main>
 
       <InspectDialog word={inspectWord} onClose={() => setInspectWord(null)} />
