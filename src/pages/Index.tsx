@@ -9,7 +9,7 @@ import { AddWordDialog } from "@/components/AddWordDialog";
 import { EditWordDialog } from "@/components/EditWordDialog";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { QuizModeDialog } from "@/components/QuizModeDialog";
-import { QuizView } from "@/components/QuizView";
+import { QuizView, type QuizMode } from "@/components/QuizView";
 import { DailyProgress } from "@/components/DailyProgress";
 import { WordAIChat } from "@/components/WordAIChat";
 import { FlashcardCreator } from "@/components/FlashcardCreator";
