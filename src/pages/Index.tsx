@@ -335,6 +335,7 @@ const Index = () => {
         allWords={allWords}
         onExit={() => { setQuizActive(false); setActivePage(1); }}
         onComplete={(correctCount) => addMastered(correctCount)}
+        mode={quizMode}
       />
     );
   }
