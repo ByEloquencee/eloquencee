@@ -132,16 +132,18 @@ function MultipleChoiceQuestion({
                   {showResult && isCorrect && <Check size={16} />}
                   {showResult && isSelected && !isCorrect && <X size={16} />}
                   {showResult && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      whileTap={{ scale: 0.85 }}
-                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); onInspect(opt); }}
-                      className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-                      title="Sprawdź znaczenie"
-                    >
-                      <BookOpen size={14} />
-                    </motion.button>
+                    <span onClick={(e) => { e.stopPropagation(); e.preventDefault(); }} className="inline-flex">
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        whileTap={{ scale: 0.85 }}
+                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); onInspect(opt); }}
+                        className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                        title="Sprawdź znaczenie"
+                      >
+                        <BookOpen size={14} />
+                      </motion.button>
+                    </span>
                   )}
                 </span>
               </span>
