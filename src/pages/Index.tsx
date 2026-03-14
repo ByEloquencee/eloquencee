@@ -123,6 +123,7 @@ const Index = () => {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
+  const [quizMode, setQuizMode] = useState<QuizMode>("multiple-choice");
   const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
