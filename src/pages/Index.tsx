@@ -717,7 +717,7 @@ const Index = () => {
       <QuizModeDialog
         open={quizModeOpen}
         onClose={() => setQuizModeOpen(false)}
-        onStartQuiz={(source) => {
+        onStartQuiz={(source, mode) => {
           setQuizModeOpen(false);
           if (source === "favorites") {
             setQuizWords(favoriteWords);
@@ -727,14 +727,16 @@ const Index = () => {
               setQuizWords(allWords.filter((w) => folder.wordIds.includes(w.id)));
             }
           }
+          setQuizMode(mode);
           setQuizActive(true);
         }}
-        onStartRandomQuiz={(difficulty) => {
+        onStartRandomQuiz={(difficulty, mode) => {
           setQuizModeOpen(false);
           const filtered = allWords.filter((w) => w.difficulty === difficulty);
           const pool = filtered.length >= 8 ? filtered : allWords;
           const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 8);
           setQuizWords(shuffled);
+          setQuizMode(mode);
           setQuizActive(true);
         }}
         hasFavorites={hasEnoughForQuiz}
