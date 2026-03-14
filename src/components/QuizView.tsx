@@ -27,7 +27,21 @@ function shuffle<T>(arr: T[]): T[] {
 
 function generateQuestion(word: PolishWord, pool: PolishWord[]) {
   const others = pool.filter((w) => w.id !== word.id);
-  const distractors = shuffle(others).slice(0, 3);
+
+  // Prefer same part of speech, then same category
+  const samePoS = others.filter((w) => w.partOfSpeech === word.partOfSpeech);
+  const sameCat = others.filter((w) => w.category === word.category && w.partOfSpeech === word.partOfSpeech);
+
+  let candidates: PolishWord[];
+  if (sameCat.length >= 3) {
+    candidates = sameCat;
+  } else if (samePoS.length >= 3) {
+    candidates = samePoS;
+  } else {
+    candidates = others;
+  }
+
+  const distractors = shuffle(candidates).slice(0, 3);
   const options = shuffle([word, ...distractors]);
   return { definition: word.definition, correctId: word.id, options };
 }
