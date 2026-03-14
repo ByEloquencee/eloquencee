@@ -255,7 +255,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
                     style={{
                       fontFamily: "var(--font-display)",
                       fontSize: flipped
-                        ? `clamp(0.75rem, ${Math.max(0.75, 1.5 - card.definition.length / 200)}rem, 1.5rem)`
+                        ? `clamp(1rem, ${Math.max(1, 2 - card.definition.length / 150)}rem, 2rem)`
                         : `clamp(1rem, ${Math.max(1, 1.875 - card.word.length / 80)}rem, 1.875rem)`,
                     }}
                   >
