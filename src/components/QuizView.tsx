@@ -168,7 +168,7 @@ function MultipleChoiceQuestion({
                   )}
                 </span>
               </span>
-            </motion.button>
+            </div>
           );
         })}
       </div>
