@@ -9,11 +9,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+type QuizMode = "multiple-choice" | "typing";
+
 interface QuizViewProps {
   words: PolishWord[];
   allWords: PolishWord[];
   onExit: () => void;
   onComplete?: (correctCount: number) => void;
+  mode?: QuizMode;
 }
 
 function shuffle<T>(arr: T[]): T[] {
