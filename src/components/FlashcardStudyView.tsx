@@ -235,7 +235,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           >
             <motion.button
               onClick={() => setFlipped((f) => !f)}
-              className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card shadow-sm p-6 flex flex-col justify-center cursor-pointer hover:shadow-md transition-shadow overflow-hidden"
+              className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card shadow-sm p-6 flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-shadow overflow-hidden text-center"
               whileTap={{ scale: 0.98 }}
             >
               <AnimatePresence mode="wait">
@@ -245,13 +245,13 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
                   animate={{ opacity: 1, rotateY: 0 }}
                   exit={{ opacity: 0, rotateY: -90 }}
                   transition={{ duration: 0.2 }}
-                  className="flex flex-col gap-3 w-full"
+                  className="flex flex-col items-center gap-3 w-full"
                 >
                   <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
                     {flipped ? "Definicja" : "Termin"}
                   </span>
                   <p
-                    className="font-semibold leading-snug text-left break-words"
+                    className="font-semibold leading-snug text-center break-words w-full"
                     style={{
                       fontFamily: "var(--font-display)",
                       fontSize: flipped
