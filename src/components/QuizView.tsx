@@ -319,9 +319,7 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
       </header>
 
       <main
-        className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full"
-        onClick={isAnswered ? handleAdvance : undefined}
-        style={{ cursor: isAnswered ? "pointer" : undefined }}
+        className="flex-1 flex flex-col items-center justify-center px-4 pb-12 max-w-lg mx-auto w-full relative"
       >
         <AnimatePresence mode="wait">
           <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full">
