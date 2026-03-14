@@ -54,20 +54,21 @@ export function QuizView({ words, allWords, onExit, onComplete }: QuizViewProps)
       setAnswers((prev) => ({ ...prev, [current]: id }));
       const correct = id === question.correctId;
       if (correct) setScore((s) => s + 1);
-      setTimeout(() => {
-        if (current + 1 >= questions.length) {
-          const finalScore = correct ? score + 1 : score;
-          setFinished(true);
-          onComplete?.(finalScore);
-        } else {
-          const next = current + 1;
-          setCurrent(next);
-          setMaxReached((m) => Math.max(m, next));
-        }
-      }, 1200);
     },
-    [answers, current, question, questions.length]
+    [answers, current, question]
   );
+
+  const handleAdvance = useCallback(() => {
+    if (answers[current] === undefined) return;
+    if (current + 1 >= questions.length) {
+      setFinished(true);
+      onComplete?.(score);
+    } else {
+      const next = current + 1;
+      setCurrent(next);
+      setMaxReached((m) => Math.max(m, next));
+    }
+  }, [answers, current, questions.length, score, onComplete]);
 
   const canGoBack = current > 0;
   const canGoForward = current < maxReached;
