@@ -1,6 +1,10 @@
 import { useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, X, Trophy, ChevronLeft, ChevronRight, BookOpen, Keyboard, ArrowRight } from "lucide-react";
+import { ArrowLeft, Check, X, Trophy, ChevronLeft, ChevronRight, BookOpen, Keyboard, ArrowRight, Heart, FolderPlus } from "lucide-react";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useFolders } from "@/hooks/use-folders";
+import { getFolderIcon } from "@/components/CreateFolderDialog";
+import { useToast } from "@/hooks/use-toast";
 import type { PolishWord } from "@/data/words";
 import {
   Dialog,
@@ -63,11 +67,54 @@ function ResultsScreen({ score, total, onExit, onRestart }: { score: number; tot
 
 // ─── Inspect Dialog ───
 function InspectDialog({ word, onClose }: { word: PolishWord | null; onClose: () => void }) {
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const { folders, toggleWordInFolder, isWordInFolder } = useFolders();
+  const { toast } = useToast();
+  const [showFolders, setShowFolders] = useState(false);
+
+  const isFav = word ? isFavorite(word.id) : false;
+
+  const handleToggleFavorite = async () => {
+    if (!word) return;
+    await toggleFavorite(word.id);
+    toast({ title: isFav ? "Usunięto z ulubionych" : "Dodano do ulubionych", duration: 1500 });
+  };
+
+  const handleToggleFolder = async (folderId: string) => {
+    if (!word) return;
+    const wasIn = isWordInFolder(folderId, word.id);
+    await toggleWordInFolder(folderId, word.id);
+    const folder = folders.find(f => f.id === folderId);
+    toast({ title: wasIn ? `Usunięto z „${folder?.name}"` : `Dodano do „${folder?.name}"`, duration: 1500 });
+  };
+
   return (
-    <Dialog open={!!word} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={!!word} onOpenChange={(o) => { if (!o) { setShowFolders(false); onClose(); } }}>
       <DialogContent className="max-w-sm rounded-2xl overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>{word?.word}</DialogTitle>
+          <div className="flex items-center justify-between gap-2">
+            <DialogTitle className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>{word?.word}</DialogTitle>
+            {word && (
+              <div className="flex items-center gap-1">
+                <motion.button
+                  whileTap={{ scale: 0.85 }}
+                  onClick={handleToggleFavorite}
+                  className="p-2 rounded-xl transition-colors cursor-pointer hover:bg-secondary"
+                >
+                  <Heart size={18} className={isFav ? "fill-red-500 text-red-500" : "text-muted-foreground"} />
+                </motion.button>
+                {folders.length > 0 && (
+                  <motion.button
+                    whileTap={{ scale: 0.85 }}
+                    onClick={() => setShowFolders(!showFolders)}
+                    className={`p-2 rounded-xl transition-colors cursor-pointer hover:bg-secondary ${showFolders ? "bg-secondary text-primary" : "text-muted-foreground"}`}
+                  >
+                    <FolderPlus size={18} />
+                  </motion.button>
+                )}
+              </div>
+            )}
+          </div>
         </DialogHeader>
         {word && (
           <motion.div
@@ -77,6 +124,41 @@ function InspectDialog({ word, onClose }: { word: PolishWord | null; onClose: ()
             className="space-y-3"
           >
             <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">{word.partOfSpeech}</span>
+
+            <AnimatePresence>
+              {showFolders && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex flex-wrap gap-1.5 pb-1">
+                    {folders.map((folder) => {
+                      const FolderIcon = getFolderIcon(folder.icon);
+                      const isIn = isWordInFolder(folder.id, word.id);
+                      return (
+                        <motion.button
+                          key={folder.id}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => handleToggleFolder(folder.id)}
+                          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
+                            isIn
+                              ? "bg-primary/10 border-primary/30 text-primary"
+                              : "bg-secondary border-border text-muted-foreground hover:bg-secondary/80"
+                          }`}
+                        >
+                          <FolderIcon size={13} />
+                          {folder.name}
+                          {isIn && <Check size={12} />}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
