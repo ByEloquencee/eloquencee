@@ -1,6 +1,10 @@
 import { useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, X, Trophy, ChevronLeft, ChevronRight, BookOpen, Keyboard, ArrowRight } from "lucide-react";
+import { ArrowLeft, Check, X, Trophy, ChevronLeft, ChevronRight, BookOpen, Keyboard, ArrowRight, Heart, FolderPlus } from "lucide-react";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useFolders } from "@/hooks/use-folders";
+import { getFolderIcon } from "@/components/CreateFolderDialog";
+import { useToast } from "@/hooks/use-toast";
 import type { PolishWord } from "@/data/words";
 import {
   Dialog,
