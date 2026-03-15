@@ -329,10 +329,12 @@ function TypingQuestion({
 
 // ─── Main QuizView ───
 export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple-choice" }: QuizViewProps) {
-  const questions = useMemo(() => {
+  const questionsRef = useRef<ReturnType<typeof generateQuestion>[] | null>(null);
+  if (!questionsRef.current) {
     const pool = allWords.length >= 4 ? allWords : words;
-    return shuffle(words).map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
-  }, [words, allWords]);
+    questionsRef.current = shuffle(words).map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
+  }
+  const questions = questionsRef.current;
 
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
