@@ -385,6 +385,8 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
   }, [isAnswered, inspectWord, current, questions.length, score, onComplete]);
 
   const handleRestart = () => {
+    const pool = allWords.length >= 4 ? allWords : words;
+    questionsRef.current = shuffle(words).map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
     setCurrent(0);
     setAnswers({});
     setScore(0);
