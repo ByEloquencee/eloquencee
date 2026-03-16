@@ -439,15 +439,11 @@ const Index = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="w-full max-w-lg mx-auto px-4 pb-4"
+            className="relative z-20 w-full max-w-lg mx-auto px-4 pb-4"
           >
             <div className="flex items-center justify-between gap-2">
               <button
                 onClick={() => setCategoriesOpen((v) => !v)}
-                onPointerDownCapture={(e) => e.stopPropagation()}
-                onTouchStartCapture={(e) => e.stopPropagation()}
-                onPointerMoveCapture={(e) => e.stopPropagation()}
-                onTouchMoveCapture={(e) => e.stopPropagation()}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
               >
                 <span className="truncate max-w-[180px]">{selectedCategoryLabels}</span>
@@ -461,16 +457,13 @@ const Index = () => {
             <AnimatePresence>
               {categoriesOpen && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden"
-                  onPointerDownCapture={(e) => e.stopPropagation()}
-                  onTouchStartCapture={(e) => e.stopPropagation()}
-                  onPointerMoveCapture={(e) => e.stopPropagation()}
-                  onTouchMoveCapture={(e) => e.stopPropagation()}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-4 right-4 top-full z-30 mt-3 rounded-2xl border border-border bg-background/95 p-3 shadow-sm backdrop-blur-sm"
                 >
-                  <div className="flex flex-wrap gap-1.5 pt-3">
+                  <div className="flex flex-wrap gap-1.5">
                     {visibleCategories.map((cat) => {
                       const isSelected = cat.value === "all"
                         ? selectedCategories.includes("all")
@@ -479,8 +472,6 @@ const Index = () => {
                         <button
                           key={cat.value}
                           onClick={() => toggleCategory(cat.value)}
-                          onPointerDownCapture={(e) => e.stopPropagation()}
-                          onTouchStartCapture={(e) => e.stopPropagation()}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
                             isSelected
                               ? "bg-primary text-primary-foreground"
