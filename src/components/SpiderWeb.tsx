@@ -24,7 +24,7 @@ export function SpiderWeb() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="pointer-events-none select-none absolute left-0 top-full z-10"
+          className="pointer-events-none select-none absolute left-3 top-full z-10"
         >
           <div className="flex flex-col items-center">
             {/* Single thread */}
