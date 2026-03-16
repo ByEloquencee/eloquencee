@@ -30,6 +30,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [zenMode, setZenMode] = useState(false);
+  const [swipeDir, setSwipeDir] = useState<"up" | "down">("up");
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Show pronunciation for foreign-origin words and historical figures
