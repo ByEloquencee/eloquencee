@@ -142,7 +142,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           style={{ touchAction: "pan-x" }}
         >
           <div
-            className="bg-card rounded-2xl border border-border shadow-sm overflow-visible relative select-none"
+            className="overflow-visible relative select-none"
           >
             {/* Header */}
             <div className="px-6 pt-8 pb-4 text-center relative">
