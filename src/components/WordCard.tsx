@@ -296,6 +296,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           </AnimatePresence>
         </div>
         <SpiderWeb />
+        </div>
       </motion.div>
     </AnimatePresence>
   );
