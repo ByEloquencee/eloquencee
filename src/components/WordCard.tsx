@@ -339,19 +339,15 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           </div>
         </motion.div>
       </AnimatePresence>
-      {/* Mobile swipe hint - outside draggable area */}
+      {/* Mobile swipe hint - overlayed so it doesn't move the card */}
       <AnimatePresence>
         {showSwipeHint && (
           <motion.div
-            className="md:hidden flex flex-col items-center mt-3 text-muted-foreground/40 select-none"
+            className="pointer-events-none absolute left-1/2 top-full z-10 mt-3 hidden -translate-x-1/2 flex-col items-center text-muted-foreground/40 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            onPointerDownCapture={(e) => e.stopPropagation()}
-            onTouchStartCapture={(e) => e.stopPropagation()}
-            onPointerMoveCapture={(e) => e.stopPropagation()}
-            onTouchMoveCapture={(e) => e.stopPropagation()}
           >
             <motion.div
               animate={{ y: [0, -4, 0] }}
