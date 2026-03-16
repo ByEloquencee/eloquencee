@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2, ChevronUp } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
-import { SpiderWeb } from "@/components/SpiderWeb";
+
 import { WordExtraInfo } from "@/components/WordExtraInfo";
 import type { Folder } from "@/hooks/use-folders";
 import type { DifficultyLevel } from "@/hooks/use-profile";
@@ -335,7 +335,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                 </motion.div>
               )}
             </AnimatePresence>
-            <SpiderWeb />
+            
           </div>
         </motion.div>
       </AnimatePresence>

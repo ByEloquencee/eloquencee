@@ -26,6 +26,7 @@ import { StatsPanel } from "@/components/StatsPanel";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
+import { SpiderWeb } from "@/components/SpiderWeb";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useCustomWords } from "@/hooks/use-custom-words";
 import { useFolders } from "@/hooks/use-folders";
@@ -442,16 +443,19 @@ const Index = () => {
             className="relative z-20 w-full max-w-lg mx-auto px-4 pb-4"
           >
             <div className="flex items-center justify-between gap-2">
-              <button
-                onClick={() => setCategoriesOpen((v) => !v)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
-              >
-                <span className="truncate max-w-[180px]">{selectedCategoryLabels}</span>
-                <ChevronDown
-                  size={16}
-                  className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
-                />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setCategoriesOpen((v) => !v)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
+                >
+                  <span className="truncate max-w-[180px]">{selectedCategoryLabels}</span>
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+                <SpiderWeb />
+              </div>
               <DailyProgress current={todayCount} goal={profile?.daily_goal ?? 5} />
             </div>
             <AnimatePresence>
