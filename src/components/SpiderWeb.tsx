@@ -7,9 +7,15 @@ export function SpiderWeb() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), IDLE_TIMEOUT);
-    return () => clearTimeout(timer);
+    const showTimer = setTimeout(() => setVisible(true), IDLE_TIMEOUT);
+    return () => clearTimeout(showTimer);
   }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    const hideTimer = setTimeout(() => setVisible(false), 8000);
+    return () => clearTimeout(hideTimer);
+  }, [visible]);
 
   return (
     <AnimatePresence>
@@ -18,7 +24,7 @@ export function SpiderWeb() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="pointer-events-none select-none absolute left-0 top-full z-10"
+          className="pointer-events-none select-none absolute left-3 top-full z-10"
         >
           <div className="flex flex-col items-center">
             {/* Single thread */}
