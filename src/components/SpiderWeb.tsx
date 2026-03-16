@@ -7,9 +7,15 @@ export function SpiderWeb() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), IDLE_TIMEOUT);
-    return () => clearTimeout(timer);
+    const showTimer = setTimeout(() => setVisible(true), IDLE_TIMEOUT);
+    return () => clearTimeout(showTimer);
   }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    const hideTimer = setTimeout(() => setVisible(false), 8000);
+    return () => clearTimeout(hideTimer);
+  }, [visible]);
 
   return (
     <AnimatePresence>
