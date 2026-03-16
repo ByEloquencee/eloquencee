@@ -295,7 +295,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                   })}
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="hidden md:flex items-center gap-2 flex-shrink-0">
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={handleNext}
