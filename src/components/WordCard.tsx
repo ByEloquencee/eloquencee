@@ -95,6 +95,16 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
     setZenMode(false);
   };
 
+  // Show swipe hint after 4s without swiping, reset on each new word
+  useEffect(() => {
+    setShowSwipeHint(false);
+    if (swipeHintTimerRef.current) clearTimeout(swipeHintTimerRef.current);
+    swipeHintTimerRef.current = setTimeout(() => setShowSwipeHint(true), 4000);
+    return () => {
+      if (swipeHintTimerRef.current) clearTimeout(swipeHintTimerRef.current);
+    };
+  }, [word.id]);
+
   useEffect(() => {
     return () => {
       if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
