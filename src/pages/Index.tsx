@@ -444,6 +444,10 @@ const Index = () => {
             <div className="flex items-center justify-between gap-2">
               <button
                 onClick={() => setCategoriesOpen((v) => !v)}
+                onPointerDownCapture={(e) => e.stopPropagation()}
+                onTouchStartCapture={(e) => e.stopPropagation()}
+                onPointerMoveCapture={(e) => e.stopPropagation()}
+                onTouchMoveCapture={(e) => e.stopPropagation()}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors"
               >
                 <span className="truncate max-w-[180px]">{selectedCategoryLabels}</span>
@@ -461,6 +465,10 @@ const Index = () => {
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
+                  onPointerDownCapture={(e) => e.stopPropagation()}
+                  onTouchStartCapture={(e) => e.stopPropagation()}
+                  onPointerMoveCapture={(e) => e.stopPropagation()}
+                  onTouchMoveCapture={(e) => e.stopPropagation()}
                 >
                   <div className="flex flex-wrap gap-1.5 pt-3">
                     {visibleCategories.map((cat) => {
@@ -471,6 +479,8 @@ const Index = () => {
                         <button
                           key={cat.value}
                           onClick={() => toggleCategory(cat.value)}
+                          onPointerDownCapture={(e) => e.stopPropagation()}
+                          onTouchStartCapture={(e) => e.stopPropagation()}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
                             isSelected
                               ? "bg-primary text-primary-foreground"
