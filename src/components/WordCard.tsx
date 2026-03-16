@@ -99,14 +99,21 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
     };
   }, []);
 
+  const cardVariants = {
+    enter: (dir: string) => ({ opacity: 0, y: dir === "up" ? 300 : -300 }),
+    center: { opacity: 1, y: 0 },
+    exit: (dir: string) => ({ opacity: 0, y: dir === "up" ? -300 : 300 }),
+  };
+
   return (
     <AnimatePresence mode="popLayout" custom={swipeDir}>
       <motion.div
         key={word.id}
         custom={swipeDir}
-        initial={(dir: string) => ({ opacity: 0, y: dir === "up" ? 300 : -300 })}
-        animate={{ opacity: 1, y: 0 }}
-        exit={(dir: string) => ({ opacity: 0, y: dir === "up" ? -300 : 300 })}
+        variants={cardVariants}
+        initial="enter"
+        animate="center"
+        exit="exit"
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-lg mx-auto"
         drag="y"
