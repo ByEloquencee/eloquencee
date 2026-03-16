@@ -134,7 +134,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
+                  onClick={() => handlePrevAction()}
                   className="absolute top-3 left-3 p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   title="Cofnij"
                 >
