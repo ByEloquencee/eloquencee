@@ -100,13 +100,14 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   }, []);
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="popLayout" custom={swipeDir}>
       <motion.div
         key={word.id}
-        initial={{ opacity: 0, y: 20 }}
+        custom={swipeDir}
+        initial={(dir: string) => ({ opacity: 0, y: dir === "up" ? 300 : -300 })}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        exit={(dir: string) => ({ opacity: 0, y: dir === "up" ? -300 : 300 })}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-lg mx-auto"
         drag="y"
         dragConstraints={{ top: 0, bottom: 0 }}
@@ -116,9 +117,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           if (info.offset.y < -threshold) {
             handleNext();
           } else if (info.offset.y > threshold && canGoBack) {
-            setRevealed(false);
-            setConfirmDelete(false);
-            onPrev?.();
+            handlePrevAction();
           }
         }}
         style={{ touchAction: "pan-x" }}
