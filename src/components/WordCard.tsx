@@ -325,6 +325,21 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           </AnimatePresence>
           <SpiderWeb />
         </div>
+        {/* Mobile swipe hint */}
+        <motion.div
+          className="md:hidden flex flex-col items-center mt-3 text-muted-foreground/40"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.6 }}
+        >
+          <motion.div
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronUp size={18} />
+          </motion.div>
+          <span className="text-[10px] tracking-wide">przesuń w górę</span>
+        </motion.div>
       </motion.div>
     </AnimatePresence>
   );
