@@ -43,8 +43,7 @@ export function SpiderWeb() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
           transition={{ duration: 0.8 }}
-          className="w-full pointer-events-none select-none absolute left-0 right-0"
-          style={{ marginTop: "-1px" }}
+          className="w-full pointer-events-none select-none absolute left-0 right-0 bottom-0 translate-y-full z-10"
         >
           {/* Cartoon web stretched along card bottom */}
           <motion.svg
