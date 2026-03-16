@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const IDLE_TIMEOUT = 3 * 1000; // 3 seconds for testing (change back to 5 * 60 * 1000)
+const IDLE_TIMEOUT = 15 * 1000; // 15 seconds
 
 export function SpiderWeb() {
   const [visible, setVisible] = useState(false);
@@ -43,8 +43,7 @@ export function SpiderWeb() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
           transition={{ duration: 0.8 }}
-          className="w-full pointer-events-none select-none"
-          style={{ marginTop: "-1px" }}
+          className="w-full pointer-events-none select-none absolute left-0 right-0 bottom-0 translate-y-full z-10"
         >
           {/* Cartoon web stretched along card bottom */}
           <motion.svg

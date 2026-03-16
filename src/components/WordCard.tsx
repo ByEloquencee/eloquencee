@@ -101,7 +101,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
         className="w-full max-w-lg mx-auto"
       >
         <div
-          className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden relative select-none"
+          className="bg-card rounded-2xl border border-border shadow-sm overflow-visible relative select-none"
         >
           {/* Header */}
           <div className="px-6 pt-8 pb-4 text-center relative">
@@ -294,8 +294,8 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               </motion.div>
             )}
           </AnimatePresence>
+          <SpiderWeb />
         </div>
-        <SpiderWeb />
       </motion.div>
     </AnimatePresence>
   );
