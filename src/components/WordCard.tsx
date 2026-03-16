@@ -343,11 +343,15 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
       <AnimatePresence>
         {showSwipeHint && (
           <motion.div
-            className="md:hidden flex flex-col items-center mt-3 text-muted-foreground/40"
+            className="md:hidden flex flex-col items-center mt-3 text-muted-foreground/40 select-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
+            onPointerDownCapture={(e) => e.stopPropagation()}
+            onTouchStartCapture={(e) => e.stopPropagation()}
+            onPointerMoveCapture={(e) => e.stopPropagation()}
+            onTouchMoveCapture={(e) => e.stopPropagation()}
           >
             <motion.div
               animate={{ y: [0, -4, 0] }}
