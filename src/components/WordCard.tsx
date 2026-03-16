@@ -30,6 +30,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [zenMode, setZenMode] = useState(false);
+  const [swipeDir, setSwipeDir] = useState<"up" | "down">("up");
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Show pronunciation for foreign-origin words and historical figures
@@ -58,10 +59,18 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   const handleReveal = () => setRevealed(true);
 
   const handleNext = useCallback(() => {
+    setSwipeDir("up");
     setRevealed(false);
     setConfirmDelete(false);
     onNext();
   }, [onNext]);
+
+  const handlePrevAction = useCallback(() => {
+    setSwipeDir("down");
+    setRevealed(false);
+    setConfirmDelete(false);
+    onPrev?.();
+  }, [onPrev]);
 
   const handleDelete = () => {
     if (!confirmDelete) {
@@ -90,14 +99,22 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
     };
   }, []);
 
+  const cardVariants = {
+    enter: (dir: string) => ({ opacity: 0, y: dir === "up" ? 300 : -300 }),
+    center: { opacity: 1, y: 0 },
+    exit: (dir: string) => ({ opacity: 0, y: dir === "up" ? -300 : 300 }),
+  };
+
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="popLayout" custom={swipeDir}>
       <motion.div
         key={word.id}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        custom={swipeDir}
+        variants={cardVariants}
+        initial="enter"
+        animate="center"
+        exit="exit"
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-lg mx-auto"
         drag="y"
         dragConstraints={{ top: 0, bottom: 0 }}
@@ -107,9 +124,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           if (info.offset.y < -threshold) {
             handleNext();
           } else if (info.offset.y > threshold && canGoBack) {
-            setRevealed(false);
-            setConfirmDelete(false);
-            onPrev?.();
+            handlePrevAction();
           }
         }}
         style={{ touchAction: "pan-x" }}
@@ -126,7 +141,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  onClick={() => { setRevealed(false); setConfirmDelete(false); onPrev?.(); }}
+                  onClick={() => handlePrevAction()}
                   className="absolute top-3 left-3 p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   title="Cofnij"
                 >
