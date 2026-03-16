@@ -99,6 +99,20 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-lg mx-auto"
+        drag="y"
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={0.3}
+        onDragEnd={(_, info) => {
+          const threshold = 50;
+          if (info.offset.y < -threshold) {
+            handleNext();
+          } else if (info.offset.y > threshold && canGoBack) {
+            setRevealed(false);
+            setConfirmDelete(false);
+            onPrev?.();
+          }
+        }}
+        style={{ touchAction: "pan-x" }}
       >
         <div
           className="bg-card rounded-2xl border border-border shadow-sm overflow-visible relative select-none"
@@ -281,7 +295,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                   })}
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="hidden md:flex items-center gap-2 flex-shrink-0">
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={handleNext}
