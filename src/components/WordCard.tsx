@@ -250,16 +250,13 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
             {/* Definition area */}
             <div className="px-6 pb-6 max-h-[50vh] overflow-y-auto">
               {!revealed && !zenMode ? (
-                <div className="relative mt-4">
-                  <motion.button
-                    onClick={handleReveal}
-                    whileTap={{ scale: 0.97 }}
-                    className="w-full py-4 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium tracking-wide hover:opacity-90 transition-opacity cursor-pointer"
-                  >
-                    Pokaż definicję
-                  </motion.button>
-                  <SpiderWeb />
-                </div>
+                <motion.button
+                  onClick={handleReveal}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full mt-4 py-4 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium tracking-wide hover:opacity-90 transition-opacity cursor-pointer"
+                >
+                  Pokaż definicję
+                </motion.button>
               ) : (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
@@ -338,6 +335,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                 </motion.div>
               )}
             </AnimatePresence>
+            <SpiderWeb />
           </div>
         </motion.div>
       </AnimatePresence>
