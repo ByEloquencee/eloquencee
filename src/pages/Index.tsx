@@ -139,6 +139,8 @@ const Index = () => {
   const cardDragY = useMotionValue(0);
   const wheelCooldownRef = useRef(false);
   const sliderControls = useAnimationControls();
+  const dragAxisRef = useRef<"x" | "y" | null>(null);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const snapToActivePage = useCallback((immediate = false) => {
     const target = -activePage * sliderWidth;
@@ -307,14 +309,17 @@ const Index = () => {
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
     const threshold = 50;
+    const offScreen = 500;
     if (offsetY < -threshold) {
-      void animate(cardDragY, 0, { type: "spring", stiffness: 500, damping: 30, duration: 0.15 }).then(() => {
+      void animate(cardDragY, -offScreen, { type: "tween", duration: 0.2, ease: "easeIn" }).then(() => {
+        cardDragY.set(0);
         handleNext();
       });
       return;
     }
     if (offsetY > threshold && history.length > 0) {
-      void animate(cardDragY, 0, { type: "spring", stiffness: 500, damping: 30, duration: 0.15 }).then(() => {
+      void animate(cardDragY, offScreen, { type: "tween", duration: 0.2, ease: "easeIn" }).then(() => {
+        cardDragY.set(0);
         handlePrev();
       });
       return;
@@ -398,31 +403,6 @@ const Index = () => {
         setTimeout(() => {
           completeExternalCardSwipe(e.deltaY > 0 ? -72 : 72);
         }, 20);
-      }}
-      onPointerDown={(e) => {
-        if (activePage !== 1) return;
-        const card = wordPageRef.current?.querySelector('[data-word-card]');
-        if (card && card.contains(e.target as Node)) {
-          wordPageTouchRef.current = null;
-          return;
-        }
-        wordPageTouchRef.current = e.clientY;
-        cardDragY.stop();
-      }}
-      onPointerMove={(e) => {
-        if (activePage !== 1 || wordPageTouchRef.current == null) return;
-        const raw = e.clientY - wordPageTouchRef.current;
-        const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
-        cardDragY.set(damped);
-      }}
-      onPointerUp={() => {
-        if (activePage !== 1 || wordPageTouchRef.current == null) return;
-        wordPageTouchRef.current = null;
-        completeExternalCardSwipe(cardDragY.get());
-      }}
-      onPointerCancel={() => {
-        wordPageTouchRef.current = null;
-        void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
       }}
     >
       {/* Nav */}
@@ -573,14 +553,36 @@ const Index = () => {
         <div className="flex-1 relative overflow-hidden min-h-0">
           <motion.div
             className="flex min-w-full h-full"
-            style={{ touchAction: "pan-y" }}
+            style={{ touchAction: "none" }}
             animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
             drag={sliderWidth > 0 ? "x" : false}
             dragMomentum={false}
             dragConstraints={{ left: -(totalPages - 1) * sliderWidth, right: 0 }}
             dragElastic={0.15}
+            dragDirectionLock
+            onDirectionLock={(axis) => {
+              dragAxisRef.current = axis;
+            }}
+            onDragStart={() => {
+              dragAxisRef.current = null;
+            }}
+            onDrag={(_, info) => {
+              if (dragAxisRef.current === "y" && activePage === 1) {
+                const raw = info.offset.y;
+                const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
+                cardDragY.set(damped);
+              }
+            }}
             onDragEnd={(_, info) => {
+              if (dragAxisRef.current === "y") {
+                if (activePage === 1) {
+                  completeExternalCardSwipe(cardDragY.get());
+                }
+                dragAxisRef.current = null;
+                return;
+              }
+              dragAxisRef.current = null;
               const threshold = 30;
               if (info.offset.x < -threshold && activePage < totalPages - 1) {
                 switchPage(activePage + 1);
