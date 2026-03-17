@@ -134,13 +134,19 @@ const Index = () => {
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
-  const wordPageRef = useRef<HTMLDivElement>(null);
-  
+  const pointerRef = useRef<{
+    startX: number;
+    startY: number;
+    currentX: number;
+    currentY: number;
+    axis: "x" | "y" | null;
+    pointerId: number | null;
+  } | null>(null);
+
   const cardDragY = useMotionValue(0);
   const wheelCooldownRef = useRef(false);
   const sliderControls = useAnimationControls();
-  const touchRef = useRef<{ startX: number; startY: number; axis: "x" | "y" | null } | null>(null);
-  const sliderXRef = useRef(0); // tracks current slider X position
+  const sliderXRef = useRef(0);
 
   const snapToActivePage = useCallback((immediate = false) => {
     const target = -activePage * sliderWidth;
