@@ -317,7 +317,7 @@ const Index = () => {
   }, [history]);
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
-    const threshold = 36;
+    const threshold = 60;
     const offScreen = Math.max(window.innerHeight * 0.9, 700);
 
     cardDragY.stop();
@@ -336,7 +336,7 @@ const Index = () => {
       });
       return;
     }
-    void animate(cardDragY, 0, { type: "spring", stiffness: 520, damping: 34, mass: 0.7 });
+    void animate(cardDragY, 0, { type: "spring", stiffness: 560, damping: 38, mass: 0.8 });
   }, [cardDragY, handleNext, handlePrev, history.length]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
