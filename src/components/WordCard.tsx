@@ -69,7 +69,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   }, [onNext]);
 
   const handlePrevAction = useCallback(() => {
-    setSwipeDir("down");
     setRevealed(false);
     setConfirmDelete(false);
     onPrev?.();
