@@ -104,7 +104,6 @@ const Index = () => {
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [history, setHistory] = useState<number[]>([]);
   const [forwardHistory, setForwardHistory] = useState<number[]>([]);
-  const [isRevisit, setIsRevisit] = useState(false);
   const swipeDirRef = useRef<"up" | "down" | null>(null);
   const [totalViewed, setTotalViewed] = useState(() => {
     try {
@@ -305,15 +304,11 @@ const Index = () => {
     if (forwardHistory.length > 0) {
       const nextIdx = forwardHistory[forwardHistory.length - 1];
       setForwardHistory((prev) => prev.slice(0, -1));
-      setIsRevisit(true);
       setCurrentIndex(nextIdx);
+    } else if (selectedCategories.includes("all") && preferredCategories.length > 0) {
+      setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
     } else {
-      setIsRevisit(false);
-      if (selectedCategories.includes("all") && preferredCategories.length > 0) {
-        setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
-      } else {
-        setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
-      }
+      setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
     }
   }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress, forwardHistory]);
 
@@ -322,7 +317,6 @@ const Index = () => {
     if (navigator.vibrate) navigator.vibrate(8);
     setForwardHistory((prev) => [...prev, currentIndex]);
     swipeDirRef.current = "down";
-    setIsRevisit(true);
     setHistory((prev) => {
       const next = [...prev];
       const lastIndex = next.pop()!;
@@ -777,6 +771,7 @@ const Index = () => {
               ) : (
                 currentWord && (
                   <WordCard
+                    key={currentWord.id}
                     word={currentWord}
                     isFavorite={isFavorite(currentWord.id)}
                     onToggleFavorite={() => {
@@ -806,7 +801,6 @@ const Index = () => {
                     difficultyLevel={profile?.difficulty_level || "advanced"}
                     externalDragY={cardDragY}
                     onExternalDragEnd={completeExternalCardSwipe}
-                    isRevisit={isRevisit}
                   />
                 )
               )}
