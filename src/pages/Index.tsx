@@ -134,6 +134,7 @@ const Index = () => {
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
+  const wordPageRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef<{
     startX: number;
     startY: number;
@@ -141,6 +142,7 @@ const Index = () => {
     currentY: number;
     axis: "x" | "y" | null;
     pointerId: number | null;
+    allowVertical: boolean;
   } | null>(null);
 
   const cardDragY = useMotionValue(0);
