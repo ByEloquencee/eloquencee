@@ -148,7 +148,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               handlePrevAction();
             }
           }}
-          style={{ touchAction: "none", y: externalDragY }}
+          style={{ y: externalDragY }}
         >
           <div
             className="overflow-visible relative select-none"
