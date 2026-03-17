@@ -692,6 +692,8 @@ const Index = () => {
                     onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
                     onShare={() => setShareOpen(true)}
                     difficultyLevel={profile?.difficulty_level || "advanced"}
+                    externalDragY={cardDragY}
+                    onExternalDragEnd={completeExternalCardSwipe}
                   />
                 )
               )}
