@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Crown, X, Heart, Infinity, Dumbbell, GraduationCap, Bell, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/use-subscription";
+import { useAuth } from "@/hooks/use-auth";
 
 interface PremiumDialogProps {
   open: boolean;
@@ -27,6 +28,7 @@ const FEATURES = [
 
 export function PremiumDialog({ open, onClose }: PremiumDialogProps) {
   const { startCheckout, isPremium } = useSubscription();
+  const { user } = useAuth();
   const [tab, setTab] = useState<"premium" | "support">("premium");
   const [supportAmount, setSupportAmount] = useState(9.99);
   const [customAmount, setCustomAmount] = useState("");
@@ -35,6 +37,10 @@ export function PremiumDialog({ open, onClose }: PremiumDialogProps) {
   if (!open) return null;
 
   const handlePurchase = async () => {
+    if (!user) {
+      toast.error("Zaloguj się, aby przejść do płatności");
+      return;
+    }
     setLoading(true);
     try {
       if (tab === "support") {
