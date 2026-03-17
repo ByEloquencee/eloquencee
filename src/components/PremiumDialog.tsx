@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Crown, X, Heart, Infinity, Dumbbell, GraduationCap, Bell, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/use-subscription";
+import { useAuth } from "@/hooks/use-auth";
 
 interface PremiumDialogProps {
   open: boolean;
