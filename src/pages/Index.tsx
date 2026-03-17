@@ -806,6 +806,7 @@ const Index = () => {
                     difficultyLevel={profile?.difficulty_level || "advanced"}
                     externalDragY={cardDragY}
                     onExternalDragEnd={completeExternalCardSwipe}
+                    isRevisit={isRevisit}
                   />
                 )
               )}
