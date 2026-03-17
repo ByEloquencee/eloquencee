@@ -136,6 +136,7 @@ const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const wordPageRef = useRef<HTMLDivElement>(null);
   const wordPageTouchRef = useRef<number | null>(null);
+  const cardDragY = useMotionValue(0);
   const wheelCooldownRef = useRef(false);
   const sliderControls = useAnimationControls();
 
