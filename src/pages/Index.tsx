@@ -309,14 +309,17 @@ const Index = () => {
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
     const threshold = 50;
+    const offScreen = 500;
     if (offsetY < -threshold) {
-      void animate(cardDragY, 0, { type: "spring", stiffness: 500, damping: 30, duration: 0.15 }).then(() => {
+      void animate(cardDragY, -offScreen, { type: "tween", duration: 0.2, ease: "easeIn" }).then(() => {
+        cardDragY.set(0);
         handleNext();
       });
       return;
     }
     if (offsetY > threshold && history.length > 0) {
-      void animate(cardDragY, 0, { type: "spring", stiffness: 500, damping: 30, duration: 0.15 }).then(() => {
+      void animate(cardDragY, offScreen, { type: "tween", duration: 0.2, ease: "easeIn" }).then(() => {
+        cardDragY.set(0);
         handlePrev();
       });
       return;
