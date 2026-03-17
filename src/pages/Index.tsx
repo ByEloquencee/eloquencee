@@ -134,6 +134,9 @@ const Index = () => {
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
+  const wordPageRef = useRef<HTMLDivElement>(null);
+  const wordPageTouchRef = useRef<number | null>(null);
+  const wheelCooldownRef = useRef(false);
   const sliderControls = useAnimationControls();
 
   const snapToActivePage = useCallback((immediate = false) => {
