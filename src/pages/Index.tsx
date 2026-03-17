@@ -721,6 +721,14 @@ const Index = () => {
                     <Shield size={16} />
                     Panel moderatora
                   </button>
+                  <button
+                    onClick={() => setForceSpider(true)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    title="Przywołaj Elokwentnego Pająka"
+                  >
+                    <Bug size={16} />
+                    🕷️
+                  </button>
                 </div>
               )}
               <div className="flex-1 w-full min-h-0 flex items-start justify-center overflow-hidden">
