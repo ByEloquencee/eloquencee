@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield, Bug } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -134,6 +134,7 @@ const Index = () => {
   const [exercisesActive, setExercisesActive] = useState(false);
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
+  const [forceSpider, setForceSpider] = useState(false);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
   const wordPageRef = useRef<HTMLDivElement>(null);
@@ -550,7 +551,7 @@ const Index = () => {
                     className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
                   />
                 </button>
-                <SpiderWeb todayCount={todayCount} dailyGoal={profile?.daily_goal ?? 5} streak={streak} />
+                <SpiderWeb todayCount={todayCount} dailyGoal={profile?.daily_goal ?? 5} streak={streak} forceShow={forceSpider} onHide={() => setForceSpider(false)} />
               </div>
               <DailyProgress current={todayCount} goal={profile?.daily_goal ?? 5} />
             </div>
@@ -719,6 +720,14 @@ const Index = () => {
                   >
                     <Shield size={16} />
                     Panel moderatora
+                  </button>
+                  <button
+                    onClick={() => setForceSpider(true)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    title="Przywołaj Elokwentnego Pająka"
+                  >
+                    <Bug size={16} />
+                    🕷️
                   </button>
                 </div>
               )}
