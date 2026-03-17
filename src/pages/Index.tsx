@@ -407,7 +407,9 @@ const Index = () => {
       }}
       onPointerMove={(e) => {
         if (activePage !== 1 || wordPageTouchRef.current == null) return;
-        cardDragY.set(e.clientY - wordPageTouchRef.current);
+        const raw = e.clientY - wordPageTouchRef.current;
+        const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
+        cardDragY.set(damped);
       }}
       onPointerUp={(e) => {
         if (activePage !== 1 || wordPageTouchRef.current == null) return;
