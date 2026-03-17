@@ -103,6 +103,7 @@ const Index = () => {
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [history, setHistory] = useState<number[]>([]);
+  const [forwardHistory, setForwardHistory] = useState<number[]>([]);
   const [totalViewed, setTotalViewed] = useState(() => {
     try {
       const stored = JSON.parse(localStorage.getItem("eloquencee-total-viewed") || "0");
