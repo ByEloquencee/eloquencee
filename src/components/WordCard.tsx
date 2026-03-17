@@ -241,10 +241,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
             {/* Definition area */}
             <div
               className="px-6 pb-6 max-h-[50vh] overflow-y-auto scrollbar-none"
-              style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
-              onPointerDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onTouchMove={(e) => e.stopPropagation()}
+              style={{ touchAction: "none", overscrollBehavior: "contain" }}
             >
               {!revealed && !zenMode ? (
                 <motion.button

@@ -318,25 +318,25 @@ const Index = () => {
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
     const threshold = 60;
-    const offScreen = Math.max(window.innerHeight * 0.9, 700);
+    const offScreen = Math.max(window.innerHeight * 1.15, 900);
 
     cardDragY.stop();
 
     if (offsetY < -threshold) {
-      void animate(cardDragY, -offScreen, { type: "tween", duration: 0.18, ease: "easeOut" }).then(() => {
+      void animate(cardDragY, -offScreen, { type: "tween", duration: 0.2, ease: [0.22, 1, 0.36, 1] }).then(() => {
         cardDragY.set(0);
         handleNext();
       });
       return;
     }
     if (offsetY > threshold && history.length > 0) {
-      void animate(cardDragY, offScreen, { type: "tween", duration: 0.18, ease: "easeOut" }).then(() => {
+      void animate(cardDragY, offScreen, { type: "tween", duration: 0.22, ease: [0.22, 1, 0.36, 1] }).then(() => {
         cardDragY.set(0);
         handlePrev();
       });
       return;
     }
-    void animate(cardDragY, 0, { type: "spring", stiffness: 560, damping: 38, mass: 0.8 });
+    void animate(cardDragY, 0, { type: "spring", stiffness: 620, damping: 42, mass: 0.9 });
   }, [cardDragY, handleNext, handlePrev, history.length]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
