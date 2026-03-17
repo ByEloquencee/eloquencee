@@ -582,17 +582,23 @@ const Index = () => {
             sliderControls.set({ x: newX });
           }
         }}
-        onTouchEnd={() => {
+        onTouchEnd={(e) => {
           if (!touchRef.current) return;
           const axis = touchRef.current.axis;
+          const t = e.changedTouches[0];
+          const dx = t.clientX - touchRef.current.startX;
 
           if (axis === "y" && activePage === 1) {
             completeExternalCardSwipe(cardDragY.get());
           } else if (axis === "x") {
-            const dx = 0; // we need to compute from last known
-            // Use the slider's current visual position to decide
-            const baseX = -activePage * sliderWidth;
-            // We don't have the final dx easily, so recompute from touch
+            const threshold = 40;
+            if (dx < -threshold && activePage < totalPages - 1) {
+              switchPage(activePage + 1);
+            } else if (dx > threshold && activePage > 0) {
+              switchPage(activePage - 1);
+            } else {
+              snapToActivePage();
+            }
           }
 
           touchRef.current = null;
