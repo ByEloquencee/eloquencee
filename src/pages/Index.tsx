@@ -104,6 +104,8 @@ const Index = () => {
   const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
   const [history, setHistory] = useState<number[]>([]);
   const [forwardHistory, setForwardHistory] = useState<number[]>([]);
+  const [isRevisit, setIsRevisit] = useState(false);
+  const swipeDirRef = useRef<"up" | "down" | null>(null);
   const [totalViewed, setTotalViewed] = useState(() => {
     try {
       const stored = JSON.parse(localStorage.getItem("eloquencee-total-viewed") || "0");
@@ -299,23 +301,28 @@ const Index = () => {
       localStorage.setItem("eloquencee-total-viewed", JSON.stringify(next));
       return next;
     });
-    // If we have forward history (user went back and now goes forward), restore that word
+    swipeDirRef.current = "up";
     if (forwardHistory.length > 0) {
       const nextIdx = forwardHistory[forwardHistory.length - 1];
       setForwardHistory((prev) => prev.slice(0, -1));
+      setIsRevisit(true);
       setCurrentIndex(nextIdx);
-    } else if (selectedCategories.includes("all") && preferredCategories.length > 0) {
-      setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
     } else {
-      setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
+      setIsRevisit(false);
+      if (selectedCategories.includes("all") && preferredCategories.length > 0) {
+        setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
+      } else {
+        setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
+      }
     }
   }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress, forwardHistory]);
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
     if (navigator.vibrate) navigator.vibrate(8);
-    // Save current index to forward history so user can go forward to it again
     setForwardHistory((prev) => [...prev, currentIndex]);
+    swipeDirRef.current = "down";
+    setIsRevisit(true);
     setHistory((prev) => {
       const next = [...prev];
       const lastIndex = next.pop()!;
@@ -357,7 +364,16 @@ const Index = () => {
   useEffect(() => {
     pointerRef.current = null;
     cardDragY.stop();
-    cardDragY.set(0);
+    const dir = swipeDirRef.current;
+    if (dir) {
+      // Card enters from the opposite side: swipe up → enters from bottom, swipe down → enters from top
+      const entryOffset = dir === "up" ? 300 : -300;
+      cardDragY.set(entryOffset);
+      void animate(cardDragY, 0, { type: "spring", stiffness: 500, damping: 38, mass: 0.8 });
+      swipeDirRef.current = null;
+    } else {
+      cardDragY.set(0);
+    }
   }, [currentIndex, cardDragY]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
@@ -790,6 +806,7 @@ const Index = () => {
                     difficultyLevel={profile?.difficulty_level || "advanced"}
                     externalDragY={cardDragY}
                     onExternalDragEnd={completeExternalCardSwipe}
+                    isRevisit={isRevisit}
                   />
                 )
               )}
