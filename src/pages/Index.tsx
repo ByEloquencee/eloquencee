@@ -415,11 +415,10 @@ const Index = () => {
         const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
         cardDragY.set(damped);
       }}
-      onPointerUp={(e) => {
+      onPointerUp={() => {
         if (activePage !== 1 || wordPageTouchRef.current == null) return;
-        const diff = e.clientY - wordPageTouchRef.current;
         wordPageTouchRef.current = null;
-        completeExternalCardSwipe(diff);
+        completeExternalCardSwipe(cardDragY.get());
       }}
       onPointerCancel={() => {
         wordPageTouchRef.current = null;
