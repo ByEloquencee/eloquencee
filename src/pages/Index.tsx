@@ -306,15 +306,17 @@ const Index = () => {
   }, [history]);
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
-    const threshold = 30;
+    const threshold = 50;
     if (offsetY < -threshold) {
-      cardDragY.set(0);
-      handleNext();
+      void animate(cardDragY, 0, { type: "spring", stiffness: 500, damping: 30, duration: 0.15 }).then(() => {
+        handleNext();
+      });
       return;
     }
     if (offsetY > threshold && history.length > 0) {
-      cardDragY.set(0);
-      handlePrev();
+      void animate(cardDragY, 0, { type: "spring", stiffness: 500, damping: 30, duration: 0.15 }).then(() => {
+        handlePrev();
+      });
       return;
     }
     void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
@@ -413,11 +415,10 @@ const Index = () => {
         const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
         cardDragY.set(damped);
       }}
-      onPointerUp={(e) => {
+      onPointerUp={() => {
         if (activePage !== 1 || wordPageTouchRef.current == null) return;
-        const diff = e.clientY - wordPageTouchRef.current;
         wordPageTouchRef.current = null;
-        completeExternalCardSwipe(diff);
+        completeExternalCardSwipe(cardDragY.get());
       }}
       onPointerCancel={() => {
         wordPageTouchRef.current = null;
