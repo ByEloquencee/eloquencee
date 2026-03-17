@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const IDLE_TIMEOUT = 15 * 1000;
 const VISIBLE_DURATION = 8 * 1000;
