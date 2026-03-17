@@ -330,9 +330,14 @@ function TypingQuestion({
 // ─── Main QuizView ───
 export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple-choice" }: QuizViewProps) {
   const questionsRef = useRef<ReturnType<typeof generateQuestion>[] | null>(null);
+  const usedWordIdsRef = useRef<Set<string>>(new Set());
   if (!questionsRef.current) {
     const pool = allWords.length >= 4 ? allWords : words;
-    questionsRef.current = shuffle(words).map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
+    // Deduplicate words by id to prevent repeating questions
+    const uniqueWords = Array.from(new Map(words.map(w => [w.id, w])).values());
+    const shuffled = shuffle(uniqueWords);
+    questionsRef.current = shuffled.map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
+    usedWordIdsRef.current = new Set(shuffled.map(w => w.id));
   }
   const questions = questionsRef.current;
 
@@ -347,6 +352,9 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
   const [typingInput, setTypingInput] = useState("");
   const [typingStatus, setTypingStatus] = useState<"answering" | "correct" | "wrong">("answering");
 
+  // Guard against accidental advance (e.g. tap to wake screen)
+  const answeredAtRef = useRef<number>(0);
+
   const question = questions[current];
   const selected = answers[current] ?? null;
   const isAnswered = mode === "multiple-choice" ? selected !== null : typingStatus !== "answering";
@@ -356,6 +364,7 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
       if (answers[current] !== undefined) return;
       setAnswers((prev) => ({ ...prev, [current]: id }));
       if (id === question.correctId) setScore((s) => s + 1);
+      answeredAtRef.current = Date.now();
     },
     [answers, current, question]
   );
@@ -366,11 +375,14 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
     const isCorrect = normalize(typingInput) === normalize(question.word.word);
     setTypingStatus(isCorrect ? "correct" : "wrong");
     if (isCorrect) setScore((s) => s + 1);
+    answeredAtRef.current = Date.now();
   }, [typingInput, question]);
 
   const handleAdvance = useCallback(() => {
     if (!isAnswered) return;
-    if (inspectWord) return; // don't advance while dialog is open
+    if (inspectWord) return;
+    // Require at least 400ms after answering to prevent accidental taps
+    if (Date.now() - answeredAtRef.current < 400) return;
     if (current + 1 >= questions.length) {
       setFinished(true);
       onComplete?.(score);
@@ -378,7 +390,6 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
       const next = current + 1;
       setCurrent(next);
       setMaxReached((m) => Math.max(m, next));
-      // Reset typing state
       setTypingInput("");
       setTypingStatus("answering");
     }
@@ -386,7 +397,10 @@ export function QuizView({ words, allWords, onExit, onComplete, mode = "multiple
 
   const handleRestart = () => {
     const pool = allWords.length >= 4 ? allWords : words;
-    questionsRef.current = shuffle(words).map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
+    const uniqueWords = Array.from(new Map(words.map(w => [w.id, w])).values());
+    const shuffled = shuffle(uniqueWords);
+    questionsRef.current = shuffled.map((w) => generateQuestion(w, pool.length >= 4 ? pool : words));
+    usedWordIdsRef.current = new Set(shuffled.map(w => w.id));
     setCurrent(0);
     setAnswers({});
     setScore(0);
