@@ -95,6 +95,15 @@ WAŻNE: Każde pytanie MUSI dotyczyć INNEGO słowa. NIGDY nie powtarzaj tego sa
       });
     }
 
+    // Deduplicate questions by question_word
+    const seen = new Set<string>();
+    result.questions = result.questions.filter((q: { question_word: string }) => {
+      const key = q.question_word.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
