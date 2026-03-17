@@ -139,8 +139,8 @@ const Index = () => {
   const cardDragY = useMotionValue(0);
   const wheelCooldownRef = useRef(false);
   const sliderControls = useAnimationControls();
-  const dragAxisRef = useRef<"x" | "y" | null>(null);
-  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchRef = useRef<{ startX: number; startY: number; axis: "x" | "y" | null } | null>(null);
+  const sliderXRef = useRef(0); // tracks current slider X position
 
   const snapToActivePage = useCallback((immediate = false) => {
     const target = -activePage * sliderWidth;
