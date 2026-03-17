@@ -12,6 +12,7 @@ interface QuizModeDialogProps {
   onClose: () => void;
   onStartQuiz: (source: "favorites" | string, mode: QuizMode) => void;
   onStartRandomQuiz: (difficulty: DifficultyLevel, mode: QuizMode) => void;
+  onStartSynonymQuiz: (source: "favorites" | string | "__random__", difficulty?: DifficultyLevel) => void;
   hasFavorites: boolean;
   folders: Folder[];
 }
