@@ -135,15 +135,16 @@ const Index = () => {
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
   const wordPageRef = useRef<HTMLDivElement>(null);
-  const wordPageTouchRef = useRef<number | null>(null);
+  
   const cardDragY = useMotionValue(0);
   const wheelCooldownRef = useRef(false);
   const sliderControls = useAnimationControls();
-  const dragAxisRef = useRef<"x" | "y" | null>(null);
-  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchRef = useRef<{ startX: number; startY: number; axis: "x" | "y" | null } | null>(null);
+  const sliderXRef = useRef(0); // tracks current slider X position
 
   const snapToActivePage = useCallback((immediate = false) => {
     const target = -activePage * sliderWidth;
+    sliderXRef.current = target;
     if (immediate) {
       sliderControls.set({ x: target });
     } else {
@@ -551,7 +552,67 @@ const Index = () => {
       </AnimatePresence>
 
       {/* Swipeable content area */}
-      <main className="flex-1 min-h-0 flex flex-col overflow-hidden relative" ref={containerRef}>
+      <main
+        className="flex-1 min-h-0 flex flex-col overflow-hidden relative"
+        ref={containerRef}
+        onTouchStart={(e) => {
+          const t = e.touches[0];
+          touchRef.current = { startX: t.clientX, startY: t.clientY, axis: null };
+        }}
+        onTouchMove={(e) => {
+          if (!touchRef.current) return;
+          const t = e.touches[0];
+          const dx = t.clientX - touchRef.current.startX;
+          const dy = t.clientY - touchRef.current.startY;
+
+          // Lock axis after 8px of movement
+          if (!touchRef.current.axis) {
+            if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+              touchRef.current.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+            } else {
+              return;
+            }
+          }
+
+          if (touchRef.current.axis === "y" && activePage === 1) {
+            cardDragY.set(dy * 0.9);
+          } else if (touchRef.current.axis === "x") {
+            const baseX = -activePage * sliderWidth;
+            const newX = baseX + dx * 0.6;
+            sliderControls.set({ x: newX });
+          }
+        }}
+        onTouchEnd={(e) => {
+          if (!touchRef.current) return;
+          const axis = touchRef.current.axis;
+          const t = e.changedTouches[0];
+          const dx = t.clientX - touchRef.current.startX;
+
+          if (axis === "y" && activePage === 1) {
+            completeExternalCardSwipe(cardDragY.get());
+          } else if (axis === "x") {
+            const threshold = 40;
+            if (dx < -threshold && activePage < totalPages - 1) {
+              switchPage(activePage + 1);
+            } else if (dx > threshold && activePage > 0) {
+              switchPage(activePage - 1);
+            } else {
+              snapToActivePage();
+            }
+          }
+
+          touchRef.current = null;
+        }}
+        onTouchCancel={() => {
+          if (touchRef.current?.axis === "y") {
+            void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
+          }
+          if (touchRef.current?.axis === "x") {
+            snapToActivePage();
+          }
+          touchRef.current = null;
+        }}
+      >
 
         <div className="flex-1 relative overflow-hidden min-h-0">
           <motion.div
@@ -559,44 +620,6 @@ const Index = () => {
             style={{ touchAction: "none" }}
             animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
-            drag={sliderWidth > 0 ? "x" : false}
-            dragMomentum={false}
-            dragConstraints={{ left: -(totalPages - 1) * sliderWidth, right: 0 }}
-            dragElastic={0.15}
-            dragDirectionLock
-            onDirectionLock={(axis) => {
-              dragAxisRef.current = axis;
-            }}
-            onDragStart={() => {
-              dragAxisRef.current = null;
-            }}
-            onDrag={(_, info) => {
-              if (dragAxisRef.current === "y" && activePage === 1) {
-                const raw = info.offset.y;
-                const eased = raw * 0.92;
-                cardDragY.set(eased);
-              }
-            }}
-            onDragEnd={(_, info) => {
-              if (dragAxisRef.current === "y") {
-                if (activePage === 1) {
-                  completeExternalCardSwipe(cardDragY.get());
-                }
-                dragAxisRef.current = null;
-                return;
-              }
-              dragAxisRef.current = null;
-              const threshold = 30;
-              if (info.offset.x < -threshold && activePage < totalPages - 1) {
-                switchPage(activePage + 1);
-                return;
-              }
-              if (info.offset.x > threshold && activePage > 0) {
-                switchPage(activePage - 1);
-                return;
-              }
-              snapToActivePage();
-            }}
           >
             {/* Page 0: Stats panel with optional Admin tab for moderators */}
             <div className="w-full h-full min-h-0 flex-shrink-0 flex flex-col items-center px-4 pt-2 overflow-hidden">
