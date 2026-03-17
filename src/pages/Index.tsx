@@ -561,38 +561,46 @@ const Index = () => {
       <main
         className="flex-1 min-h-0 flex flex-col overflow-hidden relative"
         ref={containerRef}
-        onTouchStart={(e) => {
-          const t = e.touches[0];
-          touchRef.current = { startX: t.clientX, startY: t.clientY, axis: null };
+        onPointerDown={(e) => {
+          if (e.pointerType === "mouse" && e.button !== 0) return;
+          pointerRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            currentX: e.clientX,
+            currentY: e.clientY,
+            axis: null,
+            pointerId: e.pointerId,
+          };
         }}
-        onTouchMove={(e) => {
-          if (!touchRef.current) return;
-          const t = e.touches[0];
-          const dx = t.clientX - touchRef.current.startX;
-          const dy = t.clientY - touchRef.current.startY;
+        onPointerMove={(e) => {
+          if (!pointerRef.current || pointerRef.current.pointerId !== e.pointerId) return;
 
-          // Lock axis after 8px of movement
-          if (!touchRef.current.axis) {
-            if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
-              touchRef.current.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-            } else {
-              return;
-            }
+          pointerRef.current.currentX = e.clientX;
+          pointerRef.current.currentY = e.clientY;
+
+          const dx = e.clientX - pointerRef.current.startX;
+          const dy = e.clientY - pointerRef.current.startY;
+
+          if (!pointerRef.current.axis) {
+            if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+            pointerRef.current.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
           }
 
-          if (touchRef.current.axis === "y" && activePage === 1) {
-            cardDragY.set(dy * 0.9);
-          } else if (touchRef.current.axis === "x") {
+          if (pointerRef.current.axis === "y" && activePage === 1) {
+            cardDragY.set(dy * 0.92);
+            return;
+          }
+
+          if (pointerRef.current.axis === "x") {
             const baseX = -activePage * sliderWidth;
-            const newX = baseX + dx * 0.6;
-            sliderControls.set({ x: newX });
+            sliderControls.set({ x: baseX + dx * 0.65 });
           }
         }}
-        onTouchEnd={(e) => {
-          if (!touchRef.current) return;
-          const axis = touchRef.current.axis;
-          const t = e.changedTouches[0];
-          const dx = t.clientX - touchRef.current.startX;
+        onPointerUp={(e) => {
+          if (!pointerRef.current || pointerRef.current.pointerId !== e.pointerId) return;
+
+          const dx = pointerRef.current.currentX - pointerRef.current.startX;
+          const axis = pointerRef.current.axis;
 
           if (axis === "y" && activePage === 1) {
             completeExternalCardSwipe(cardDragY.get());
@@ -607,16 +615,16 @@ const Index = () => {
             }
           }
 
-          touchRef.current = null;
+          pointerRef.current = null;
         }}
-        onTouchCancel={() => {
-          if (touchRef.current?.axis === "y") {
+        onPointerCancel={() => {
+          if (pointerRef.current?.axis === "y") {
             void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
           }
-          if (touchRef.current?.axis === "x") {
+          if (pointerRef.current?.axis === "x") {
             snapToActivePage();
           }
-          touchRef.current = null;
+          pointerRef.current = null;
         }}
       >
 
