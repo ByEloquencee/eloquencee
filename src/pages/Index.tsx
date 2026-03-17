@@ -296,6 +296,7 @@ const Index = () => {
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
+    if (navigator.vibrate) navigator.vibrate(8);
     setHistory((prev) => {
       const next = [...prev];
       const lastIndex = next.pop()!;
