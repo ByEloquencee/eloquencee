@@ -134,6 +134,10 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           dragConstraints={{ top: 0, bottom: 0 }}
           dragElastic={0.3}
           onDragEnd={(_, info) => {
+            if (onExternalDragEnd) {
+              onExternalDragEnd(info.offset.y);
+              return;
+            }
             const threshold = 50;
             if (info.offset.y < -threshold) {
               handleNext();
