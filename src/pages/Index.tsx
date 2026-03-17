@@ -771,6 +771,7 @@ const Index = () => {
               ) : (
                 currentWord && (
                   <WordCard
+                    key={currentWord.id}
                     word={currentWord}
                     isFavorite={isFavorite(currentWord.id)}
                     onToggleFavorite={() => {
@@ -800,7 +801,6 @@ const Index = () => {
                     difficultyLevel={profile?.difficulty_level || "advanced"}
                     externalDragY={cardDragY}
                     onExternalDragEnd={completeExternalCardSwipe}
-                    isRevisit={isRevisit}
                   />
                 )
               )}
