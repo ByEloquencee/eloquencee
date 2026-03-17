@@ -19,6 +19,7 @@ import { FlashcardStudyView } from "@/components/FlashcardStudyView";
 import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
+import { SynonymQuizView } from "@/components/SynonymQuizView";
 import { ExercisesView } from "@/components/ExercisesView";
 import { AdminPanel } from "@/components/AdminPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
@@ -129,6 +130,8 @@ const Index = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [exercisesActive, setExercisesActive] = useState(false);
+  const [synonymQuizActive, setSynonymQuizActive] = useState(false);
+  const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
   const sliderControls = useAnimationControls();
@@ -157,7 +160,7 @@ const Index = () => {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [studySet, typingSet, quizActive, exercisesActive]);
+  }, [studySet, typingSet, quizActive, exercisesActive, synonymQuizActive]);
 
   // After returning from fullscreen, immediately set position then snap
   useEffect(() => {
@@ -171,7 +174,7 @@ const Index = () => {
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, [quizActive, exercisesActive, studySet, typingSet]);
+  }, [quizActive, exercisesActive, studySet, typingSet, synonymQuizActive]);
 
   // Snap slider whenever page or width changes
   useEffect(() => {
@@ -337,6 +340,16 @@ const Index = () => {
         onExit={() => { setQuizActive(false); setActivePage(1); }}
         onComplete={(correctCount) => addMastered(correctCount)}
         mode={quizMode}
+      />
+    );
+  }
+
+  if (synonymQuizActive) {
+    return (
+      <SynonymQuizView
+        words={synonymQuizWords}
+        onExit={() => { setSynonymQuizActive(false); setActivePage(1); }}
+        onComplete={(correctCount) => addMastered(correctCount)}
       />
     );
   }
@@ -743,6 +756,20 @@ const Index = () => {
           setQuizWords(shuffled);
           setQuizMode(mode);
           setQuizActive(true);
+        }}
+        onStartSynonymQuiz={(source) => {
+          setQuizModeOpen(false);
+          let pool: PolishWord[];
+          if (source === "favorites") {
+            pool = favoriteWords;
+          } else if (source === "__random__") {
+            pool = [...allWords].sort(() => Math.random() - 0.5).slice(0, 30);
+          } else {
+            const folder = folders.find((f) => f.id === source);
+            pool = folder ? allWords.filter((w) => folder.wordIds.includes(w.id)) : allWords;
+          }
+          setSynonymQuizWords(pool.length >= 8 ? pool : allWords);
+          setSynonymQuizActive(true);
         }}
         hasFavorites={hasEnoughForQuiz}
         folders={folders}

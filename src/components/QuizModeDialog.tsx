@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { BrainCircuit, Sparkles, Zap, Flame, Crown, MousePointerClick, Keyboard } from "lucide-react";
+import { BrainCircuit, Sparkles, Zap, Flame, Crown, MousePointerClick, Keyboard, Replace } from "lucide-react";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 import type { Folder } from "@/hooks/use-folders";
 import type { DifficultyLevel } from "@/hooks/use-profile";
@@ -12,6 +12,7 @@ interface QuizModeDialogProps {
   onClose: () => void;
   onStartQuiz: (source: "favorites" | string, mode: QuizMode) => void;
   onStartRandomQuiz: (difficulty: DifficultyLevel, mode: QuizMode) => void;
+  onStartSynonymQuiz: (source: "favorites" | string | "__random__", difficulty?: DifficultyLevel) => void;
   hasFavorites: boolean;
   folders: Folder[];
 }
@@ -24,7 +25,7 @@ const difficultyOptions: { value: DifficultyLevel; label: string; description: s
 
 type Step = "source" | "mode" | "difficulty";
 
-export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, hasFavorites, folders }: QuizModeDialogProps) {
+export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, onStartSynonymQuiz, hasFavorites, folders }: QuizModeDialogProps) {
   const [step, setStep] = useState<Step>("source");
   const [pendingSource, setPendingSource] = useState<string | null>(null);
 
@@ -104,6 +105,24 @@ export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, 
               <div className="flex-1">
                 <p className="font-semibold text-sm text-foreground">Wpisywanie</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Wpisz poprawne słowo na podstawie definicji</p>
+              </div>
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                if (pendingSource === "__random__") {
+                  onStartSynonymQuiz("__random__");
+                } else if (pendingSource) {
+                  onStartSynonymQuiz(pendingSource);
+                }
+                handleClose();
+              }}
+              className="flex items-center gap-4 p-4 rounded-xl bg-secondary text-left transition-colors hover:bg-secondary/80 cursor-pointer"
+            >
+              <div className="p-2.5 rounded-lg bg-primary/10 text-primary"><Replace size={22} /></div>
+              <div className="flex-1">
+                <p className="font-semibold text-sm text-foreground">Synonimy</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Znajdź synonim podanego słowa</p>
               </div>
             </motion.button>
             <motion.button whileTap={{ scale: 0.97 }} onClick={() => setStep("source")} className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-1">← Wróć</motion.button>
