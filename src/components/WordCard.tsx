@@ -257,7 +257,11 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
             </div>
 
             {/* Definition area */}
-            <div className="px-6 pb-6 max-h-[50vh] overflow-y-auto">
+            <div
+              className="px-6 pb-6 max-h-[50vh] overflow-y-auto"
+              style={{ touchAction: "pan-y" }}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               {!revealed && !zenMode ? (
                 <motion.button
                   onClick={handleReveal}
