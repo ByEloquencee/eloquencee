@@ -32,7 +32,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [zenMode, setZenMode] = useState(false);
-  const [swipeDir, setSwipeDir] = useState<"up" | "down">("up");
+  
   const [showSwipeHint, setShowSwipeHint] = useState(false);
   const swipeHintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -63,14 +63,12 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   const handleReveal = () => setRevealed(true);
 
   const handleNext = useCallback(() => {
-    setSwipeDir("up");
     setRevealed(false);
     setConfirmDelete(false);
     onNext();
   }, [onNext]);
 
   const handlePrevAction = useCallback(() => {
-    setSwipeDir("down");
     setRevealed(false);
     setConfirmDelete(false);
     onPrev?.();
@@ -113,23 +111,9 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
     };
   }, []);
 
-  const cardVariants = {
-    enter: (dir: string) => ({ opacity: 0, y: dir === "up" ? 300 : -300 }),
-    center: { opacity: 1, y: 0 },
-    exit: (dir: string) => ({ opacity: 0, y: dir === "up" ? -300 : 300 }),
-  };
-
   return (
     <div className="relative w-full max-w-lg mx-auto" data-word-card>
-      <AnimatePresence mode="popLayout" custom={swipeDir}>
         <motion.div
-          key={word.id}
-          custom={swipeDir}
-          variants={cardVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           style={{ y: externalDragY }}
         >
           <div
@@ -332,7 +316,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
             
           </div>
         </motion.div>
-      </AnimatePresence>
       {/* Mobile swipe hint - overlayed so it doesn't move the card */}
       <AnimatePresence>
         {showSwipeHint && (
