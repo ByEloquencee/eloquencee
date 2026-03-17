@@ -377,18 +377,18 @@ const Index = () => {
         if (e.deltaY > 0) handleNext();
         else handlePrev();
       }}
-      onTouchStart={(e) => {
+      onPointerDown={(e) => {
         if (activePage !== 1) return;
-        wordPageTouchRef.current = e.touches[0].clientY;
+        wordPageTouchRef.current = e.clientY;
       }}
-      onTouchEnd={(e) => {
+      onPointerUp={(e) => {
         if (activePage !== 1 || wordPageTouchRef.current == null) return;
         const card = wordPageRef.current?.querySelector('[data-word-card]');
         if (card && card.contains(e.target as Node)) {
           wordPageTouchRef.current = null;
           return;
         }
-        const diff = wordPageTouchRef.current - e.changedTouches[0].clientY;
+        const diff = wordPageTouchRef.current - e.clientY;
         wordPageTouchRef.current = null;
         if (Math.abs(diff) < 50) return;
         if (diff > 0) handleNext();
