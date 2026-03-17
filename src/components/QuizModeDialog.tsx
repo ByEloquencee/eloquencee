@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { BrainCircuit, Sparkles, Zap, Flame, Crown, MousePointerClick, Keyboard } from "lucide-react";
+import { BrainCircuit, Sparkles, Zap, Flame, Crown, MousePointerClick, Keyboard, Replace } from "lucide-react";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 import type { Folder } from "@/hooks/use-folders";
 import type { DifficultyLevel } from "@/hooks/use-profile";
