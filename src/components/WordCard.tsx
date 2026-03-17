@@ -63,7 +63,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   const handleReveal = () => setRevealed(true);
 
   const handleNext = useCallback(() => {
-    setSwipeDir("up");
     setRevealed(false);
     setConfirmDelete(false);
     onNext();
