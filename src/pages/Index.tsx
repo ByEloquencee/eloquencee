@@ -682,7 +682,6 @@ const Index = () => {
             </div>
             {/* Word card page */}
             <div
-              ref={wordPageRef}
               className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden relative"
             >
               <WordLimitOverlay show={dailyLimitReached} onUpgrade={() => setPremiumOpen(true)} />
