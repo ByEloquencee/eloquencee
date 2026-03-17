@@ -185,12 +185,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                 )}
               </AnimatePresence>
               <div className="flex items-center justify-center gap-1.5">
-                {isRevisit && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-[10px] font-medium tracking-wide">
-                    <Eye size={10} />
-                    widziane
-                  </span>
-                )}
                 {word.category === "ciekawi_ludzie" && (
                   <UserRound size={14} className="text-primary" />
                 )}
