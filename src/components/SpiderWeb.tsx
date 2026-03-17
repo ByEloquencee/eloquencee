@@ -157,7 +157,7 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.3 } }}
           transition={{ duration: 0.8 }}
-          className="pointer-events-none select-none absolute left-1/2 -translate-x-[15px] top-full z-10"
+          className="pointer-events-none select-none absolute left-1/2 -translate-x-[30px] top-full z-10"
         >
           <div className="flex flex-col items-center">
             {/* Thread - centered on spider */}
