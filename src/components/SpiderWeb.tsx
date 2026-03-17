@@ -98,6 +98,8 @@ function SpiderSVG() {
 
 export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow = false, onHide }: SpiderWebProps) {
   const [visible, setVisible] = useState(false);
+  const onHideRef = useRef(onHide);
+  onHideRef.current = onHide;
 
   const allMessages = useMemo(
     () => [
@@ -129,12 +131,10 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
 
     const hideTimer = setTimeout(() => {
       setVisible(false);
-      onHide?.();
     }, VISIBLE_DURATION);
 
     return () => clearTimeout(hideTimer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, onHide]);
+  }, [visible]);
 
   // Pick a new message only when spider appears
   useEffect(() => {
@@ -144,75 +144,93 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  if (!visible) return null;
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -4 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.24, ease: "easeOut" }}
-      className="pointer-events-none select-none absolute left-[10px] top-full -mt-2 z-10"
-      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
+    <AnimatePresence
+      onExitComplete={() => onHideRef.current?.()}
     >
-      <div className="flex flex-col items-center overflow-hidden pt-2">
-        <svg
-          width="32"
-          height="14"
-          viewBox="0 0 32 14"
-          className="block -mb-[1px]"
-          style={{ color: "hsl(var(--muted-foreground))", opacity: 0.35, transform: "scaleY(-1)" }}
-          aria-hidden="true"
+      {visible && (
+        <motion.div
+          key="spider"
+          initial={{ opacity: 0, scaleY: 0 }}
+          animate={{ opacity: 1, scaleY: 1 }}
+          exit={{ opacity: 0, scaleY: 0 }}
+          transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+          style={{ originY: 0, willChange: "transform, opacity", transform: "translateZ(0)" }}
+          className="pointer-events-none select-none absolute left-[10px] top-full -mt-2 z-10"
         >
-          <line x1="16" y1="0" x2="0" y2="12" stroke="currentColor" strokeWidth="0.6" />
-          <line x1="16" y1="0" x2="6" y2="13" stroke="currentColor" strokeWidth="0.6" />
-          <line x1="16" y1="0" x2="16" y2="14" stroke="currentColor" strokeWidth="0.6" />
-          <line x1="16" y1="0" x2="26" y2="13" stroke="currentColor" strokeWidth="0.6" />
-          <line x1="16" y1="0" x2="32" y2="12" stroke="currentColor" strokeWidth="0.6" />
-          <path d="M 4 5 Q 10 7 16 5 Q 22 7 28 5" stroke="currentColor" strokeWidth="0.5" fill="none" />
-          <path d="M 1 9 Q 8 12 16 9 Q 24 12 31 9" stroke="currentColor" strokeWidth="0.5" fill="none" />
-        </svg>
+          <div className="flex flex-col items-center overflow-hidden pt-2">
+            <svg
+              width="32"
+              height="14"
+              viewBox="0 0 32 14"
+              className="block -mb-[1px]"
+              style={{ color: "hsl(var(--muted-foreground))", opacity: 0.35, transform: "scaleY(-1)" }}
+              aria-hidden="true"
+            >
+              <line x1="16" y1="0" x2="0" y2="12" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="16" y1="0" x2="6" y2="13" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="16" y1="0" x2="16" y2="14" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="16" y1="0" x2="26" y2="13" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="16" y1="0" x2="32" y2="12" stroke="currentColor" strokeWidth="0.6" />
+              <path d="M 4 5 Q 10 7 16 5 Q 22 7 28 5" stroke="currentColor" strokeWidth="0.5" fill="none" />
+              <path d="M 1 9 Q 8 12 16 9 Q 24 12 31 9" stroke="currentColor" strokeWidth="0.5" fill="none" />
+            </svg>
 
-        <div
-          className="rounded-full"
-          style={{
-            width: "1.5px",
-            height: "28px",
-            background: "linear-gradient(to bottom, hsl(var(--muted-foreground) / 0.25), hsl(var(--muted-foreground) / 0.08))",
-          }}
-        />
-
-        <div className="relative">
-          <div className="origin-top">
-            <SpiderSVG />
-          </div>
-
-          <div
-            className="absolute -top-2 left-full ml-4 animate-fade-in"
-            style={{ minWidth: 240, maxWidth: 320 }}
-          >
             <div
-              className="absolute left-0 top-3 -translate-x-[5px] w-0 h-0"
+              className="rounded-full"
               style={{
-                borderTop: "5px solid transparent",
-                borderBottom: "5px solid transparent",
-                borderRight: "6px solid hsl(var(--muted))",
+                width: "1.5px",
+                height: "28px",
+                background: "linear-gradient(to bottom, hsl(var(--muted-foreground) / 0.25), hsl(var(--muted-foreground) / 0.08))",
               }}
             />
-            <div
-              className="rounded-xl border border-border/40 px-3 py-2 text-xs leading-snug shadow-sm"
-              style={{
-                background: "hsl(var(--muted))",
-                color: "hsl(var(--muted-foreground))",
-              }}
+
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.35, duration: 0.3 }}
             >
-              <span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide opacity-60">
-                Elokwentny Pająk
-              </span>
-              {message}
-            </div>
+              <motion.div
+                className="origin-top"
+                animate={{ rotate: [0, 6, -5, 3, 0] }}
+                transition={{ duration: 1.5, delay: 0.4, ease: "easeInOut" }}
+              >
+                <SpiderSVG />
+              </motion.div>
+
+              <motion.div
+                className="absolute -top-2 left-full ml-4"
+                style={{ minWidth: 240, maxWidth: 320 }}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7, duration: 0.3, ease: "easeOut" }}
+              >
+                <div
+                  className="absolute left-0 top-3 -translate-x-[5px] w-0 h-0"
+                  style={{
+                    borderTop: "5px solid transparent",
+                    borderBottom: "5px solid transparent",
+                    borderRight: "6px solid hsl(var(--muted))",
+                  }}
+                />
+                <div
+                  className="rounded-xl border border-border/40 px-3 py-2 text-xs leading-snug shadow-sm"
+                  style={{
+                    background: "hsl(var(--muted))",
+                    color: "hsl(var(--muted-foreground))",
+                  }}
+                >
+                  <span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide opacity-60">
+                    Elokwentny Pająk
+                  </span>
+                  {message}
+                </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
-      </div>
-    </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
