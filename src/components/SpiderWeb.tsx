@@ -172,14 +172,14 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
               }}
             />
 
-            {/* Spider + speech bubble row */}
-            <div className="flex items-start gap-2.5">
+            {/* Spider with bubble positioned to the right */}
+            <div className="relative">
               {/* Spider */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.2, y: -16 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.4, type: "spring", bounce: 0.6 }}
-                className="origin-top shrink-0"
+                className="origin-top"
               >
                 <motion.div
                   animate={{ rotate: [0, 12, -12, 8, -8, 0] }}
@@ -190,12 +190,12 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
                 </motion.div>
               </motion.div>
 
-              {/* Speech bubble */}
+              {/* Speech bubble - positioned absolutely to the right of spider */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.5, x: -8 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 transition={{ delay: 1.0, duration: 0.4, type: "spring", bounce: 0.4 }}
-                className="relative mt-0.5"
+                className="absolute top-0 left-full ml-2.5"
                 style={{ minWidth: 160, maxWidth: 220 }}
               >
                 {/* Bubble tail */}
