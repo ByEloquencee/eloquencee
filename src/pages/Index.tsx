@@ -384,7 +384,7 @@ const Index = () => {
 
   return (
     <div
-      className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden touch-none"
+      className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden"
       onWheel={(e) => {
         if (activePage !== 1 || wheelCooldownRef.current) return;
         if (Math.abs(e.deltaY) < 30) return;

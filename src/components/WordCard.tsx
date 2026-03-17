@@ -148,7 +148,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               handlePrevAction();
             }
           }}
-          style={{ touchAction: "none", y: externalDragY }}
+          style={{ y: externalDragY }}
         >
           <div
             className="overflow-visible relative select-none"
@@ -258,9 +258,11 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
 
             {/* Definition area */}
             <div
-              className="px-6 pb-6 max-h-[50vh] overflow-y-auto"
-              style={{ touchAction: "pan-y" }}
+              className="px-6 pb-6 max-h-[50vh] overflow-y-auto scrollbar-none"
+              style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
               onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
             >
               {!revealed && !zenMode ? (
                 <motion.button
