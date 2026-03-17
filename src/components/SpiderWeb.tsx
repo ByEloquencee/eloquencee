@@ -160,10 +160,32 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
           className="pointer-events-none select-none absolute left-1/2 -translate-x-[30px] top-full z-10"
         >
           <div className="flex flex-col items-center">
-            {/* Thread - centered on spider */}
+            {/* Cobweb at attachment point */}
+            <motion.svg
+              width="32"
+              height="14"
+              viewBox="0 0 32 14"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.35 }}
+              transition={{ duration: 0.6 }}
+              className="block -mb-[1px]"
+              style={{ color: "hsl(var(--muted-foreground))" }}
+            >
+              {/* Radial threads from center top */}
+              <line x1="16" y1="0" x2="0" y2="12" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="16" y1="0" x2="6" y2="13" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="16" y1="0" x2="16" y2="14" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="16" y1="0" x2="26" y2="13" stroke="currentColor" strokeWidth="0.6" />
+              <line x1="16" y1="0" x2="32" y2="12" stroke="currentColor" strokeWidth="0.6" />
+              {/* Cross threads (arcs) */}
+              <path d="M 4 5 Q 10 7 16 5 Q 22 7 28 5" stroke="currentColor" strokeWidth="0.5" fill="none" />
+              <path d="M 1 9 Q 8 12 16 9 Q 24 12 31 9" stroke="currentColor" strokeWidth="0.5" fill="none" />
+            </motion.svg>
+
+            {/* Thread */}
             <motion.div
               initial={{ height: 0 }}
-              animate={{ height: 40 }}
+              animate={{ height: 28 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
               style={{
                 width: "1.5px",
