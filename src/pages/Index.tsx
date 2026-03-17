@@ -315,7 +315,7 @@ const Index = () => {
       handlePrev();
       return;
     }
-    void animate(cardDragY, 0, { duration: 0.22, ease: [0.22, 1, 0.36, 1] });
+    void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
   }, [cardDragY, handleNext, handlePrev, history.length]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
@@ -384,7 +384,7 @@ const Index = () => {
 
   return (
     <div
-      className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden"
+      className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden touch-none"
       onWheel={(e) => {
         if (activePage !== 1 || wheelCooldownRef.current) return;
         if (Math.abs(e.deltaY) < 30) return;
@@ -407,7 +407,9 @@ const Index = () => {
       }}
       onPointerMove={(e) => {
         if (activePage !== 1 || wordPageTouchRef.current == null) return;
-        cardDragY.set(e.clientY - wordPageTouchRef.current);
+        const raw = e.clientY - wordPageTouchRef.current;
+        const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
+        cardDragY.set(damped);
       }}
       onPointerUp={(e) => {
         if (activePage !== 1 || wordPageTouchRef.current == null) return;
@@ -417,7 +419,7 @@ const Index = () => {
       }}
       onPointerCancel={() => {
         wordPageTouchRef.current = null;
-        void animate(cardDragY, 0, { duration: 0.22, ease: [0.22, 1, 0.36, 1] });
+        void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
       }}
     >
       {/* Nav */}
