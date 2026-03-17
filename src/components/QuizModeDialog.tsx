@@ -107,6 +107,24 @@ export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, 
                 <p className="text-xs text-muted-foreground mt-0.5">Wpisz poprawne słowo na podstawie definicji</p>
               </div>
             </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                if (pendingSource === "__random__") {
+                  onStartSynonymQuiz("__random__");
+                } else if (pendingSource) {
+                  onStartSynonymQuiz(pendingSource);
+                }
+                handleClose();
+              }}
+              className="flex items-center gap-4 p-4 rounded-xl bg-secondary text-left transition-colors hover:bg-secondary/80 cursor-pointer"
+            >
+              <div className="p-2.5 rounded-lg bg-primary/10 text-primary"><Replace size={22} /></div>
+              <div className="flex-1">
+                <p className="font-semibold text-sm text-foreground">Synonimy</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Znajdź synonim podanego słowa</p>
+              </div>
+            </motion.button>
             <motion.button whileTap={{ scale: 0.97 }} onClick={() => setStep("source")} className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-1">← Wróć</motion.button>
           </div>
         )}

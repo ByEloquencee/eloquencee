@@ -757,6 +757,20 @@ const Index = () => {
           setQuizMode(mode);
           setQuizActive(true);
         }}
+        onStartSynonymQuiz={(source) => {
+          setQuizModeOpen(false);
+          let pool: PolishWord[];
+          if (source === "favorites") {
+            pool = favoriteWords;
+          } else if (source === "__random__") {
+            pool = [...allWords].sort(() => Math.random() - 0.5).slice(0, 30);
+          } else {
+            const folder = folders.find((f) => f.id === source);
+            pool = folder ? allWords.filter((w) => folder.wordIds.includes(w.id)) : allWords;
+          }
+          setSynonymQuizWords(pool.length >= 8 ? pool : allWords);
+          setSynonymQuizActive(true);
+        }}
         hasFavorites={hasEnoughForQuiz}
         folders={folders}
       />
