@@ -130,6 +130,8 @@ const Index = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [exercisesActive, setExercisesActive] = useState(false);
+  const [synonymQuizActive, setSynonymQuizActive] = useState(false);
+  const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
   const sliderControls = useAnimationControls();
