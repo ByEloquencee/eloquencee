@@ -118,7 +118,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
   };
 
   return (
-    <div className="relative w-full max-w-lg mx-auto">
+    <div className="relative w-full max-w-lg mx-auto" data-word-card>
       <AnimatePresence mode="popLayout" custom={swipeDir}>
         <motion.div
           key={word.id}
