@@ -389,26 +389,35 @@ const Index = () => {
         if (activePage !== 1 || wheelCooldownRef.current) return;
         if (Math.abs(e.deltaY) < 30) return;
         wheelCooldownRef.current = true;
+        cardDragY.set(e.deltaY > 0 ? -72 : 72);
         setTimeout(() => { wheelCooldownRef.current = false; }, 400);
-        if (e.deltaY > 0) handleNext();
-        else handlePrev();
+        setTimeout(() => {
+          completeExternalCardSwipe(e.deltaY > 0 ? -72 : 72);
+        }, 20);
       }}
       onPointerDown={(e) => {
         if (activePage !== 1) return;
-        wordPageTouchRef.current = e.clientY;
-      }}
-      onPointerUp={(e) => {
-        if (activePage !== 1 || wordPageTouchRef.current == null) return;
         const card = wordPageRef.current?.querySelector('[data-word-card]');
         if (card && card.contains(e.target as Node)) {
           wordPageTouchRef.current = null;
           return;
         }
-        const diff = wordPageTouchRef.current - e.clientY;
+        wordPageTouchRef.current = e.clientY;
+        cardDragY.stop();
+      }}
+      onPointerMove={(e) => {
+        if (activePage !== 1 || wordPageTouchRef.current == null) return;
+        cardDragY.set(e.clientY - wordPageTouchRef.current);
+      }}
+      onPointerUp={(e) => {
+        if (activePage !== 1 || wordPageTouchRef.current == null) return;
+        const diff = e.clientY - wordPageTouchRef.current;
         wordPageTouchRef.current = null;
-        if (Math.abs(diff) < 50) return;
-        if (diff > 0) handleNext();
-        else handlePrev();
+        completeExternalCardSwipe(diff);
+      }}
+      onPointerCancel={() => {
+        wordPageTouchRef.current = null;
+        void animate(cardDragY, 0, { duration: 0.22, ease: [0.22, 1, 0.36, 1] });
       }}
     >
       {/* Nav */}
