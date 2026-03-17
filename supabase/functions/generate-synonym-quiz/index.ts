@@ -47,7 +47,7 @@ Odpowiedz WYŁĄCZNIE w formacie JSON (bez markdown):
 }
 
 correct to indeks (0-3) poprawnej odpowiedzi (synonimu) w tablicy options. Opcje powinny być WYMIESZANE - synonim nie zawsze na pozycji 0.
-Używaj RÓŻNYCH słów jako pytania - nie powtarzaj tego samego słowa.`;
+WAŻNE: Każde pytanie MUSI dotyczyć INNEGO słowa. NIGDY nie powtarzaj tego samego question_word. Użyj 8 RÓŻNYCH słów z listy.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
