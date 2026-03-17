@@ -25,7 +25,7 @@ const difficultyOptions: { value: DifficultyLevel; label: string; description: s
 
 type Step = "source" | "mode" | "difficulty";
 
-export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, hasFavorites, folders }: QuizModeDialogProps) {
+export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, onStartSynonymQuiz, hasFavorites, folders }: QuizModeDialogProps) {
   const [step, setStep] = useState<Step>("source");
   const [pendingSource, setPendingSource] = useState<string | null>(null);
 
