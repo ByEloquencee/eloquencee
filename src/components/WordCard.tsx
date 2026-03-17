@@ -318,7 +318,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
             
           </div>
         </motion.div>
-      </AnimatePresence>
       {/* Mobile swipe hint - overlayed so it doesn't move the card */}
       <AnimatePresence>
         {showSwipeHint && (
