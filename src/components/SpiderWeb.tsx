@@ -158,6 +158,7 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
           exit={{ opacity: 0, transition: { duration: 0.3 } }}
           transition={{ duration: 0.8 }}
           className="pointer-events-none select-none absolute left-1/2 -translate-x-[30px] top-full z-10"
+          style={{ willChange: "opacity", contain: "layout style paint" }}
         >
           <div className="flex flex-col items-center">
             {/* Cobweb at attachment point */}
