@@ -134,6 +134,7 @@ const Index = () => {
   const [exercisesActive, setExercisesActive] = useState(false);
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
+  const [forceSpider, setForceSpider] = useState(false);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
   const wordPageRef = useRef<HTMLDivElement>(null);
