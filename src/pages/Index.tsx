@@ -367,7 +367,34 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden">
+    <div
+      className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden"
+      onWheel={(e) => {
+        if (activePage !== 1 || wheelCooldownRef.current) return;
+        if (Math.abs(e.deltaY) < 30) return;
+        wheelCooldownRef.current = true;
+        setTimeout(() => { wheelCooldownRef.current = false; }, 400);
+        if (e.deltaY > 0) handleNext();
+        else handlePrev();
+      }}
+      onTouchStart={(e) => {
+        if (activePage !== 1) return;
+        wordPageTouchRef.current = e.touches[0].clientY;
+      }}
+      onTouchEnd={(e) => {
+        if (activePage !== 1 || wordPageTouchRef.current == null) return;
+        const card = wordPageRef.current?.querySelector('[data-word-card]');
+        if (card && card.contains(e.target as Node)) {
+          wordPageTouchRef.current = null;
+          return;
+        }
+        const diff = wordPageTouchRef.current - e.changedTouches[0].clientY;
+        wordPageTouchRef.current = null;
+        if (Math.abs(diff) < 50) return;
+        if (diff > 0) handleNext();
+        else handlePrev();
+      }}
+    >
       {/* Nav */}
       <header className="w-full max-w-lg mx-auto px-4 pt-[max(env(safe-area-inset-top,0.5rem),0.5rem)] pb-4 flex items-center justify-between gap-2">
         <div className="flex flex-col min-w-0 flex-shrink-0">
@@ -585,32 +612,6 @@ const Index = () => {
             <div
               ref={wordPageRef}
               className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden relative"
-              onWheel={(e) => {
-                if (activePage !== 1 || wheelCooldownRef.current) return;
-                if (Math.abs(e.deltaY) < 30) return;
-                wheelCooldownRef.current = true;
-                setTimeout(() => { wheelCooldownRef.current = false; }, 400);
-                if (e.deltaY > 0) handleNext();
-                else handlePrev();
-              }}
-              onTouchStart={(e) => {
-                if (activePage !== 1) return;
-                wordPageTouchRef.current = e.touches[0].clientY;
-              }}
-              onTouchEnd={(e) => {
-                if (activePage !== 1 || wordPageTouchRef.current == null) return;
-                // Skip if the touch was on the card (card handles its own drag)
-                const card = wordPageRef.current?.querySelector('[data-word-card]');
-                if (card && card.contains(e.target as Node)) {
-                  wordPageTouchRef.current = null;
-                  return;
-                }
-                const diff = wordPageTouchRef.current - e.changedTouches[0].clientY;
-                wordPageTouchRef.current = null;
-                if (Math.abs(diff) < 50) return;
-                if (diff > 0) handleNext();
-                else handlePrev();
-              }}
             >
               <WordLimitOverlay show={dailyLimitReached} onUpgrade={() => setPremiumOpen(true)} />
               {filteredWords.length === 0 ? (
