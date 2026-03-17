@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
+import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
 import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
@@ -136,6 +136,7 @@ const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const wordPageRef = useRef<HTMLDivElement>(null);
   const wordPageTouchRef = useRef<number | null>(null);
+  const cardDragY = useMotionValue(0);
   const wheelCooldownRef = useRef(false);
   const sliderControls = useAnimationControls();
 
@@ -302,6 +303,21 @@ const Index = () => {
     });
   }, [history]);
 
+  const completeExternalCardSwipe = useCallback((offsetY: number) => {
+    const threshold = 50;
+    if (offsetY < -threshold) {
+      cardDragY.set(0);
+      handleNext();
+      return;
+    }
+    if (offsetY > threshold && history.length > 0) {
+      cardDragY.set(0);
+      handlePrev();
+      return;
+    }
+    void animate(cardDragY, 0, { duration: 0.22, ease: [0.22, 1, 0.36, 1] });
+  }, [cardDragY, handleNext, handlePrev, history.length]);
+
   const toggleCategory = (cat: WordCategory | "all") => {
     if (cat === "all") {
       setSelectedCategories(["all"]);
@@ -373,26 +389,35 @@ const Index = () => {
         if (activePage !== 1 || wheelCooldownRef.current) return;
         if (Math.abs(e.deltaY) < 30) return;
         wheelCooldownRef.current = true;
+        cardDragY.set(e.deltaY > 0 ? -72 : 72);
         setTimeout(() => { wheelCooldownRef.current = false; }, 400);
-        if (e.deltaY > 0) handleNext();
-        else handlePrev();
+        setTimeout(() => {
+          completeExternalCardSwipe(e.deltaY > 0 ? -72 : 72);
+        }, 20);
       }}
       onPointerDown={(e) => {
         if (activePage !== 1) return;
-        wordPageTouchRef.current = e.clientY;
-      }}
-      onPointerUp={(e) => {
-        if (activePage !== 1 || wordPageTouchRef.current == null) return;
         const card = wordPageRef.current?.querySelector('[data-word-card]');
         if (card && card.contains(e.target as Node)) {
           wordPageTouchRef.current = null;
           return;
         }
-        const diff = wordPageTouchRef.current - e.clientY;
+        wordPageTouchRef.current = e.clientY;
+        cardDragY.stop();
+      }}
+      onPointerMove={(e) => {
+        if (activePage !== 1 || wordPageTouchRef.current == null) return;
+        cardDragY.set(e.clientY - wordPageTouchRef.current);
+      }}
+      onPointerUp={(e) => {
+        if (activePage !== 1 || wordPageTouchRef.current == null) return;
+        const diff = e.clientY - wordPageTouchRef.current;
         wordPageTouchRef.current = null;
-        if (Math.abs(diff) < 50) return;
-        if (diff > 0) handleNext();
-        else handlePrev();
+        completeExternalCardSwipe(diff);
+      }}
+      onPointerCancel={() => {
+        wordPageTouchRef.current = null;
+        void animate(cardDragY, 0, { duration: 0.22, ease: [0.22, 1, 0.36, 1] });
       }}
     >
       {/* Nav */}
@@ -667,6 +692,8 @@ const Index = () => {
                     onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
                     onShare={() => setShareOpen(true)}
                     difficultyLevel={profile?.difficulty_level || "advanced"}
+                    externalDragY={cardDragY}
+                    onExternalDragEnd={completeExternalCardSwipe}
                   />
                 )
               )}

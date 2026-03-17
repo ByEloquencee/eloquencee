@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type MotionValue } from "framer-motion";
 import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2, ChevronUp } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
@@ -23,9 +23,11 @@ interface WordCardProps {
   folders?: Folder[];
   onToggleFolder?: (folderId: string) => void;
   difficultyLevel?: DifficultyLevel;
+  externalDragY?: MotionValue<number>;
+  onExternalDragEnd?: (offsetY: number) => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced" }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -132,6 +134,10 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           dragConstraints={{ top: 0, bottom: 0 }}
           dragElastic={0.3}
           onDragEnd={(_, info) => {
+            if (onExternalDragEnd) {
+              onExternalDragEnd(info.offset.y);
+              return;
+            }
             const threshold = 50;
             if (info.offset.y < -threshold) {
               handleNext();
@@ -139,7 +145,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               handlePrevAction();
             }
           }}
-          style={{ touchAction: "pan-x" }}
+          style={{ touchAction: "pan-x", y: externalDragY }}
         >
           <div
             className="overflow-visible relative select-none"
