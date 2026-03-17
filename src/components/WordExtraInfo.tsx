@@ -78,57 +78,50 @@ export function WordExtraInfo({ word, difficultyLevel }: WordExtraInfoProps) {
           </button>
         </DialogTrigger>
 
-        <DialogContent className="max-w-2xl border-border bg-background p-0 sm:rounded-2xl">
-          <div className="max-h-[85vh] overflow-y-auto scrollbar-none px-5 py-5 sm:px-6">
-            <DialogHeader className="pb-4 text-left">
-              <DialogTitle className="text-xl" style={{ fontFamily: "var(--font-display)" }}>
-                Więcej o słowie
+        <DialogContent className="max-w-[340px] sm:max-w-sm border-border bg-background p-0 rounded-2xl shadow-xl">
+          <div className="max-h-[70vh] overflow-y-auto scrollbar-none px-4 py-4">
+            <DialogHeader className="pb-3 text-left">
+              <DialogTitle className="text-lg" style={{ fontFamily: "var(--font-display)" }}>
+                {word.word}
               </DialogTitle>
-              <DialogDescription>
-                Dodatkowe informacje i kontekst użycia słowa.
-              </DialogDescription>
+              {word.etymology && (
+                <DialogDescription className="text-xs italic">
+                  {word.etymology}
+                </DialogDescription>
+              )}
+              {!word.etymology && (
+                <DialogDescription className="sr-only">Szczegóły słowa</DialogDescription>
+              )}
             </DialogHeader>
 
-            <div className="space-y-4">
-              <section className="rounded-2xl bg-secondary/50 p-4">
-                <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
-                  Słowo
-                </p>
-                <h2 className="mt-2 text-3xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-                  {word.word}
-                </h2>
-                {word.etymology && (
-                  <p className="mt-2 text-sm italic text-muted-foreground">{word.etymology}</p>
-                )}
-              </section>
-
-              <section className="rounded-2xl border border-border p-4">
-                <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
+            <div className="space-y-3">
+              <section className="rounded-xl bg-secondary/40 px-3 py-2.5">
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
                   Definicja
                 </p>
-                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-foreground">
+                <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed text-foreground">
                   {word.definition}
                 </p>
               </section>
 
-              <section className="rounded-2xl border border-border p-4">
-                <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
+              <section className="rounded-xl bg-secondary/40 px-3 py-2.5">
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
                   Przykład
                 </p>
-                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed italic text-muted-foreground">
-                  {word.example}
+                <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed italic text-muted-foreground">
+                  „{word.example}"
                 </p>
               </section>
 
-              <section className="rounded-2xl border border-border p-4">
-                <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
+              <section className="rounded-xl border border-border px-3 py-2.5">
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
                   Dodatkowe informacje
                 </p>
-                <div className="mt-3 text-sm leading-relaxed text-foreground">
+                <div className="mt-1.5 text-[13px] leading-relaxed text-foreground">
                   {loading ? (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Loader2 size={14} className="animate-spin" />
-                      <span>Ładowanie...</span>
+                    <div className="flex items-center gap-2 text-muted-foreground py-2">
+                      <Loader2 size={13} className="animate-spin" />
+                      <span className="text-xs">Ładowanie...</span>
                     </div>
                   ) : (
                     <div className="whitespace-pre-line">{info}</div>
