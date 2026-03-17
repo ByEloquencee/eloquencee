@@ -218,7 +218,7 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 transition={{ delay: 1.0, duration: 0.4, type: "spring", bounce: 0.4 }}
                 className="absolute top-0 left-full ml-2.5"
-                style={{ minWidth: 160, maxWidth: 220 }}
+                style={{ minWidth: 200, maxWidth: 280 }}
               >
                 {/* Bubble tail */}
                 <div
