@@ -169,7 +169,7 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
               animate={{ opacity: 0.35 }}
               transition={{ duration: 0.6 }}
               className="block -mb-[1px]"
-              style={{ color: "hsl(var(--muted-foreground))" }}
+              style={{ color: "hsl(var(--muted-foreground))", transform: "scaleY(-1)" }}
             >
               {/* Radial threads from center top */}
               <line x1="16" y1="0" x2="0" y2="12" stroke="currentColor" strokeWidth="0.6" />
