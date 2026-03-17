@@ -404,31 +404,6 @@ const Index = () => {
           completeExternalCardSwipe(e.deltaY > 0 ? -72 : 72);
         }, 20);
       }}
-      onPointerDown={(e) => {
-        if (activePage !== 1) return;
-        const card = wordPageRef.current?.querySelector('[data-word-card]');
-        if (card && card.contains(e.target as Node)) {
-          wordPageTouchRef.current = null;
-          return;
-        }
-        wordPageTouchRef.current = e.clientY;
-        cardDragY.stop();
-      }}
-      onPointerMove={(e) => {
-        if (activePage !== 1 || wordPageTouchRef.current == null) return;
-        const raw = e.clientY - wordPageTouchRef.current;
-        const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
-        cardDragY.set(damped);
-      }}
-      onPointerUp={() => {
-        if (activePage !== 1 || wordPageTouchRef.current == null) return;
-        wordPageTouchRef.current = null;
-        completeExternalCardSwipe(cardDragY.get());
-      }}
-      onPointerCancel={() => {
-        wordPageTouchRef.current = null;
-        void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
-      }}
     >
       {/* Nav */}
       <header className="w-full max-w-lg mx-auto px-4 pt-[max(env(safe-area-inset-top,0.5rem),0.5rem)] pb-4 flex items-center justify-between gap-2">
