@@ -127,15 +127,22 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
   useEffect(() => {
     if (!visible) return;
 
-    setMessage(allMessages[Math.floor(Math.random() * allMessages.length)] ?? "");
-
     const hideTimer = setTimeout(() => {
       setVisible(false);
       onHide?.();
     }, VISIBLE_DURATION);
 
     return () => clearTimeout(hideTimer);
-  }, [allMessages, visible, onHide]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, onHide]);
+
+  // Pick a new message only when spider appears
+  useEffect(() => {
+    if (visible) {
+      setMessage(allMessages[Math.floor(Math.random() * allMessages.length)] ?? "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   if (!visible) return null;
 
