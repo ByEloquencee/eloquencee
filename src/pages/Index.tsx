@@ -314,13 +314,15 @@ const Index = () => {
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
     if (navigator.vibrate) navigator.vibrate(8);
+    // Save current index to forward history so user can go forward to it again
+    setForwardHistory((prev) => [...prev, currentIndex]);
     setHistory((prev) => {
       const next = [...prev];
       const lastIndex = next.pop()!;
       setCurrentIndex(lastIndex);
       return next;
     });
-  }, [history]);
+  }, [history, currentIndex]);
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
     const threshold = 60;
