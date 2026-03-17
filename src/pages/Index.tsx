@@ -419,7 +419,7 @@ const Index = () => {
       }}
       onPointerCancel={() => {
         wordPageTouchRef.current = null;
-        void animate(cardDragY, 0, { duration: 0.22, ease: [0.22, 1, 0.36, 1] });
+        void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
       }}
     >
       {/* Nav */}
