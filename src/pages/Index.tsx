@@ -139,6 +139,8 @@ const Index = () => {
   const cardDragY = useMotionValue(0);
   const wheelCooldownRef = useRef(false);
   const sliderControls = useAnimationControls();
+  const dragAxisRef = useRef<"x" | "y" | null>(null);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const snapToActivePage = useCallback((immediate = false) => {
     const target = -activePage * sliderWidth;
