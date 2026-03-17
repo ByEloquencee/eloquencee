@@ -37,6 +37,10 @@ export function PremiumDialog({ open, onClose }: PremiumDialogProps) {
   if (!open) return null;
 
   const handlePurchase = async () => {
+    if (!user) {
+      toast.error("Zaloguj się, aby przejść do płatności");
+      return;
+    }
     setLoading(true);
     try {
       if (tab === "support") {
