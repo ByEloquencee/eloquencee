@@ -299,12 +299,17 @@ const Index = () => {
       localStorage.setItem("eloquencee-total-viewed", JSON.stringify(next));
       return next;
     });
-    if (selectedCategories.includes("all") && preferredCategories.length > 0) {
+    // If we have forward history (user went back and now goes forward), restore that word
+    if (forwardHistory.length > 0) {
+      const nextIdx = forwardHistory[forwardHistory.length - 1];
+      setForwardHistory((prev) => prev.slice(0, -1));
+      setCurrentIndex(nextIdx);
+    } else if (selectedCategories.includes("all") && preferredCategories.length > 0) {
       setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
     } else {
       setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
     }
-  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress]);
+  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress, forwardHistory]);
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
