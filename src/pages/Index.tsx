@@ -304,7 +304,7 @@ const Index = () => {
   }, [history]);
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
-    const threshold = 50;
+    const threshold = 30;
     if (offsetY < -threshold) {
       cardDragY.set(0);
       handleNext();

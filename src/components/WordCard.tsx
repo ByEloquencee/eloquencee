@@ -136,7 +136,9 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           dragMomentum={false}
           onDragEnd={(_, info) => {
             if (onExternalDragEnd) {
-              onExternalDragEnd(info.offset.y);
+              // info.offset.y is reduced by dragElastic, so use the visual position
+              const currentY = externalDragY?.get() ?? info.offset.y;
+              onExternalDragEnd(currentY);
               return;
             }
             const threshold = 50;
@@ -146,7 +148,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
               handlePrevAction();
             }
           }}
-          style={{ touchAction: "pan-x", y: externalDragY }}
+          style={{ touchAction: "none", y: externalDragY }}
         >
           <div
             className="overflow-visible relative select-none"
@@ -255,7 +257,11 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
             </div>
 
             {/* Definition area */}
-            <div className="px-6 pb-6 max-h-[50vh] overflow-y-auto">
+            <div
+              className="px-6 pb-6 max-h-[50vh] overflow-y-auto"
+              style={{ touchAction: "pan-y" }}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               {!revealed && !zenMode ? (
                 <motion.button
                   onClick={handleReveal}
