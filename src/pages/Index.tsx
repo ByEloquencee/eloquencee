@@ -303,6 +303,21 @@ const Index = () => {
     });
   }, [history]);
 
+  const completeExternalCardSwipe = useCallback((offsetY: number) => {
+    const threshold = 50;
+    if (offsetY < -threshold) {
+      cardDragY.set(0);
+      handleNext();
+      return;
+    }
+    if (offsetY > threshold && history.length > 0) {
+      cardDragY.set(0);
+      handlePrev();
+      return;
+    }
+    void animate(cardDragY, 0, { duration: 0.22, ease: [0.22, 1, 0.36, 1] });
+  }, [cardDragY, handleNext, handlePrev, history.length]);
+
   const toggleCategory = (cat: WordCategory | "all") => {
     if (cat === "all") {
       setSelectedCategories(["all"]);
