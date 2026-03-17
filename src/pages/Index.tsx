@@ -579,7 +579,28 @@ const Index = () => {
               </div>
             </div>
             {/* Word card page */}
-            <div className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden relative">
+            <div
+              className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden relative"
+              onWheel={(e) => {
+                if (activePage !== 1) return;
+                if (Math.abs(e.deltaY) < 30) return;
+                if (e.deltaY > 0) handleNext();
+                else if (e.deltaY < 0) handlePrev();
+              }}
+              onTouchStart={(e) => {
+                if (activePage !== 1) return;
+                (e.currentTarget as any)._touchStartY = e.touches[0].clientY;
+              }}
+              onTouchEnd={(e) => {
+                if (activePage !== 1) return;
+                const startY = (e.currentTarget as any)._touchStartY;
+                if (startY == null) return;
+                const diff = startY - e.changedTouches[0].clientY;
+                if (Math.abs(diff) < 50) return;
+                if (diff > 0) handleNext();
+                else handlePrev();
+              }}
+            >
               <WordLimitOverlay show={dailyLimitReached} onUpgrade={() => setPremiumOpen(true)} />
               {filteredWords.length === 0 ? (
                 <motion.div
