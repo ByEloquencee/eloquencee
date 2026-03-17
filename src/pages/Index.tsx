@@ -364,7 +364,16 @@ const Index = () => {
   useEffect(() => {
     pointerRef.current = null;
     cardDragY.stop();
-    cardDragY.set(0);
+    const dir = swipeDirRef.current;
+    if (dir) {
+      // Card enters from the opposite side: swipe up → enters from bottom, swipe down → enters from top
+      const entryOffset = dir === "up" ? 300 : -300;
+      cardDragY.set(entryOffset);
+      void animate(cardDragY, 0, { type: "spring", stiffness: 500, damping: 38, mass: 0.8 });
+      swipeDirRef.current = null;
+    } else {
+      cardDragY.set(0);
+    }
   }, [currentIndex, cardDragY]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
