@@ -344,6 +344,16 @@ const Index = () => {
     );
   }
 
+  if (synonymQuizActive) {
+    return (
+      <SynonymQuizView
+        words={synonymQuizWords}
+        onExit={() => { setSynonymQuizActive(false); setActivePage(1); }}
+        onComplete={(correctCount) => addMastered(correctCount)}
+      />
+    );
+  }
+
   if (exercisesActive) {
     return (
       <ExercisesView
