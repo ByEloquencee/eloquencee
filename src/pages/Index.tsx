@@ -599,12 +599,12 @@ const Index = () => {
           const dy = e.clientY - pointerRef.current.startY;
 
           if (!pointerRef.current.axis) {
-            if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+            if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
             pointerRef.current.axis = pointerRef.current.allowVertical && Math.abs(dy) > Math.abs(dx) ? "y" : "x";
           }
 
           if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
-            cardDragY.set(dy * 0.96);
+            cardDragY.set(dy * 0.72);
             return;
           }
 
