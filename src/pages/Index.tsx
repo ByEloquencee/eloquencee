@@ -570,8 +570,8 @@ const Index = () => {
           const allowVertical = activePage === 1 && !!wordPageRect &&
             e.clientX >= wordPageRect.left &&
             e.clientX <= wordPageRect.right &&
-            e.clientY >= wordPageRect.top &&
-            e.clientY <= wordPageRect.bottom;
+            e.clientY >= wordPageRect.top - 88 &&
+            e.clientY <= wordPageRect.bottom + 96;
 
           try {
             e.currentTarget.setPointerCapture(e.pointerId);
