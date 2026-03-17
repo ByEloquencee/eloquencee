@@ -308,23 +308,26 @@ const Index = () => {
   }, [history]);
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
-    const threshold = 50;
-    const offScreen = 500;
+    const threshold = 36;
+    const offScreen = Math.max(window.innerHeight * 0.9, 700);
+
+    cardDragY.stop();
+
     if (offsetY < -threshold) {
-      void animate(cardDragY, -offScreen, { type: "tween", duration: 0.2, ease: "easeIn" }).then(() => {
+      void animate(cardDragY, -offScreen, { type: "tween", duration: 0.18, ease: "easeOut" }).then(() => {
         cardDragY.set(0);
         handleNext();
       });
       return;
     }
     if (offsetY > threshold && history.length > 0) {
-      void animate(cardDragY, offScreen, { type: "tween", duration: 0.2, ease: "easeIn" }).then(() => {
+      void animate(cardDragY, offScreen, { type: "tween", duration: 0.18, ease: "easeOut" }).then(() => {
         cardDragY.set(0);
         handlePrev();
       });
       return;
     }
-    void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
+    void animate(cardDragY, 0, { type: "spring", stiffness: 520, damping: 34, mass: 0.7 });
   }, [cardDragY, handleNext, handlePrev, history.length]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
@@ -396,13 +399,13 @@ const Index = () => {
       className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden"
       onWheel={(e) => {
         if (activePage !== 1 || wheelCooldownRef.current) return;
-        if (Math.abs(e.deltaY) < 30) return;
+        if (Math.abs(e.deltaY) < 20) return;
         wheelCooldownRef.current = true;
-        cardDragY.set(e.deltaY > 0 ? -72 : 72);
-        setTimeout(() => { wheelCooldownRef.current = false; }, 400);
+        cardDragY.set(e.deltaY > 0 ? -84 : 84);
+        setTimeout(() => { wheelCooldownRef.current = false; }, 320);
         setTimeout(() => {
-          completeExternalCardSwipe(e.deltaY > 0 ? -72 : 72);
-        }, 20);
+          completeExternalCardSwipe(e.deltaY > 0 ? -84 : 84);
+        }, 16);
       }}
     >
       {/* Nav */}
@@ -570,8 +573,8 @@ const Index = () => {
             onDrag={(_, info) => {
               if (dragAxisRef.current === "y" && activePage === 1) {
                 const raw = info.offset.y;
-                const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
-                cardDragY.set(damped);
+                const eased = raw * 0.92;
+                cardDragY.set(eased);
               }
             }}
             onDragEnd={(_, info) => {
