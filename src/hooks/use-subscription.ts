@@ -25,6 +25,24 @@ export function useSubscription() {
     }
 
     try {
+      // Check if user is a moderator — moderators get premium automatically
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "moderator")
+        .maybeSingle();
+
+      if (roleData) {
+        setState({
+          isPremium: true,
+          plan: "premium",
+          subscriptionEnd: null,
+          loading: false,
+        });
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("check-subscription");
       if (error) throw error;
 
