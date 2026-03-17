@@ -553,6 +553,16 @@ const Index = () => {
                 </button>
                 <SpiderWeb todayCount={todayCount} dailyGoal={profile?.daily_goal ?? 5} streak={streak} forceShow={forceSpider} onHide={() => setForceSpider(false)} />
               </div>
+              {isModerator && (
+                <button
+                  onClick={() => setForceSpider(true)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  title="Przywołaj Elokwentnego Pająka"
+                >
+                  <Bug size={14} />
+                  🕷️
+                </button>
+              )}
               <DailyProgress current={todayCount} goal={profile?.daily_goal ?? 5} />
             </div>
             <AnimatePresence>
@@ -720,14 +730,6 @@ const Index = () => {
                   >
                     <Shield size={16} />
                     Panel moderatora
-                  </button>
-                  <button
-                    onClick={() => setForceSpider(true)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    title="Przywołaj Elokwentnego Pająka"
-                  >
-                    <Bug size={16} />
-                    🕷️
                   </button>
                 </div>
               )}
