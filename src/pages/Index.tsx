@@ -160,7 +160,7 @@ const Index = () => {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [studySet, typingSet, quizActive, exercisesActive]);
+  }, [studySet, typingSet, quizActive, exercisesActive, synonymQuizActive]);
 
   // After returning from fullscreen, immediately set position then snap
   useEffect(() => {
