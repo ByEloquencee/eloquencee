@@ -578,14 +578,36 @@ const Index = () => {
         <div className="flex-1 relative overflow-hidden min-h-0">
           <motion.div
             className="flex min-w-full h-full"
-            style={{ touchAction: "pan-y" }}
+            style={{ touchAction: "none" }}
             animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
             drag={sliderWidth > 0 ? "x" : false}
             dragMomentum={false}
             dragConstraints={{ left: -(totalPages - 1) * sliderWidth, right: 0 }}
             dragElastic={0.15}
+            dragDirectionLock
+            onDirectionLock={(axis) => {
+              dragAxisRef.current = axis;
+            }}
+            onDragStart={() => {
+              dragAxisRef.current = null;
+            }}
+            onDrag={(_, info) => {
+              if (dragAxisRef.current === "y" && activePage === 1) {
+                const raw = info.offset.y;
+                const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
+                cardDragY.set(damped);
+              }
+            }}
             onDragEnd={(_, info) => {
+              if (dragAxisRef.current === "y") {
+                if (activePage === 1) {
+                  completeExternalCardSwipe(cardDragY.get());
+                }
+                dragAxisRef.current = null;
+                return;
+              }
+              dragAxisRef.current = null;
               const threshold = 30;
               if (info.offset.x < -threshold && activePage < totalPages - 1) {
                 switchPage(activePage + 1);
