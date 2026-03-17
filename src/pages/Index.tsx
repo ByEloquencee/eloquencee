@@ -134,6 +134,7 @@ const Index = () => {
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
+  const wordPageRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef<{
     startX: number;
     startY: number;
@@ -141,6 +142,7 @@ const Index = () => {
     currentY: number;
     axis: "x" | "y" | null;
     pointerId: number | null;
+    allowVertical: boolean;
   } | null>(null);
 
   const cardDragY = useMotionValue(0);
@@ -563,6 +565,20 @@ const Index = () => {
         ref={containerRef}
         onPointerDown={(e) => {
           if (e.pointerType === "mouse" && e.button !== 0) return;
+
+          const wordPageRect = wordPageRef.current?.getBoundingClientRect();
+          const allowVertical = activePage === 1 && !!wordPageRect &&
+            e.clientX >= wordPageRect.left &&
+            e.clientX <= wordPageRect.right &&
+            e.clientY >= wordPageRect.top &&
+            e.clientY <= wordPageRect.bottom;
+
+          try {
+            e.currentTarget.setPointerCapture(e.pointerId);
+          } catch {
+            // ignore unsupported capture errors
+          }
+
           pointerRef.current = {
             startX: e.clientX,
             startY: e.clientY,
@@ -570,6 +586,7 @@ const Index = () => {
             currentY: e.clientY,
             axis: null,
             pointerId: e.pointerId,
+            allowVertical,
           };
         }}
         onPointerMove={(e) => {
@@ -583,11 +600,11 @@ const Index = () => {
 
           if (!pointerRef.current.axis) {
             if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-            pointerRef.current.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+            pointerRef.current.axis = pointerRef.current.allowVertical && Math.abs(dy) > Math.abs(dx) ? "y" : "x";
           }
 
-          if (pointerRef.current.axis === "y" && activePage === 1) {
-            cardDragY.set(dy * 0.92);
+          if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
+            cardDragY.set(dy * 0.96);
             return;
           }
 
@@ -602,7 +619,7 @@ const Index = () => {
           const dx = pointerRef.current.currentX - pointerRef.current.startX;
           const axis = pointerRef.current.axis;
 
-          if (axis === "y" && activePage === 1) {
+          if (axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
             completeExternalCardSwipe(cardDragY.get());
           } else if (axis === "x") {
             const threshold = 40;
@@ -615,14 +632,25 @@ const Index = () => {
             }
           }
 
+          try {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+          } catch {
+            // ignore unsupported capture errors
+          }
+
           pointerRef.current = null;
         }}
-        onPointerCancel={() => {
+        onPointerCancel={(e) => {
           if (pointerRef.current?.axis === "y") {
             void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
           }
           if (pointerRef.current?.axis === "x") {
             snapToActivePage();
+          }
+          try {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+          } catch {
+            // ignore unsupported capture errors
           }
           pointerRef.current = null;
         }}
@@ -682,6 +710,7 @@ const Index = () => {
             </div>
             {/* Word card page */}
             <div
+              ref={wordPageRef}
               className="w-full h-full min-h-0 flex-shrink-0 flex items-center justify-center px-4 overflow-hidden relative"
             >
               <WordLimitOverlay show={dailyLimitReached} onUpgrade={() => setPremiumOpen(true)} />
