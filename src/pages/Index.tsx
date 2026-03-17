@@ -399,13 +399,13 @@ const Index = () => {
       className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden"
       onWheel={(e) => {
         if (activePage !== 1 || wheelCooldownRef.current) return;
-        if (Math.abs(e.deltaY) < 30) return;
+        if (Math.abs(e.deltaY) < 20) return;
         wheelCooldownRef.current = true;
-        cardDragY.set(e.deltaY > 0 ? -72 : 72);
-        setTimeout(() => { wheelCooldownRef.current = false; }, 400);
+        cardDragY.set(e.deltaY > 0 ? -84 : 84);
+        setTimeout(() => { wheelCooldownRef.current = false; }, 320);
         setTimeout(() => {
-          completeExternalCardSwipe(e.deltaY > 0 ? -72 : 72);
-        }, 20);
+          completeExternalCardSwipe(e.deltaY > 0 ? -84 : 84);
+        }, 16);
       }}
     >
       {/* Nav */}
