@@ -144,7 +144,7 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.24, ease: "easeOut" }}
-      className="pointer-events-none select-none absolute left-1/2 top-full z-10 -translate-x-[30px]"
+      className="pointer-events-none select-none absolute left-0 top-full z-10"
       style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
     >
       <div className="flex flex-col items-center">
