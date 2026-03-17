@@ -308,23 +308,26 @@ const Index = () => {
   }, [history]);
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
-    const threshold = 50;
-    const offScreen = 500;
+    const threshold = 36;
+    const offScreen = Math.max(window.innerHeight * 0.9, 700);
+
+    cardDragY.stop();
+
     if (offsetY < -threshold) {
-      void animate(cardDragY, -offScreen, { type: "tween", duration: 0.2, ease: "easeIn" }).then(() => {
+      void animate(cardDragY, -offScreen, { type: "tween", duration: 0.18, ease: "easeOut" }).then(() => {
         cardDragY.set(0);
         handleNext();
       });
       return;
     }
     if (offsetY > threshold && history.length > 0) {
-      void animate(cardDragY, offScreen, { type: "tween", duration: 0.2, ease: "easeIn" }).then(() => {
+      void animate(cardDragY, offScreen, { type: "tween", duration: 0.18, ease: "easeOut" }).then(() => {
         cardDragY.set(0);
         handlePrev();
       });
       return;
     }
-    void animate(cardDragY, 0, { type: "spring", stiffness: 400, damping: 25 });
+    void animate(cardDragY, 0, { type: "spring", stiffness: 520, damping: 34, mass: 0.7 });
   }, [cardDragY, handleNext, handlePrev, history.length]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
