@@ -27,6 +27,7 @@ const FEATURES = [
 
 export function PremiumDialog({ open, onClose }: PremiumDialogProps) {
   const { startCheckout, isPremium } = useSubscription();
+  const { user } = useAuth();
   const [tab, setTab] = useState<"premium" | "support">("premium");
   const [supportAmount, setSupportAmount] = useState(9.99);
   const [customAmount, setCustomAmount] = useState("");
