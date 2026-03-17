@@ -551,7 +551,7 @@ const Index = () => {
                     className={`transition-transform flex-shrink-0 ${categoriesOpen ? "rotate-180" : ""}`}
                   />
                 </button>
-                <SpiderWeb todayCount={todayCount} dailyGoal={profile?.daily_goal ?? 5} streak={streak} />
+                <SpiderWeb todayCount={todayCount} dailyGoal={profile?.daily_goal ?? 5} streak={streak} forceShow={forceSpider} onHide={() => setForceSpider(false)} />
               </div>
               <DailyProgress current={todayCount} goal={profile?.daily_goal ?? 5} />
             </div>
