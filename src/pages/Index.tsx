@@ -301,23 +301,28 @@ const Index = () => {
       localStorage.setItem("eloquencee-total-viewed", JSON.stringify(next));
       return next;
     });
-    // If we have forward history (user went back and now goes forward), restore that word
+    swipeDirRef.current = "up";
     if (forwardHistory.length > 0) {
       const nextIdx = forwardHistory[forwardHistory.length - 1];
       setForwardHistory((prev) => prev.slice(0, -1));
+      setIsRevisit(true);
       setCurrentIndex(nextIdx);
-    } else if (selectedCategories.includes("all") && preferredCategories.length > 0) {
-      setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
     } else {
-      setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
+      setIsRevisit(false);
+      if (selectedCategories.includes("all") && preferredCategories.length > 0) {
+        setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
+      } else {
+        setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
+      }
     }
   }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress, forwardHistory]);
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
     if (navigator.vibrate) navigator.vibrate(8);
-    // Save current index to forward history so user can go forward to it again
     setForwardHistory((prev) => [...prev, currentIndex]);
+    swipeDirRef.current = "down";
+    setIsRevisit(true);
     setHistory((prev) => {
       const next = [...prev];
       const lastIndex = next.pop()!;
