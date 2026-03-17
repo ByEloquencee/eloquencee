@@ -317,7 +317,7 @@ const Index = () => {
   }, [history]);
 
   const completeExternalCardSwipe = useCallback((offsetY: number) => {
-    const threshold = 36;
+    const threshold = 60;
     const offScreen = Math.max(window.innerHeight * 0.9, 700);
 
     cardDragY.stop();
@@ -336,7 +336,7 @@ const Index = () => {
       });
       return;
     }
-    void animate(cardDragY, 0, { type: "spring", stiffness: 520, damping: 34, mass: 0.7 });
+    void animate(cardDragY, 0, { type: "spring", stiffness: 560, damping: 38, mass: 0.8 });
   }, [cardDragY, handleNext, handlePrev, history.length]);
 
   const toggleCategory = (cat: WordCategory | "all") => {
@@ -570,8 +570,8 @@ const Index = () => {
           const allowVertical = activePage === 1 && !!wordPageRect &&
             e.clientX >= wordPageRect.left &&
             e.clientX <= wordPageRect.right &&
-            e.clientY >= wordPageRect.top &&
-            e.clientY <= wordPageRect.bottom;
+            e.clientY >= wordPageRect.top - 88 &&
+            e.clientY <= wordPageRect.bottom + 96;
 
           try {
             e.currentTarget.setPointerCapture(e.pointerId);
@@ -599,12 +599,12 @@ const Index = () => {
           const dy = e.clientY - pointerRef.current.startY;
 
           if (!pointerRef.current.axis) {
-            if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+            if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
             pointerRef.current.axis = pointerRef.current.allowVertical && Math.abs(dy) > Math.abs(dx) ? "y" : "x";
           }
 
           if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
-            cardDragY.set(dy * 0.96);
+            cardDragY.set(dy * 0.72);
             return;
           }
 
