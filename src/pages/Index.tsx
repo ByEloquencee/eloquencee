@@ -573,8 +573,8 @@ const Index = () => {
             onDrag={(_, info) => {
               if (dragAxisRef.current === "y" && activePage === 1) {
                 const raw = info.offset.y;
-                const damped = Math.sign(raw) * Math.pow(Math.abs(raw), 0.75);
-                cardDragY.set(damped);
+                const eased = raw * 0.92;
+                cardDragY.set(eased);
               }
             }}
             onDragEnd={(_, info) => {
