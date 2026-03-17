@@ -130,24 +130,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
           animate="center"
           exit="exit"
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          drag="y"
-          dragConstraints={{ top: 0, bottom: 0 }}
-          dragElastic={0.3}
-          dragMomentum={false}
-          onDragEnd={(_, info) => {
-            if (onExternalDragEnd) {
-              // info.offset.y is reduced by dragElastic, so use the visual position
-              const currentY = externalDragY?.get() ?? info.offset.y;
-              onExternalDragEnd(currentY);
-              return;
-            }
-            const threshold = 50;
-            if (info.offset.y < -threshold) {
-              handleNext();
-            } else if (info.offset.y > threshold && canGoBack) {
-              handlePrevAction();
-            }
-          }}
           style={{ y: externalDragY }}
         >
           <div
