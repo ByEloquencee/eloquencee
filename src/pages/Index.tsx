@@ -346,6 +346,12 @@ const Index = () => {
     });
   }, [cardDragY, handleNext, handlePrev, history.length]);
 
+  useEffect(() => {
+    pointerRef.current = null;
+    cardDragY.stop();
+    cardDragY.set(0);
+  }, [currentIndex, cardDragY]);
+
   const toggleCategory = (cat: WordCategory | "all") => {
     if (cat === "all") {
       setSelectedCategories(["all"]);
