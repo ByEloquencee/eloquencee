@@ -144,6 +144,7 @@ const Index = () => {
 
   const snapToActivePage = useCallback((immediate = false) => {
     const target = -activePage * sliderWidth;
+    sliderXRef.current = target;
     if (immediate) {
       sliderControls.set({ x: target });
     } else {
