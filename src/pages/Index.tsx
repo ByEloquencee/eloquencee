@@ -806,7 +806,13 @@ const Index = () => {
                     }}
                     onAskAI={() => setAiChatOpen(true)}
                     folders={folders}
-                    onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
+                    onToggleFolder={(folderId) => {
+                      const folder = folders.find(f => f.id === folderId);
+                      const isAlreadyInFolder = folder?.wordIds.includes(currentWord.id);
+                      toggleWordInFolder(folderId, currentWord.id);
+                      if (!isAlreadyInFolder) incrementProgress();
+                      else decrementProgress();
+                    }}
                     onShare={() => setShareOpen(true)}
                     difficultyLevel={profile?.difficulty_level || "advanced"}
                     externalDragY={cardDragY}
