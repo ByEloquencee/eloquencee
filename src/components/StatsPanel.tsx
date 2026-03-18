@@ -254,72 +254,88 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 {weeklyTotal} polubionych
               </span>
             </div>
-            <div className="relative h-32">
+            <div className="relative h-32 pl-7">
+              {/* Y-axis labels */}
+              {[15, 10, 5, 0].map((value) => (
+                <span
+                  key={value}
+                  className="absolute left-0 -translate-y-1/2 text-[9px] font-medium text-muted-foreground tabular-nums"
+                  style={{ bottom: `${(value / maxCount) * 100}%` }}
+                >
+                  {value}
+                </span>
+              ))}
+
               {/* Grid lines */}
-              {[0, 0.5, 1].map((ratio) => (
+              {[0, 5, 10, 15].map((value) => (
                 <div
-                  key={ratio}
-                  className="absolute left-0 right-0 border-t border-border/30"
-                  style={{ bottom: `${ratio * 100}%` }}
+                  key={value}
+                  className="absolute left-7 right-0 border-t border-border/30"
+                  style={{ bottom: `${(value / maxCount) * 100}%` }}
                 />
               ))}
+
               {/* Goal line */}
-              {maxCount > 0 && dailyGoal <= maxCount && (
+              {dailyGoal <= maxCount && (
                 <div
-                  className="absolute left-0 right-0 border-t border-dashed border-primary/40"
+                  className="absolute left-7 right-0 border-t border-dashed border-primary/40"
                   style={{ bottom: `${(dailyGoal / maxCount) * 100}%` }}
                 >
                   <span className="absolute right-0 -top-3.5 text-[9px] text-primary/60 font-medium">cel</span>
                 </div>
               )}
+
               {/* Area + line chart */}
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                {(() => {
+              <div className="absolute inset-y-0 left-7 right-0">
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  {(() => {
+                    const padding = 4;
+                    const points = displayData.map((d, i) => {
+                      const x = displayData.length > 1 ? padding + (i / (displayData.length - 1)) * (100 - padding * 2) : 50;
+                      const y = 100 - (Math.min(d.count, maxCount) / maxCount) * 92 - 4;
+                      return { x, y };
+                    });
+                    const linePoints = points.map((p) => `${p.x},${p.y}`).join(" ");
+                    const areaPoints = `${points[0].x},100 ${linePoints} ${points[points.length - 1].x},100`;
+
+                    return (
+                      <>
+                        <defs>
+                          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.2" />
+                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.02" />
+                          </linearGradient>
+                        </defs>
+                        <motion.polygon
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.8 }}
+                          points={areaPoints}
+                          fill="url(#areaGrad)"
+                        />
+                        <polyline
+                          points={linePoints}
+                          fill="none"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </>
+                    );
+                  })()}
+                </svg>
+
+                {displayData.map((d, i) => {
                   const padding = 4;
-                  const points = displayData.map((d, i) => {
-                    const x = displayData.length > 1 ? padding + (i / (displayData.length - 1)) * (100 - padding * 2) : 50;
-                    const y = maxCount > 0 ? 100 - (d.count / maxCount) * 92 - 4 : 96;
-                    return { x, y };
-                  });
-                  const linePoints = points.map(p => `${p.x},${p.y}`).join(" ");
-                  const areaPoints = `${points[0].x},100 ${linePoints} ${points[points.length - 1].x},100`;
+                  const xPct = displayData.length > 1 ? padding + (i / (displayData.length - 1)) * (100 - padding * 2) : 50;
+                  const yPct = (Math.min(d.count, maxCount) / maxCount) * 92 + 4;
+                  const isToday = i === displayData.length - 1;
+
                   return (
-                    <>
-                      <defs>
-                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.2" />
-                          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.02" />
-                        </linearGradient>
-                      </defs>
-                      <motion.polygon
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.8 }}
-                        points={areaPoints}
-                        fill="url(#areaGrad)"
-                      />
-                      <polyline
-                        points={linePoints}
-                        fill="none"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </>
-                  );
-                })()}
-              </svg>
-              {/* Dots + count labels via absolute positioning */}
-              {displayData.map((d, i) => {
-                const padding = 4;
-                const xPct = displayData.length > 1 ? padding + (i / (displayData.length - 1)) * (100 - padding * 2) : 50;
-                const yPct = maxCount > 0 ? (d.count / maxCount) * 92 + 4 : 4;
-                const isToday = i === displayData.length - 1;
-                return (
-                  <div key={d.date}>
                     <motion.div
+                      key={d.date}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ duration: 0.3, delay: 0.5 + i * 0.05 }}
@@ -328,20 +344,12 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                       }`}
                       style={{ left: `${xPct}%`, bottom: `${yPct}%` }}
                     />
-                    {d.count > 0 && (
-                      <span
-                        className="absolute text-[9px] font-semibold text-muted-foreground tabular-nums -translate-x-1/2"
-                        style={{ left: `${xPct}%`, bottom: `calc(${yPct}% + 10px)` }}
-                      >
-                        {d.count}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
             {/* Day labels */}
-            <div className="flex mt-2" style={{ paddingLeft: "4%", paddingRight: "4%" }}>
+            <div className="flex mt-2 pl-7">
               {displayData.map((d, i) => {
                 const isToday = i === displayData.length - 1;
                 return (
