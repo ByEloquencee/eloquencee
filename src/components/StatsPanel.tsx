@@ -254,33 +254,105 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 {weeklyTotal} polubionych
               </span>
             </div>
-            <div className="flex items-end gap-3 h-32">
-              {displayData.map((d, i) => {
-                const height = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
-                const isToday = i === displayData.length - 1;
-                return (
-                  <div key={d.date} className="flex-1 flex flex-col items-center gap-1.5 h-full">
-                    <span className="text-[10px] font-semibold tabular-nums text-muted-foreground min-h-[14px]">
-                      {d.count > 0 ? d.count : ""}
-                    </span>
-                    <div className="flex-1 flex items-end justify-center w-full">
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: d.count > 0 ? `${Math.max(height, 8)}%` : "0%" }}
-                        transition={{ duration: 0.6, delay: i * 0.06, ease: "easeOut" }}
-                        className={`w-2.5 rounded-full ${isToday ? "bg-primary" : "bg-primary/35"}`}
+            <div className="relative h-32">
+              {/* Grid lines */}
+              {[0, 0.5, 1].map((ratio) => (
+                <div
+                  key={ratio}
+                  className="absolute left-0 right-0 border-t border-border/30"
+                  style={{ bottom: `${ratio * 100}%` }}
+                />
+              ))}
+              {/* Goal line */}
+              {maxCount > 0 && (
+                <div
+                  className="absolute left-0 right-0 border-t border-dashed border-primary/40"
+                  style={{ bottom: `${(dailyGoal / maxCount) * 100}%` }}
+                >
+                  <span className="absolute right-0 -top-3.5 text-[9px] text-primary/60 font-medium">cel</span>
+                </div>
+              )}
+              {/* Area + line chart */}
+              <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                {(() => {
+                  const points = displayData.map((d, i) => {
+                    const x = (i / (displayData.length - 1)) * 100;
+                    const y = maxCount > 0 ? 100 - (d.count / maxCount) * 100 : 100;
+                    return { x, y };
+                  });
+                  const linePoints = points.map(p => `${p.x},${p.y}`).join(" ");
+                  const areaPoints = `0,100 ${linePoints} 100,100`;
+                  return (
+                    <>
+                      <defs>
+                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.25" />
+                          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.02" />
+                        </linearGradient>
+                      </defs>
+                      <motion.polygon
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.8 }}
+                        points={areaPoints}
+                        fill="url(#areaGrad)"
+                        vectorEffect="non-scaling-stroke"
                       />
-                    </div>
-                    <span className={`text-[10px] font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}>
-                      {getDayLabel(d.date)}
-                    </span>
-                  </div>
-                );
+                      <motion.polyline
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        points={linePoints}
+                        fill="none"
+                        stroke="hsl(var(--primary))"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      {points.map((p, i) => (
+                        <motion.circle
+                          key={i}
+                          initial={{ r: 0 }}
+                          animate={{ r: i === displayData.length - 1 ? 4 : 3 }}
+                          transition={{ duration: 0.3, delay: 0.6 + i * 0.05 }}
+                          cx={`${p.x}%`}
+                          cy={`${p.y}%`}
+                          fill={i === displayData.length - 1 ? "hsl(var(--primary))" : "hsl(var(--card))"}
+                          stroke="hsl(var(--primary))"
+                          strokeWidth="2"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      ))}
+                    </>
+                  );
+                })()}
+              </svg>
+              {/* Count labels */}
+              {displayData.map((d, i) => {
+                const x = (i / (displayData.length - 1)) * 100;
+                const y = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
+                return d.count > 0 ? (
+                  <span
+                    key={d.date}
+                    className="absolute text-[9px] font-semibold text-muted-foreground tabular-nums -translate-x-1/2"
+                    style={{ left: `${x}%`, bottom: `calc(${y}% + 10px)` }}
+                  >
+                    {d.count}
+                  </span>
+                ) : null;
               })}
             </div>
-            <div className="mt-3 flex items-center gap-1.5">
-              <div className="h-px flex-1 border-t border-dashed border-border" />
-              <span className="text-[10px] text-muted-foreground">cel: {dailyGoal}/dzień</span>
+            {/* Day labels */}
+            <div className="flex justify-between mt-2">
+              {displayData.map((d, i) => {
+                const isToday = i === displayData.length - 1;
+                return (
+                  <span key={d.date} className={`text-[10px] font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}>
+                    {getDayLabel(d.date)}
+                  </span>
+                );
+              })}
             </div>
           </motion.div>
 
