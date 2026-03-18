@@ -8,6 +8,7 @@ import {
   Line,
   ReferenceLine,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
@@ -304,20 +305,34 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                       strokeDasharray="4 4"
                     />
                   )}
+                  <Tooltip
+                    cursor={false}
+                    content={({ active, payload }) => {
+                      if (active && payload?.length) {
+                        return (
+                          <div className="rounded-lg border bg-card px-3 py-1.5 shadow-md text-xs">
+                            <span className="font-semibold text-foreground">{payload[0].value}</span>
+                            <span className="text-muted-foreground"> słów</span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
                   <Area
-                    type="monotone"
+                    type="linear"
                     dataKey="value"
                     stroke="none"
                     fill="url(#weeklyChartFill)"
                     isAnimationActive
                   />
                   <Line
-                    type="monotone"
+                    type="linear"
                     dataKey="value"
                     stroke="hsl(var(--primary))"
                     strokeWidth={2.5}
                     dot={{ r: 3, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--card))" }}
-                    activeDot={{ r: 4, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
+                    activeDot={{ r: 5, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
                     isAnimationActive
                   />
                 </AreaChart>
