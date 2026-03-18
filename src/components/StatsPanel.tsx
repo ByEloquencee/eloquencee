@@ -254,33 +254,24 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 {weeklyTotal} polubionych
               </span>
             </div>
-            <div className="flex items-end gap-2 h-24">
+            <div className="flex items-end gap-2 h-32">
               {displayData.map((d, i) => {
                 const height = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
                 const isToday = i === displayData.length - 1;
                 return (
-                  <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="relative flex items-center justify-center">
-                      {d.count > 0 && (
-                        <div
-                          className={`absolute rounded-md ${isToday ? "bg-primary/15" : "bg-primary/8"}`}
-                          style={{
-                            width: `${Math.max(20, Math.min(32, 16 + d.count * 3))}px`,
-                            height: `${Math.max(16, Math.min(24, 14 + d.count * 2))}px`,
-                          }}
-                        />
-                      )}
-                      <span className="text-[10px] font-medium text-muted-foreground tabular-nums relative z-10">
-                        {d.count > 0 ? d.count : ""}
-                      </span>
-                    </div>
-                    <div className="w-full relative rounded-lg bg-secondary/50" style={{ height: "100%" }}>
+                  <div key={d.date} className="flex-1 flex flex-col items-center gap-1.5 h-full">
+                    <span className="text-[10px] font-semibold tabular-nums text-muted-foreground min-h-[14px]">
+                      {d.count > 0 ? d.count : ""}
+                    </span>
+                    <div className="w-full flex-1 relative rounded-lg bg-secondary/40 overflow-hidden">
                       <motion.div
                         initial={{ height: 0 }}
-                        animate={{ height: `${Math.max(height, 4)}%` }}
-                        transition={{ duration: 0.5, delay: i * 0.05, ease: "easeOut" }}
+                        animate={{ height: `${Math.max(height, d.count > 0 ? 8 : 0)}%` }}
+                        transition={{ duration: 0.6, delay: i * 0.06, ease: "easeOut" }}
                         className={`absolute bottom-0 w-full rounded-lg ${
-                          isToday ? "bg-primary" : "bg-primary/25"
+                          isToday
+                            ? "bg-primary"
+                            : "bg-primary/30"
                         }`}
                       />
                     </div>
