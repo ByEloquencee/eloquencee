@@ -376,25 +376,3 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
   );
 }
 
-          <motion.div variants={itemVariants}>
-            <button
-              onClick={() => setNotifOpen(true)}
-              className="w-full rounded-2xl bg-card border border-border p-4 flex items-center gap-3 hover:bg-secondary/50 transition-colors cursor-pointer text-left"
-            >
-              <div className="p-2 rounded-xl bg-primary/10">
-                <Bell size={18} className="text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold">Przypomnienia</p>
-                <p className="text-xs text-muted-foreground">Ustaw powiadomienia o nauce</p>
-              </div>
-            </button>
-          </motion.div>
-
-        </motion.div>
-      </div>
-
-      <NotificationDialog open={notifOpen} onClose={() => setNotifOpen(false)} />
-    </div>
-  );
-}
