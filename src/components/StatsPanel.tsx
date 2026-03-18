@@ -330,9 +330,9 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                     type="linear"
                     dataKey="value"
                     stroke="hsl(var(--primary))"
-                    strokeWidth={2.5}
-                    dot={{ r: 3, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--card))" }}
-                    activeDot={{ r: 5, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
+                    strokeWidth={3.5}
+                    dot={{ r: 4, strokeWidth: 2.5, stroke: "hsl(var(--primary))", fill: "hsl(var(--card))" }}
+                    activeDot={{ r: 6, strokeWidth: 2.5, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
                     isAnimationActive
                   />
                 </AreaChart>
