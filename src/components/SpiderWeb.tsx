@@ -14,19 +14,19 @@ interface SpiderWebProps {
 
 const MESSAGES_QUIZ = [
   "Sprawdź się w quizie! 🧠",
-  "Czas na quiz! Ile zapamiętałeś?",
-  "Wypróbuj tryb quizu! 💪",
+  "Czas na quiz! 💪",
+  "Wypróbuj tryb quizu!",
 ];
 
 const MESSAGES_KNOWLEDGE = [
-  "Ile słów już znasz? Sprawdź się!",
-  "Przetestuj swoją wiedzę! 📚",
+  "Ile słów już znasz? 📚",
+  "Przetestuj swoją wiedzę!",
   "Powtórka czyni mistrza! 🎯",
 ];
 
 const MESSAGES_NOTIFICATIONS = [
-  "Włącz powiadomienia i ucz się codziennie! 🔔",
-  "Nowe słówka czekają — włącz przypomnienia!",
+  "Włącz powiadomienia! 🔔",
+  "Włącz przypomnienia!",
 ];
 
 function getProgressMessages(todayCount: number, dailyGoal: number, streak: number): string[] {
