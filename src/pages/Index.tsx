@@ -294,7 +294,6 @@ const Index = () => {
       return;
     }
     if (navigator.vibrate) navigator.vibrate(8);
-    incrementProgress();
     setHistory((prev) => [...prev, currentIndex]);
     setTotalViewed((prev: number) => {
       const next = prev + 1;
