@@ -158,7 +158,7 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
           style={{ originY: 0, willChange: "transform, opacity", transform: "translateZ(0)" }}
           className="pointer-events-none select-none absolute left-[10px] top-full -mt-2 z-10"
         >
-          <div className="flex flex-col items-center overflow-hidden pt-2">
+          <div className="flex flex-col items-center pt-2">
             <svg
               width="32"
               height="14"
