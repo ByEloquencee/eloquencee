@@ -33,20 +33,20 @@ function getProgressMessages(todayCount: number, dailyGoal: number, streak: numb
   const msgs: string[] = [];
 
   if (todayCount === 0) {
-    msgs.push("Zacznij dzień od nowego słówka! ☀️");
+    msgs.push("Nowe słówko czeka! ☀️");
   } else if (todayCount < dailyGoal) {
     const left = dailyGoal - todayCount;
-    msgs.push(`Jeszcze ${left} ${left === 1 ? "słówko" : left < 5 ? "słówka" : "słówek"} do celu! 🎯`);
+    msgs.push(`Jeszcze ${left} do celu! 🎯`);
   } else {
-    msgs.push("Cel dzienny osiągnięty! Brawo! 🏆");
+    msgs.push("Cel osiągnięty! Brawo! 🏆");
   }
 
   if (streak >= 3) {
-    msgs.push(`Passa ${streak} dni! Tak trzymaj! 🔥`);
+    msgs.push(`Passa ${streak} dni! 🔥`);
   }
 
   if (todayCount >= 5) {
-    msgs.push(`Już ${todayCount} słów dziś — super tempo! 🚀`);
+    msgs.push(`${todayCount} słów dziś! 🚀`);
   }
 
   return msgs;
