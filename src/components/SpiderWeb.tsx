@@ -215,15 +215,12 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
                   }}
                 />
                 <div
-                  className="rounded-xl border border-border/40 px-3 py-2 text-xs leading-snug shadow-sm"
+                  className="rounded-xl border border-border/40 px-3 py-2 text-xs leading-snug shadow-sm whitespace-nowrap"
                   style={{
                     background: "hsl(var(--muted))",
                     color: "hsl(var(--muted-foreground))",
                   }}
                 >
-                  <span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide opacity-60">
-                    Elokwentny Pająk
-                  </span>
                   {message}
                 </div>
               </motion.div>
