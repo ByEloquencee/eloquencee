@@ -1,6 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X } from "lucide-react";
 import { useState } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Line,
+  ReferenceLine,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type { DayRecord } from "@/hooks/use-learning-history";
 
 interface StatsPanelProps {
@@ -15,6 +25,7 @@ interface StatsPanelProps {
 }
 
 const DAY_LABELS = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Ndz"];
+const WEEKLY_CHART_MAX = 15;
 
 function getDayLabel(dateStr: string) {
   const d = new Date(dateStr + "T12:00:00");
@@ -185,8 +196,13 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
         return { date: d.toISOString().slice(0, 10), count: 0 };
       });
 
+  const chartData = displayData.map((d) => ({
+    ...d,
+    day: getDayLabel(d.date),
+    value: Math.min(d.count, WEEKLY_CHART_MAX),
+  }));
+
   const weeklyTotal = displayData.reduce((s, d) => s + d.count, 0);
-  const maxCount = 15;
   const avgDaily = Math.round(weeklyTotal / 7 * 10) / 10;
   const monthProjection = Math.round(avgDaily * 30);
   const goalPercent = Math.min((todayCount / dailyGoal) * 100, 100);
@@ -254,110 +270,112 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 {weeklyTotal} polubionych
               </span>
             </div>
-            <div className="relative h-32 pl-7">
-              {/* Y-axis labels */}
-              {[15, 10, 5, 0].map((value) => (
-                <span
-                  key={value}
-                  className="absolute left-0 -translate-y-1/2 text-[9px] font-medium text-muted-foreground tabular-nums"
-                  style={{ bottom: `${(value / maxCount) * 100}%` }}
-                >
-                  {value}
-                </span>
-              ))}
 
-              {/* Grid lines */}
-              {[0, 5, 10, 15].map((value) => (
-                <div
-                  key={value}
-                  className="absolute left-7 right-0 border-t border-border/30"
-                  style={{ bottom: `${(value / maxCount) * 100}%` }}
-                />
-              ))}
-
-              {/* Goal line */}
-              {dailyGoal <= maxCount && (
-                <div
-                  className="absolute left-7 right-0 border-t border-dashed border-primary/40"
-                  style={{ bottom: `${(dailyGoal / maxCount) * 100}%` }}
-                >
-                  <span className="absolute right-0 -top-3.5 text-[9px] text-primary/60 font-medium">cel</span>
-                </div>
-              )}
-
-              {/* Area + line chart */}
-              <div className="absolute inset-y-0 left-7 right-0">
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  {(() => {
-                    const padding = 4;
-                    const points = displayData.map((d, i) => {
-                      const x = displayData.length > 1 ? padding + (i / (displayData.length - 1)) * (100 - padding * 2) : 50;
-                      const y = 100 - (Math.min(d.count, maxCount) / maxCount) * 92 - 4;
-                      return { x, y };
-                    });
-                    const linePoints = points.map((p) => `${p.x},${p.y}`).join(" ");
-                    const areaPoints = `${points[0].x},100 ${linePoints} ${points[points.length - 1].x},100`;
-
-                    return (
-                      <>
-                        <defs>
-                          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.2" />
-                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.02" />
-                          </linearGradient>
-                        </defs>
-                        <motion.polygon
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.8 }}
-                          points={areaPoints}
-                          fill="url(#areaGrad)"
-                        />
-                        <polyline
-                          points={linePoints}
-                          fill="none"
-                          stroke="hsl(var(--primary))"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                      </>
-                    );
-                  })()}
-                </svg>
-
-                {displayData.map((d, i) => {
-                  const padding = 4;
-                  const xPct = displayData.length > 1 ? padding + (i / (displayData.length - 1)) * (100 - padding * 2) : 50;
-                  const yPct = (Math.min(d.count, maxCount) / maxCount) * 92 + 4;
-                  const isToday = i === displayData.length - 1;
-
-                  return (
-                    <motion.div
-                      key={d.date}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.3, delay: 0.5 + i * 0.05 }}
-                      className={`absolute w-2.5 h-2.5 rounded-full border-2 -translate-x-1/2 translate-y-1/2 ${
-                        isToday ? "bg-primary border-primary" : "bg-card border-primary"
-                      }`}
-                      style={{ left: `${xPct}%`, bottom: `${yPct}%` }}
+            <div className="h-40 -ml-3">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="weeklyChartFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.24} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.03} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="hsl(var(--border))" strokeOpacity={0.35} vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="day"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                    dy={6}
+                  />
+                  <YAxis
+                    domain={[0, WEEKLY_CHART_MAX]}
+                    ticks={[0, 5, 10, 15]}
+                    tickLine={false}
+                    axisLine={false}
+                    width={24}
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }}
+                  />
+                  {dailyGoal <= WEEKLY_CHART_MAX && (
+                    <ReferenceLine
+                      y={dailyGoal}
+                      stroke="hsl(var(--primary))"
+                      strokeOpacity={0.45}
+                      strokeDasharray="4 4"
                     />
-                  );
-                })}
-              </div>
+                  )}
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke="none"
+                    fill="url(#weeklyChartFill)"
+                    isAnimationActive
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2.5}
+                    dot={{ r: 3, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--card))" }}
+                    activeDot={{ r: 4, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
+                    isAnimationActive
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
-            {/* Day labels */}
-            <div className="flex mt-2 pl-7">
-              {displayData.map((d, i) => {
-                const isToday = i === displayData.length - 1;
-                return (
-                  <span key={d.date} className={`flex-1 text-center text-[10px] font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}>
-                    {getDayLabel(d.date)}
-                  </span>
-                );
-              })}
+          </motion.div>
+
+          {/* Summary stats */}
+          <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 mb-3">
+            {[
+              { icon: BookOpen, value: masteredCount, label: "Nauczone" },
+              { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
+              { icon: Eye, value: totalViewed, label: "Przejrzane" },
+            ].map(({ icon: Icon, value, label }) => (
+              <div key={label} className="rounded-2xl bg-card border border-border p-3 text-center">
+                <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
+                  <Icon size={14} className="text-muted-foreground" />
+                </div>
+                <p className="text-lg font-bold text-foreground">{value}</p>
+                <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Projection */}
+          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mb-3">
+            <p className="text-sm font-semibold mb-1.5">Prognoza nauki</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Przy obecnym tempie ({avgDaily} słów/dzień) nauczysz się{" "}
+              <span className="font-semibold text-foreground">{monthProjection} słów</span> w tym miesiącu i{" "}
+              <span className="font-semibold text-foreground">{Math.round(avgDaily * 365)} słów</span> w ciągu roku.
+            </p>
+          </motion.div>
+
+          {/* Notification button */}
+          <motion.div variants={itemVariants}>
+            <button
+              onClick={() => setNotifOpen(true)}
+              className="w-full rounded-2xl bg-card border border-border p-4 flex items-center gap-3 hover:bg-secondary/50 transition-colors cursor-pointer text-left"
+            >
+              <div className="p-2 rounded-xl bg-primary/10">
+                <Bell size={18} className="text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">Przypomnienia</p>
+                <p className="text-xs text-muted-foreground">Ustaw powiadomienia o nauce</p>
+              </div>
+            </button>
+          </motion.div>
+
+        </motion.div>
+      </div>
+
+      <NotificationDialog open={notifOpen} onClose={() => setNotifOpen(false)} />
+    </div>
+  );
+}
+
             </div>
           </motion.div>
 
