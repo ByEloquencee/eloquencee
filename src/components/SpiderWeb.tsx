@@ -14,39 +14,39 @@ interface SpiderWebProps {
 
 const MESSAGES_QUIZ = [
   "Sprawdź się w quizie! 🧠",
-  "Czas na quiz! Ile zapamiętałeś?",
-  "Wypróbuj tryb quizu! 💪",
+  "Czas na quiz! 💪",
+  "Wypróbuj tryb quizu!",
 ];
 
 const MESSAGES_KNOWLEDGE = [
-  "Ile słów już znasz? Sprawdź się!",
-  "Przetestuj swoją wiedzę! 📚",
+  "Ile słów już znasz? 📚",
+  "Przetestuj swoją wiedzę!",
   "Powtórka czyni mistrza! 🎯",
 ];
 
 const MESSAGES_NOTIFICATIONS = [
-  "Włącz powiadomienia i ucz się codziennie! 🔔",
-  "Nowe słówka czekają — włącz przypomnienia!",
+  "Włącz powiadomienia! 🔔",
+  "Włącz przypomnienia!",
 ];
 
 function getProgressMessages(todayCount: number, dailyGoal: number, streak: number): string[] {
   const msgs: string[] = [];
 
   if (todayCount === 0) {
-    msgs.push("Zacznij dzień od nowego słówka! ☀️");
+    msgs.push("Nowe słówko czeka! ☀️");
   } else if (todayCount < dailyGoal) {
     const left = dailyGoal - todayCount;
-    msgs.push(`Jeszcze ${left} ${left === 1 ? "słówko" : left < 5 ? "słówka" : "słówek"} do celu! 🎯`);
+    msgs.push(`Jeszcze ${left} do celu! 🎯`);
   } else {
-    msgs.push("Cel dzienny osiągnięty! Brawo! 🏆");
+    msgs.push("Cel osiągnięty! Brawo! 🏆");
   }
 
   if (streak >= 3) {
-    msgs.push(`Passa ${streak} dni! Tak trzymaj! 🔥`);
+    msgs.push(`Passa ${streak} dni! 🔥`);
   }
 
   if (todayCount >= 5) {
-    msgs.push(`Już ${todayCount} słów dziś — super tempo! 🚀`);
+    msgs.push(`${todayCount} słów dziś! 🚀`);
   }
 
   return msgs;
@@ -215,15 +215,12 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
                   }}
                 />
                 <div
-                  className="rounded-xl border border-border/40 px-3 py-2 text-xs leading-snug shadow-sm"
+                  className="rounded-xl border border-border/40 px-3 py-2 text-xs leading-snug shadow-sm whitespace-nowrap"
                   style={{
                     background: "hsl(var(--muted))",
                     color: "hsl(var(--muted-foreground))",
                   }}
                 >
-                  <span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide opacity-60">
-                    Elokwentny Pająk
-                  </span>
                   {message}
                 </div>
               </motion.div>
