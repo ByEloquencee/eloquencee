@@ -158,7 +158,7 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
           style={{ originY: 0, willChange: "transform, opacity", transform: "translateZ(0)" }}
           className="pointer-events-none select-none absolute left-[10px] top-full -mt-2 z-10"
         >
-          <div className="flex flex-col items-center overflow-hidden pt-2">
+          <div className="flex flex-col items-center pt-2">
             <svg
               width="32"
               height="14"
@@ -200,18 +200,18 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
               </motion.div>
 
               <motion.div
-                className="absolute -top-2 left-full ml-4"
-                style={{ minWidth: 240, maxWidth: 320 }}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
+                className="absolute top-full mt-2 left-1/2 -translate-x-1/4"
+                style={{ minWidth: 220, maxWidth: 300 }}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.3, ease: "easeOut" }}
               >
                 <div
-                  className="absolute left-0 top-3 -translate-x-[5px] w-0 h-0"
+                  className="absolute left-[20%] -top-[5px] w-0 h-0"
                   style={{
-                    borderTop: "5px solid transparent",
-                    borderBottom: "5px solid transparent",
-                    borderRight: "6px solid hsl(var(--muted))",
+                    borderLeft: "5px solid transparent",
+                    borderRight: "5px solid transparent",
+                    borderBottom: "6px solid hsl(var(--muted))",
                   }}
                 />
                 <div
