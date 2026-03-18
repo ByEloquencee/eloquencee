@@ -254,7 +254,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 {weeklyTotal} polubionych
               </span>
             </div>
-            <div className="flex items-end gap-2 h-32">
+            <div className="flex items-end gap-3 h-32">
               {displayData.map((d, i) => {
                 const height = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
                 const isToday = i === displayData.length - 1;
@@ -263,16 +263,12 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                     <span className="text-[10px] font-semibold tabular-nums text-muted-foreground min-h-[14px]">
                       {d.count > 0 ? d.count : ""}
                     </span>
-                    <div className="w-full flex-1 relative rounded-lg bg-secondary/40 overflow-hidden">
+                    <div className="flex-1 flex items-end justify-center w-full">
                       <motion.div
                         initial={{ height: 0 }}
-                        animate={{ height: `${Math.max(height, d.count > 0 ? 8 : 0)}%` }}
+                        animate={{ height: d.count > 0 ? `${Math.max(height, 8)}%` : "0%" }}
                         transition={{ duration: 0.6, delay: i * 0.06, ease: "easeOut" }}
-                        className={`absolute bottom-0 w-full rounded-lg ${
-                          isToday
-                            ? "bg-primary"
-                            : "bg-primary/30"
-                        }`}
+                        className={`w-2.5 rounded-full ${isToday ? "bg-primary" : "bg-primary/35"}`}
                       />
                     </div>
                     <span className={`text-[10px] font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}>
