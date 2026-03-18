@@ -376,37 +376,6 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
   );
 }
 
-            </div>
-          </motion.div>
-
-          {/* Summary stats */}
-          <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 mb-3">
-            {[
-              { icon: BookOpen, value: masteredCount, label: "Nauczone" },
-              { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
-              { icon: Eye, value: totalViewed, label: "Przejrzane" },
-            ].map(({ icon: Icon, value, label }) => (
-              <div key={label} className="rounded-2xl bg-card border border-border p-3 text-center">
-                <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
-                  <Icon size={14} className="text-muted-foreground" />
-                </div>
-                <p className="text-lg font-bold text-foreground">{value}</p>
-                <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* Projection */}
-          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mb-3">
-            <p className="text-sm font-semibold mb-1.5">Prognoza nauki</p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Przy obecnym tempie ({avgDaily} słów/dzień) nauczysz się{" "}
-              <span className="font-semibold text-foreground">{monthProjection} słów</span> w tym miesiącu i{" "}
-              <span className="font-semibold text-foreground">{Math.round(avgDaily * 365)} słów</span> w ciągu roku.
-            </p>
-          </motion.div>
-
-          {/* Notification button */}
           <motion.div variants={itemVariants}>
             <button
               onClick={() => setNotifOpen(true)}
