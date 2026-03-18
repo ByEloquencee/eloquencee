@@ -156,9 +156,9 @@ export function SpiderWeb({ todayCount = 0, dailyGoal = 5, streak = 0, forceShow
           exit={{ opacity: 0, scaleY: 0 }}
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           style={{ originY: 0, willChange: "transform, opacity", transform: "translateZ(0)" }}
-          className="pointer-events-none select-none absolute left-[10px] top-full -mt-4 z-10 overflow-visible"
+          className="pointer-events-none select-none absolute left-[10px] top-full -mt-4 z-0 overflow-visible"
         >
-          <div className="flex flex-col items-center pt-2">
+          <div className="flex flex-col items-center pt-4">
             <svg
               width="32"
               height="14"
