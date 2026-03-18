@@ -186,7 +186,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
       });
 
   const weeklyTotal = displayData.reduce((s, d) => s + d.count, 0);
-  const maxCount = Math.max(...displayData.map(d => d.count), dailyGoal, 1);
+  const maxCount = 15;
   const avgDaily = Math.round(weeklyTotal / 7 * 10) / 10;
   const monthProjection = Math.round(avgDaily * 30);
   const goalPercent = Math.min((todayCount / dailyGoal) * 100, 100);
