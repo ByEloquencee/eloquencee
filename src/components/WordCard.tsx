@@ -14,6 +14,8 @@ interface WordCardProps {
   onToggleFavorite: () => void;
   isSaved?: boolean;
   onToggleSaved?: () => void;
+  favoritesCount?: number;
+  savedCount?: number;
   onNext: () => void;
   onPrev?: () => void;
   canGoBack?: boolean;
