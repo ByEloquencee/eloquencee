@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Trash2, FolderOpen } from "lucide-react";
+import { Trash2, FolderOpen } from "lucide-react";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 import type { Folder } from "@/hooks/use-folders";
 
