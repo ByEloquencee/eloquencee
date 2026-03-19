@@ -630,16 +630,18 @@ const Index = () => {
         onPointerDown={(e) => {
           if (e.pointerType === "mouse" && e.button !== 0) return;
 
-          // Don't capture pointer if touch started inside a scrollable panel (stats/admin)
+          // Allow vertical scrolling inside scroll panels on side pages, or card swipe on center
           const scrollableParent = (e.target as HTMLElement).closest?.('[data-scroll-panel]');
-          if (scrollableParent && activePage !== 1) return;
-
-          const wordPageRect = wordPageRef.current?.getBoundingClientRect();
-          const allowVertical = activePage === 1 && !!wordPageRect &&
-            e.clientX >= wordPageRect.left &&
-            e.clientX <= wordPageRect.right &&
-            e.clientY >= wordPageRect.top - 88 &&
-            e.clientY <= wordPageRect.bottom + 96;
+          const allowVertical = activePage === 1
+            ? (() => {
+                const wordPageRect = wordPageRef.current?.getBoundingClientRect();
+                return !!wordPageRect &&
+                  e.clientX >= wordPageRect.left &&
+                  e.clientX <= wordPageRect.right &&
+                  e.clientY >= wordPageRect.top - 88 &&
+                  e.clientY <= wordPageRect.bottom + 96;
+              })()
+            : !!scrollableParent;
 
           try {
             e.currentTarget.setPointerCapture(e.pointerId);
