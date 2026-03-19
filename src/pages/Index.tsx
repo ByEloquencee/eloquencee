@@ -797,6 +797,8 @@ const Index = () => {
                       if (!wasSaved) incrementProgress();
                       else decrementProgress();
                     }}
+                    favoritesCount={favorites.length}
+                    savedCount={savedCount}
                     onNext={handleNext}
                     onPrev={handlePrev}
                     canGoBack={history.length > 0}
