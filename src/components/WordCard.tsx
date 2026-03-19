@@ -14,6 +14,8 @@ interface WordCardProps {
   onToggleFavorite: () => void;
   isSaved?: boolean;
   onToggleSaved?: () => void;
+  favoritesCount?: number;
+  savedCount?: number;
   onNext: () => void;
   onPrev?: () => void;
   canGoBack?: boolean;
@@ -29,7 +31,7 @@ interface WordCardProps {
   onExternalDragEnd?: (offsetY: number) => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, favoritesCount, savedCount, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -273,27 +275,35 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                   className="px-6 pb-6 flex items-center justify-between gap-2 min-w-0"
                 >
                   <div className="flex items-center gap-1 min-w-0 overflow-x-auto flex-shrink [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    <motion.button
-                      whileTap={{ scale: 0.9 }}
-                      onClick={onToggleFavorite}
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                    >
-                      <Heart
-                        size={20}
-                        className={isFavorite ? "fill-primary text-primary" : ""}
-                      />
-                    </motion.button>
-                    <motion.button
-                      whileTap={{ scale: 0.9 }}
-                      onClick={onToggleSaved}
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                      title={isSaved ? "Usuń z zapisanych" : "Zapisz"}
-                    >
-                      <Bookmark
-                        size={20}
-                        className={isSaved ? "fill-primary text-primary" : ""}
-                      />
-                    </motion.button>
+                    <div className="flex items-center gap-3">
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={onToggleFavorite}
+                        className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                      >
+                        <Heart
+                          size={20}
+                          className={isFavorite ? "fill-primary text-primary" : ""}
+                        />
+                        {typeof favoritesCount === "number" && (
+                          <span className="text-[10px] leading-none font-medium">{favoritesCount}</span>
+                        )}
+                      </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={onToggleSaved}
+                        className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                        title={isSaved ? "Usuń z zapisanych" : "Zapisz"}
+                      >
+                        <Bookmark
+                          size={20}
+                          className={isSaved ? "fill-primary text-primary" : ""}
+                        />
+                        {typeof savedCount === "number" && (
+                          <span className="text-[10px] leading-none font-medium">{savedCount}</span>
+                        )}
+                      </motion.button>
+                    </div>
                     {folders.map((f) => {
                       const Icon = getFolderIcon(f.icon);
                       const isIn = f.wordIds.includes(word.id);
