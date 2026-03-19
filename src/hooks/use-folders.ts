@@ -79,7 +79,23 @@ export function useFolders() {
       const folder = folders.find((f) => f.id === folderId);
       if (!folder) return;
 
-      if (folder.wordIds.includes(wordId)) {
+      const isIn = folder.wordIds.includes(wordId);
+
+      // Optimistic update
+      setFolders((prev) =>
+        prev.map((f) =>
+          f.id === folderId
+            ? {
+                ...f,
+                wordIds: isIn
+                  ? f.wordIds.filter((id) => id !== wordId)
+                  : [...f.wordIds, wordId],
+              }
+            : f
+        )
+      );
+
+      if (isIn) {
         await supabase
           .from("folder_words")
           .delete()
@@ -90,9 +106,8 @@ export function useFolders() {
           .from("folder_words")
           .insert({ folder_id: folderId, word_id: wordId, user_id: user.id });
       }
-      await fetchFolders();
     },
-    [user, folders, fetchFolders]
+    [user, folders]
   );
 
   const isWordInFolder = useCallback(
@@ -128,9 +143,24 @@ export function useFolders() {
         folderId = await ensureSavedFolder();
       }
       if (!folderId) return;
-      await toggleWordInFolder(folderId, wordId);
+      // toggleWordInFolder uses folders state which may not have the new folder yet
+      // so we call it which will do optimistic update
+      const folder = folders.find((f) => f.id === folderId);
+      if (folder) {
+        await toggleWordInFolder(folderId, wordId);
+      } else {
+        // Folder was just created, add word directly
+        setFolders((prev) =>
+          prev.map((f) =>
+            f.id === folderId ? { ...f, wordIds: [...f.wordIds, wordId] } : f
+          )
+        );
+        await supabase
+          .from("folder_words")
+          .insert({ folder_id: folderId, word_id: wordId, user_id: user.id });
+      }
     },
-    [user, savedFolder, ensureSavedFolder, toggleWordInFolder]
+    [user, savedFolder, ensureSavedFolder, toggleWordInFolder, folders]
   );
 
   const isWordSaved = useCallback(
