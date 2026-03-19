@@ -15,7 +15,9 @@ export function FolderDropdown({ folders, activeFolder, onSelectFolder, onDelete
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  if (folders.length === 0) return null;
+  // Hide until user has at least one non-built-in folder
+  const userFolders = folders.filter((f) => !(f.name === "Zapisane" && f.icon === "bookmark"));
+  if (userFolders.length === 0) return null;
 
   const activeF = folders.find((f) => f.id === activeFolder);
 
@@ -24,22 +26,16 @@ export function FolderDropdown({ folders, activeFolder, onSelectFolder, onDelete
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={() => setMenuOpen((v) => !v)}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+        className={`p-2 rounded-xl transition-colors cursor-pointer ${
           activeFolder
             ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:text-foreground hover:bg-secondary"
         }`}
       >
         {activeF ? (
-          <>
-            {(() => { const Icon = getFolderIcon(activeF.icon); return <Icon size={14} />; })()}
-            <span>{activeF.wordIds.length}</span>
-          </>
+          (() => { const Icon = getFolderIcon(activeF.icon); return <Icon size={18} />; })()
         ) : (
-          <>
-            <FolderOpen size={14} />
-            <ChevronDown size={12} className={`transition-transform ${menuOpen ? "rotate-180" : ""}`} />
-          </>
+          <FolderOpen size={18} />
         )}
       </motion.button>
 
