@@ -812,7 +812,7 @@ const Index = () => {
                       }
                     }}
                     onAskAI={() => setAiChatOpen(true)}
-                    folders={folders}
+                    folders={folders.filter(f => !(f.name === "Zapisane" && f.icon === "bookmark"))}
                     onToggleFolder={(folderId) => {
                       const folder = folders.find(f => f.id === folderId);
                       const isAlreadyInFolder = folder?.wordIds.includes(currentWord.id);
