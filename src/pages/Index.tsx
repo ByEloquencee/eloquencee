@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield, Bug } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield, Bug, Bookmark } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
