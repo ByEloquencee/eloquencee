@@ -495,7 +495,7 @@ const Index = () => {
                 }`}
               >
                 <Heart size={18} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
-                <span className="absolute -top-1 -right-1 text-[10px] font-bold text-primary leading-none">{favoriteWords.length}</span>
+                <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{favoriteWords.length}</span>
               </motion.button>
             )}
             {hasSaved && (
