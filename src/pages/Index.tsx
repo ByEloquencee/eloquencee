@@ -671,6 +671,13 @@ const Index = () => {
           if (!pointerRef.current.axis) {
             if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
             pointerRef.current.axis = pointerRef.current.allowVertical && Math.abs(dy) > Math.abs(dx) ? "y" : "x";
+
+            // On side pages, release pointer capture for vertical scroll so native scroll works
+            if (pointerRef.current.axis === "y" && activePage !== 1) {
+              try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
+              pointerRef.current = null;
+              return;
+            }
           }
 
           if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
