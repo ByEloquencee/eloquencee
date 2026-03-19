@@ -790,6 +790,13 @@ const Index = () => {
                       if (!wasFav) incrementProgress();
                       else decrementProgress();
                     }}
+                    isSaved={isWordSaved(currentWord.id)}
+                    onToggleSaved={() => {
+                      const wasSaved = isWordSaved(currentWord.id);
+                      toggleSaved(currentWord.id);
+                      if (!wasSaved) incrementProgress();
+                      else decrementProgress();
+                    }}
                     onNext={handleNext}
                     onPrev={handlePrev}
                     canGoBack={history.length > 0}
