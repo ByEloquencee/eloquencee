@@ -12,6 +12,8 @@ interface WordCardProps {
   word: PolishWord;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  isSaved?: boolean;
+  onToggleSaved?: () => void;
   onNext: () => void;
   onPrev?: () => void;
   canGoBack?: boolean;
