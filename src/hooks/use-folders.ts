@@ -103,5 +103,42 @@ export function useFolders() {
     [folders]
   );
 
-  return { folders, createFolder, deleteFolder, toggleWordInFolder, isWordInFolder, refetch: fetchFolders };
+  // Built-in "Zapisane" folder
+  const savedFolder = folders.find((f) => f.name === "Zapisane" && f.icon === "bookmark");
+
+  const ensureSavedFolder = useCallback(async () => {
+    if (!user) return null;
+    const existing = folders.find((f) => f.name === "Zapisane" && f.icon === "bookmark");
+    if (existing) return existing.id;
+    const { data, error } = await supabase
+      .from("folders")
+      .insert({ user_id: user.id, name: "Zapisane", icon: "bookmark" })
+      .select("id")
+      .single();
+    if (error) throw error;
+    await fetchFolders();
+    return data.id;
+  }, [user, folders, fetchFolders]);
+
+  const toggleSaved = useCallback(
+    async (wordId: string) => {
+      if (!user) return;
+      let folderId = savedFolder?.id;
+      if (!folderId) {
+        folderId = await ensureSavedFolder();
+      }
+      if (!folderId) return;
+      await toggleWordInFolder(folderId, wordId);
+    },
+    [user, savedFolder, ensureSavedFolder, toggleWordInFolder]
+  );
+
+  const isWordSaved = useCallback(
+    (wordId: string) => {
+      return savedFolder?.wordIds.includes(wordId) ?? false;
+    },
+    [savedFolder]
+  );
+
+  return { folders, createFolder, deleteFolder, toggleWordInFolder, isWordInFolder, refetch: fetchFolders, toggleSaved, isWordSaved };
 }

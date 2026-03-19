@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence, type MotionValue } from "framer-motion";
-import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2, ChevronUp } from "lucide-react";
+import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2, ChevronUp, Bookmark } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 
@@ -12,6 +12,8 @@ interface WordCardProps {
   word: PolishWord;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  isSaved?: boolean;
+  onToggleSaved?: () => void;
   onNext: () => void;
   onPrev?: () => void;
   canGoBack?: boolean;
@@ -27,7 +29,7 @@ interface WordCardProps {
   onExternalDragEnd?: (offsetY: number) => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -279,6 +281,17 @@ export function WordCard({ word, isFavorite, onToggleFavorite, onNext, onPrev, c
                       <Heart
                         size={20}
                         className={isFavorite ? "fill-primary text-primary" : ""}
+                      />
+                    </motion.button>
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
+                      onClick={onToggleSaved}
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                      title={isSaved ? "Usuń z zapisanych" : "Zapisz"}
+                    >
+                      <Bookmark
+                        size={20}
+                        className={isSaved ? "fill-primary text-primary" : ""}
                       />
                     </motion.button>
                     {folders.map((f) => {

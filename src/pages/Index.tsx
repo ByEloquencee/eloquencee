@@ -89,7 +89,7 @@ const Index = () => {
   const { weekFavData } = useWeeklyFavorites();
   const { masteredCount, addMastered } = useMasteredWords();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
-  const { folders, createFolder, deleteFolder, toggleWordInFolder } = useFolders();
+  const { folders, createFolder, deleteFolder, toggleWordInFolder, toggleSaved, isWordSaved } = useFolders();
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
@@ -790,6 +790,13 @@ const Index = () => {
                       if (!wasFav) incrementProgress();
                       else decrementProgress();
                     }}
+                    isSaved={isWordSaved(currentWord.id)}
+                    onToggleSaved={() => {
+                      const wasSaved = isWordSaved(currentWord.id);
+                      toggleSaved(currentWord.id);
+                      if (!wasSaved) incrementProgress();
+                      else decrementProgress();
+                    }}
                     onNext={handleNext}
                     onPrev={handlePrev}
                     canGoBack={history.length > 0}
@@ -805,7 +812,7 @@ const Index = () => {
                       }
                     }}
                     onAskAI={() => setAiChatOpen(true)}
-                    folders={folders}
+                    folders={folders.filter(f => !(f.name === "Zapisane" && f.icon === "bookmark"))}
                     onToggleFolder={(folderId) => {
                       const folder = folders.find(f => f.id === folderId);
                       const isAlreadyInFolder = folder?.wordIds.includes(currentWord.id);
