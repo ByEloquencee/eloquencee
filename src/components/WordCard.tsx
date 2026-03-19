@@ -31,7 +31,7 @@ interface WordCardProps {
   onExternalDragEnd?: (offsetY: number) => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, favoritesCount, savedCount, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [speaking, setSpeaking] = useState(false);
