@@ -224,7 +224,11 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
         <p className="text-xs text-muted-foreground">Statystyki nauki słówek</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-1 pb-4 space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div
+        className="flex-1 overflow-y-auto px-1 pb-4 space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
 
           {/* Streak + Today's goal */}
