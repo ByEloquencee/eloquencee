@@ -89,7 +89,7 @@ const Index = () => {
   const { weekFavData } = useWeeklyFavorites();
   const { masteredCount, addMastered } = useMasteredWords();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
-  const { folders, createFolder, deleteFolder, toggleWordInFolder, toggleSaved, isWordSaved, savedCount } = useFolders();
+  const { folders, createFolder, deleteFolder, toggleWordInFolder, toggleSaved, isWordSaved } = useFolders();
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
@@ -797,8 +797,6 @@ const Index = () => {
                       if (!wasSaved) incrementProgress();
                       else decrementProgress();
                     }}
-                    favoritesCount={favorites.length}
-                    savedCount={savedCount}
                     onNext={handleNext}
                     onPrev={handlePrev}
                     canGoBack={history.length > 0}

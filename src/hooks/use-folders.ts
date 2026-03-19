@@ -170,7 +170,5 @@ export function useFolders() {
     [savedFolder]
   );
 
-  const savedCount = savedFolder?.wordIds.length ?? 0;
-
-  return { folders, createFolder, deleteFolder, toggleWordInFolder, isWordInFolder, refetch: fetchFolders, toggleSaved, isWordSaved, savedCount };
+  return { folders, createFolder, deleteFolder, toggleWordInFolder, isWordInFolder, refetch: fetchFolders, toggleSaved, isWordSaved };
 }
