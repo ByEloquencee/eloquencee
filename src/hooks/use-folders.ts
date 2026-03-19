@@ -143,9 +143,24 @@ export function useFolders() {
         folderId = await ensureSavedFolder();
       }
       if (!folderId) return;
-      await toggleWordInFolder(folderId, wordId);
+      // toggleWordInFolder uses folders state which may not have the new folder yet
+      // so we call it which will do optimistic update
+      const folder = folders.find((f) => f.id === folderId);
+      if (folder) {
+        await toggleWordInFolder(folderId, wordId);
+      } else {
+        // Folder was just created, add word directly
+        setFolders((prev) =>
+          prev.map((f) =>
+            f.id === folderId ? { ...f, wordIds: [...f.wordIds, wordId] } : f
+          )
+        );
+        await supabase
+          .from("folder_words")
+          .insert({ folder_id: folderId, word_id: wordId, user_id: user.id });
+      }
     },
-    [user, savedFolder, ensureSavedFolder, toggleWordInFolder]
+    [user, savedFolder, ensureSavedFolder, toggleWordInFolder, folders]
   );
 
   const isWordSaved = useCallback(
