@@ -488,14 +488,14 @@ const Index = () => {
                   setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
                   setCurrentIndex(0);
                 }}
-                className={`flex flex-col items-center px-2 py-1 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+                className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
                   viewMode === "favorites" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Heart size={14} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
-                <span className="text-[10px] leading-tight">{favoriteWords.length}</span>
+                <Heart size={18} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none px-1">{favoriteWords.length}</span>
               </motion.button>
             )}
             {hasSaved && (
@@ -508,14 +508,14 @@ const Index = () => {
                     setCurrentIndex(0);
                   }
                 }}
-                className={`flex flex-col items-center px-2 py-1 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+                className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
                   activeFolderId === savedFolder?.id
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Bookmark size={14} className={activeFolderId === savedFolder?.id ? "fill-primary-foreground" : ""} />
-                <span className="text-[10px] leading-tight">{savedCount}</span>
+                <Bookmark size={18} className={activeFolderId === savedFolder?.id ? "fill-primary-foreground" : ""} />
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none px-1">{savedCount}</span>
               </motion.button>
             )}
             <FolderDropdown
