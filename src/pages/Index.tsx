@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield, Bug } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield, Bug, Bookmark } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -387,6 +387,9 @@ const Index = () => {
 
   const hasFavorites = favoriteWords.length > 0;
   const hasEnoughForQuiz = favoriteWords.length >= 4;
+  const savedFolder = folders.find((f) => f.name === "Zapisane" && f.icon === "bookmark");
+  const savedCount = savedFolder?.wordIds.length ?? 0;
+  const hasSaved = savedCount > 0;
 
   const selectedCategoryLabels = useMemo(() => {
     if (selectedCategories.includes("all")) return "Wszystkie";
@@ -485,14 +488,34 @@ const Index = () => {
                   setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
                   setCurrentIndex(0);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors cursor-pointer ${
+                className={`flex flex-col items-center px-2 py-1 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
                   viewMode === "favorites" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
                 <Heart size={14} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
-                <span>{favoriteWords.length}</span>
+                <span className="text-[10px] leading-tight">{favoriteWords.length}</span>
+              </motion.button>
+            )}
+            {hasSaved && (
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  if (savedFolder) {
+                    setActiveFolderId((prev) => prev === savedFolder.id ? null : savedFolder.id);
+                    setViewMode("all");
+                    setCurrentIndex(0);
+                  }
+                }}
+                className={`flex flex-col items-center px-2 py-1 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+                  activeFolderId === savedFolder?.id
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                }`}
+              >
+                <Bookmark size={14} className={activeFolderId === savedFolder?.id ? "fill-primary-foreground" : ""} />
+                <span className="text-[10px] leading-tight">{savedCount}</span>
               </motion.button>
             )}
             <FolderDropdown
