@@ -283,6 +283,17 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                         className={isFavorite ? "fill-primary text-primary" : ""}
                       />
                     </motion.button>
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
+                      onClick={onToggleSaved}
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                      title={isSaved ? "Usuń z zapisanych" : "Zapisz"}
+                    >
+                      <Bookmark
+                        size={20}
+                        className={isSaved ? "fill-primary text-primary" : ""}
+                      />
+                    </motion.button>
                     {folders.map((f) => {
                       const Icon = getFolderIcon(f.icon);
                       const isIn = f.wordIds.includes(word.id);
