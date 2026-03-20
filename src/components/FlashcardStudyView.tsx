@@ -23,6 +23,14 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
   const dragX = useMotionValue(0);
   const dragRotate = useTransform(dragX, [-200, 0, 200], [-12, 0, 12]);
   const dragY = useTransform(dragX, [-200, 0, 200], [30, 0, 30]);
+  const dragShadow = useTransform(dragX, [-200, -80, 0, 80, 200], [
+    "0 20px 40px -8px rgba(0,0,0,0.3)",
+    "0 12px 24px -6px rgba(0,0,0,0.18)",
+    "0 2px 8px -2px rgba(0,0,0,0.08)",
+    "0 12px 24px -6px rgba(0,0,0,0.18)",
+    "0 20px 40px -8px rgba(0,0,0,0.3)",
+  ]);
+  const nextCardScale = useTransform(dragX, [-200, 0, 200], [1, 0.92, 1]);
 
   const card = cards[index];
   const total = cards.length;
@@ -221,63 +229,89 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
 
       {/* Card */}
       <main className="flex-1 flex items-center justify-center px-4">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={`${index}-${cards.length}`}
-            custom={direction}
-            initial={{ opacity: 0, x: direction * 300, rotate: direction * 12, y: 40 }}
-            animate={{ opacity: 1, x: 0, rotate: 0, y: 0 }}
-            exit={{ opacity: 0, x: -direction * 300, rotate: -direction * 12, y: 60 }}
-            transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="w-full max-w-sm"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.7}
-            onDrag={handleDrag}
-            onDragEnd={(e, info) => {
-              handleDragEnd(e, info);
-              dragX.set(0);
-            }}
-            style={{ x: dragX, rotate: dragRotate, y: dragY }}
-          >
-            <motion.button
-              onClick={() => setFlipped((f) => !f)}
-              className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card shadow-sm p-6 flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-shadow overflow-hidden text-center"
-              whileTap={{ scale: 0.98 }}
+        <div className="relative w-full max-w-sm">
+          {/* Next card underneath */}
+          {index < total - 1 && (
+            <motion.div
+              className="absolute inset-0"
+              style={{ scale: nextCardScale }}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={flipped ? "back" : "front"}
-                  initial={{ opacity: 0, rotateY: 90 }}
-                  animate={{ opacity: 1, rotateY: 0 }}
-                  exit={{ opacity: 0, rotateY: -90 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex flex-col items-center gap-3 w-full"
+              <div className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-sm">
+                <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
+                  Termin
+                </span>
+                <p
+                  className="font-semibold leading-snug text-center break-words w-full mt-3"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: `clamp(1rem, ${Math.max(1, 1.875 - cards[index + 1].word.length / 80)}rem, 1.875rem)`,
+                  }}
                 >
-                  <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
-                    {flipped ? "Definicja" : "Termin"}
-                  </span>
-                  <p
-                    className="font-semibold leading-snug text-center break-words w-full"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: flipped
-                        ? `clamp(1rem, ${Math.max(1, 2 - card.definition.length / 150)}rem, 2rem)`
-                        : `clamp(1rem, ${Math.max(1, 1.875 - card.word.length / 80)}rem, 1.875rem)`,
-                    }}
+                  {cards[index + 1].word}
+                </p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Active draggable card */}
+          <AnimatePresence mode="popLayout" custom={direction}>
+            <motion.div
+              key={`${index}-${cards.length}`}
+              custom={direction}
+              initial={{ opacity: 0, x: direction * 300, rotate: direction * 12, y: 40 }}
+              animate={{ opacity: 1, x: 0, rotate: 0, y: 0 }}
+              exit={{ opacity: 0, x: -direction * 300, rotate: -direction * 12, y: 60 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="w-full relative z-10"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.7}
+              onDrag={handleDrag}
+              onDragEnd={(e, info) => {
+                handleDragEnd(e, info);
+                dragX.set(0);
+              }}
+              style={{ x: dragX, rotate: dragRotate, y: dragY, boxShadow: dragShadow }}
+            >
+              <motion.button
+                onClick={() => setFlipped((f) => !f)}
+                className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
+                whileTap={{ scale: 0.98 }}
+              >
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={flipped ? "back" : "front"}
+                    initial={{ opacity: 0, rotateY: 90 }}
+                    animate={{ opacity: 1, rotateY: 0 }}
+                    exit={{ opacity: 0, rotateY: -90 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex flex-col items-center gap-3 w-full"
                   >
-                    {flipped ? card.definition : card.word}
-                  </p>
-                  {!flipped && (
-                    <span className="text-xs text-muted-foreground mt-2">
-                      Stuknij, aby obrócić
+                    <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
+                      {flipped ? "Definicja" : "Termin"}
                     </span>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </motion.button>
-          </motion.div>
-        </AnimatePresence>
+                    <p
+                      className="font-semibold leading-snug text-center break-words w-full"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: flipped
+                          ? `clamp(1rem, ${Math.max(1, 2 - card.definition.length / 150)}rem, 2rem)`
+                          : `clamp(1rem, ${Math.max(1, 1.875 - card.word.length / 80)}rem, 1.875rem)`,
+                      }}
+                    >
+                      {flipped ? card.definition : card.word}
+                    </p>
+                    {!flipped && (
+                      <span className="text-xs text-muted-foreground mt-2">
+                        Stuknij, aby obrócić
+                      </span>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </motion.button>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
 
       {/* Navigation buttons */}
