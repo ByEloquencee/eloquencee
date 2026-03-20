@@ -265,7 +265,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           <div aria-hidden className="w-full aspect-[3/4] max-h-[50vh] pointer-events-none opacity-0" />
 
           {index < total - 1 && (
-            <div className="absolute inset-0">
+            <motion.div className="absolute inset-0" style={{ scale: nextCardScale }}>
               <div className="h-full w-full rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-sm">
                 <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
                   Termin
