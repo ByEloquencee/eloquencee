@@ -20,7 +20,8 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
   const [finished, setFinished] = useState(false);
   const [swipeHint, setSwipeHint] = useState<SwipeDirection>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const absDragX = useTransform(dragX, (v) => Math.abs(v));
+  const dragX = useMotionValue(0);
+  const absDragX = useTransform(dragX, (v: number) => Math.abs(v));
   const nextCardScale = useTransform(absDragX, [0, 150], [0.95, 1]);
   const dragRotate = useTransform(dragX, [-200, 0, 200], [-12, 0, 12]);
   const dragY = useTransform(dragX, [-200, 0, 200], [30, 0, 30]);
