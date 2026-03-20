@@ -30,7 +30,6 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
     "0 12px 24px -6px rgba(0,0,0,0.18)",
     "0 20px 40px -8px rgba(0,0,0,0.3)",
   ]);
-  const nextCardScale = useTransform(dragX, [-200, 0, 200], [1, 0.92, 1]);
   const dragBorder = useTransform(dragX, [-120, -60, 0, 60, 120], [
     "2px solid hsl(0 84% 60%)",
     "2px solid hsl(0 84% 60% / 0.4)",
@@ -239,10 +238,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
         <div className="relative w-full max-w-sm">
           {/* Next card underneath */}
           {index < total - 1 && (
-            <motion.div
-              className="absolute inset-0"
-              style={{ scale: nextCardScale }}
-            >
+            <div className="absolute inset-0">
               <div className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-sm">
                 <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
                   Termin
@@ -257,16 +253,16 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
                   {cards[index + 1].word}
                 </p>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* Active draggable card */}
-          <AnimatePresence custom={direction}>
+          <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={`${index}-${cards.length}`}
               custom={direction}
               initial={false}
-              animate={{ opacity: 1, x: 0, rotate: 0, y: 0, scale: 1 }}
+              animate={{ opacity: 1, x: 0, rotate: 0, y: 0 }}
               exit={{ opacity: 0, x: -direction * 300, rotate: -direction * 12, y: 60 }}
               transition={{ type: "spring", stiffness: 300, damping: 28 }}
               className="w-full relative z-10"
