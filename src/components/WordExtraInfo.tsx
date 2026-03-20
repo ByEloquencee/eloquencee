@@ -24,6 +24,15 @@ export function WordExtraInfo({ word, difficultyLevel }: WordExtraInfoProps) {
   const [info, setInfo] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
   const fetchInfo = useCallback(async () => {
     if (loaded || loading) return;
 

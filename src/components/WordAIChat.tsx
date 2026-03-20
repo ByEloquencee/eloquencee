@@ -34,7 +34,13 @@ export function WordAIChat({ word, open, onClose }: WordAIChatProps) {
   }, [word.id]);
 
   useEffect(() => {
-    if (open) inputRef.current?.focus();
+    if (open) {
+      document.body.style.overflow = "hidden";
+      inputRef.current?.focus();
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
   useEffect(() => {
