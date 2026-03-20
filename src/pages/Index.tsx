@@ -503,20 +503,18 @@ const Index = () => {
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
-                  if (savedFolder) {
-                    setActiveFolderId((prev) => prev === savedFolder.id ? null : savedFolder.id);
-                    setViewMode("all");
-                    setCurrentIndex(0);
-                  }
+                  setActiveFolderId(null);
+                  setViewMode((v) => (v === "saved" ? "all" : "saved"));
+                  setCurrentIndex(0);
                 }}
                 className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
-                  activeFolderId === savedFolder?.id
+                  viewMode === "saved" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Bookmark size={18} className={activeFolderId === savedFolder?.id ? "fill-primary-foreground" : ""} />
-                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none px-1">{savedCount}</span>
+                <Bookmark size={18} className={viewMode === "saved" && !activeFolderId ? "fill-primary-foreground" : ""} />
+                <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{savedCount}</span>
               </motion.button>
             )}
             <FolderDropdown

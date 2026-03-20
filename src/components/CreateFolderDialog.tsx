@@ -33,7 +33,7 @@ const FOLDER_ICONS = [
 export type FolderIconName = typeof FOLDER_ICONS[number]["name"];
 
 export function getFolderIcon(name: string) {
-  return FOLDER_ICONS.find((i) => i.name === name)?.Icon || Bookmark;
+  return FOLDER_ICONS.find((i) => i.name === name)?.Icon || Star;
 }
 
 interface CreateFolderDialogProps {
