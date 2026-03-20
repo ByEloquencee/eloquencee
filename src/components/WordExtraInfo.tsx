@@ -125,7 +125,7 @@ export function WordExtraInfo({ word, difficultyLevel }: WordExtraInfoProps) {
                       <span className="text-xs">Ładowanie...</span>
                     </div>
                   ) : (
-                    <div className="whitespace-pre-line">{info}</div>
+                    <div>{info ? formatAIText(info) : null}</div>
                   )}
                 </div>
               </section>
