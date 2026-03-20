@@ -387,8 +387,6 @@ const Index = () => {
 
   const hasFavorites = favoriteWords.length > 0;
   const hasEnoughForQuiz = favoriteWords.length >= 4;
-  const savedFolder = folders.find((f) => f.name === "Zapisane" && f.icon === "bookmark");
-  const savedCount = savedFolder?.wordIds.length ?? 0;
   const hasSaved = savedCount > 0;
 
   const selectedCategoryLabels = useMemo(() => {

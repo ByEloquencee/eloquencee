@@ -2,13 +2,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check } from "lucide-react";
 import {
-  Bookmark, Star, Flame, Zap, Target, Crown, Gem, Rocket,
+  Heart, Star, Flame, Zap, Target, Crown, Gem, Rocket,
   BookOpen, Brain, Sparkles, Flag, Award, Coffee, Music,
   Palette, Globe, Compass, Anchor, Feather
 } from "lucide-react";
 
 const FOLDER_ICONS = [
-  { name: "bookmark", Icon: Bookmark },
+  { name: "heart", Icon: Heart },
   { name: "star", Icon: Star },
   { name: "flame", Icon: Flame },
   { name: "zap", Icon: Zap },
