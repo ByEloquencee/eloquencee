@@ -919,7 +919,13 @@ const Index = () => {
         open={authOpen}
         onClose={() => setAuthOpen(false)}
         onAddWord={() => setAddWordOpen(true)}
-        onCreateFolder={() => setCreateFolderOpen(true)}
+        onCreateFolder={() => {
+          if (folders.length >= 3) {
+            toast.error("Możesz mieć maksymalnie 3 foldery. Usuń istniejący, aby dodać nowy.");
+            return;
+          }
+          setCreateFolderOpen(true);
+        }}
         onSuggestWord={() => setSuggestWordOpen(true)}
         onOpenPremium={() => { setAuthOpen(false); setPremiumOpen(true); }}
         isPremium={isPremium}
