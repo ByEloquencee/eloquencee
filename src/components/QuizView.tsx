@@ -34,15 +34,26 @@ function shuffle<T>(arr: T[]): T[] {
 
 function generateQuestion(word: PolishWord, pool: PolishWord[]) {
   const others = pool.filter((w) => w.id !== word.id);
+  
+  // Priority: same partOfSpeech + category > same partOfSpeech > same category > any
+  const samePosAndCat = others.filter((w) => w.partOfSpeech === word.partOfSpeech && w.category === word.category);
   const samePoS = others.filter((w) => w.partOfSpeech === word.partOfSpeech);
-  const sameCat = others.filter((w) => w.category === word.category && w.partOfSpeech === word.partOfSpeech);
+  const sameCat = others.filter((w) => w.category === word.category);
 
   let candidates: PolishWord[];
-  if (sameCat.length >= 3) candidates = sameCat;
+  if (samePosAndCat.length >= 3) candidates = samePosAndCat;
   else if (samePoS.length >= 3) candidates = samePoS;
+  else if (sameCat.length >= 3) candidates = sameCat;
   else candidates = others;
 
-  const distractors = shuffle(candidates).slice(0, 3);
+  // Pick distractors with similar word length to avoid visual giveaways
+  const sorted = shuffle(candidates).sort((a, b) => {
+    const diffA = Math.abs(a.word.length - word.word.length);
+    const diffB = Math.abs(b.word.length - word.word.length);
+    return diffA - diffB;
+  });
+  
+  const distractors = sorted.slice(0, 3);
   const options = shuffle([word, ...distractors]);
   return { word, definition: word.definition, correctId: word.id, options };
 }

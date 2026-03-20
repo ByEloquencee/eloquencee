@@ -28,6 +28,13 @@ serve(async (req) => {
     const systemPrompt = `Jesteś nauczycielem języka polskiego. Wygeneruj JEDNO ćwiczenie z zakresu: ${typeLabels[type] || type}.
 Poziom: ${difficultyLabels[difficulty] || difficulty}.
 
+KRYTYCZNA ZASADA SPÓJNOŚCI OPCJI:
+- Wszystkie 4 opcje MUSZĄ być w IDENTYCZNEJ formie gramatycznej i stylistycznej.
+- Opcje powinny być podobnej długości i struktury, aby poprawna odpowiedź nie wyróżniała się wizualnie.
+- Jeśli opcje to pojedyncze słowa — wszystkie muszą być tą samą częścią mowy w tej samej formie.
+- Jeśli opcje to fragmenty zdań — wszystkie muszą mieć podobną strukturę.
+- NIE WOLNO, żeby jedna opcja była wyraźnie dłuższa, bardziej szczegółowa lub w innej formie niż pozostałe.
+
 Odpowiedz WYŁĄCZNIE w formacie JSON (bez markdown):
 {
   "question": "treść pytania/polecenia",

@@ -30,8 +30,16 @@ serve(async (req) => {
 Dla każdego pytania:
 1. Wybierz słowo z listy jako "pytanie" (question_word)
 2. Znajdź lub wymyśl synonim tego słowa (synonym) — synonim NIE musi być z listy
-3. Wybierz 3 inne słowa z listy jako błędne odpowiedzi (distractors)
+3. Wybierz 3 inne słowa jako błędne odpowiedzi (distractors)
 4. Synonim powinien być prawdziwym, poprawnym synonimem lub słowem bardzo bliskim znaczeniowo
+
+KRYTYCZNA ZASADA SPÓJNOŚCI FORMY:
+- WSZYSTKIE 4 opcje (synonim + 3 dystraktory) MUSZĄ być w IDENTYCZNEJ formie gramatycznej.
+- Jeśli synonim to rzeczownik w mianowniku — dystraktory też muszą być rzeczownikami w mianowniku.
+- Jeśli synonim to przymiotnik — dystraktory też muszą być przymiotnikami w tej samej formie (np. wszystkie męskie, l.poj.).
+- Jeśli synonim to czasownik w bezokoliczniku — dystraktory też muszą być czasownikami w bezokoliczniku.
+- Opcje powinny być podobnej długości i stylu, żeby poprawna odpowiedź nie wyróżniała się wizualnie.
+- NIE WOLNO mieszać części mowy ani form gramatycznych wśród opcji!
 
 Odpowiedz WYŁĄCZNIE w formacie JSON (bez markdown):
 {
