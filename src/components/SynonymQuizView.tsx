@@ -167,12 +167,22 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
                 {question.question_word}
               </p>
               <AnimatePresence>
-                {selected !== null && (
+                {(selected !== null || hintUsedOnCurrent) && (
                   <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-xs text-muted-foreground mt-2 leading-relaxed overflow-hidden">
                     {question.question_definition}
                   </motion.p>
                 )}
               </AnimatePresence>
+              {selected === null && !hintUsedOnCurrent && hintsLeft > 0 && (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => { setHintsLeft((h) => h - 1); setHintUsedOnCurrent(true); }}
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium cursor-pointer hover:bg-primary/20 transition-colors"
+                >
+                  <Lightbulb size={13} />
+                  Pokaż definicję ({hintsLeft} pozostało) · 0.5 pkt
+                </motion.button>
+              )}
             </div>
 
             {/* Options */}
