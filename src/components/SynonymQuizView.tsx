@@ -99,7 +99,7 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
   const handleSelect = (idx: number) => {
     if (selected !== null) return;
     setSelected(idx);
-    if (idx === question.correct) setScore((s) => s + 1);
+    if (idx === question.correct) setScore((s) => s + (hintUsedOnCurrent ? 0.5 : 1));
   };
 
   const handleAdvance = () => {
