@@ -54,7 +54,7 @@ export function CreateFolderDialog({ open, onClose, onCreated }: CreateFolderDia
     try {
       await onCreated(name.trim(), selectedIcon);
       setName("");
-      setSelectedIcon("bookmark");
+      setSelectedIcon("star");
       onClose();
     } catch {
       // error handled upstream
