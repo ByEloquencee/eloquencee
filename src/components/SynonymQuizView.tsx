@@ -110,6 +110,7 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
     } else {
       setCurrent((c) => c + 1);
       setSelected(null);
+      setHintUsedOnCurrent(false);
     }
   };
 
