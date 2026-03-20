@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, type PanInfo } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, type PanInfo, animate } from "framer-motion";
 import { RotateCcw, X, BookOpen, ThumbsUp, ThumbsDown, RotateCw } from "lucide-react";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
 import type { PolishWord } from "@/data/words";
@@ -15,11 +15,11 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
   const [cards, setCards] = useState<PolishWord[]>(set.cards);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [direction, setDirection] = useState(0);
   const [known, setKnown] = useState<PolishWord[]>([]);
   const [unknown, setUnknown] = useState<PolishWord[]>([]);
   const [finished, setFinished] = useState(false);
   const [swipeHint, setSwipeHint] = useState<SwipeDirection>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const dragX = useMotionValue(0);
   const dragRotate = useTransform(dragX, [-200, 0, 200], [-12, 0, 12]);
   const dragY = useTransform(dragX, [-200, 0, 200], [30, 0, 30]);
@@ -42,65 +42,94 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
   const total = cards.length;
 
   const handleResult = useCallback(
-    (isKnown: boolean) => {
-      if (!card) return;
+    async (isKnown: boolean) => {
+      if (!card || isTransitioning) return;
+
+      setIsTransitioning(true);
+
       if (isKnown) {
         setKnown((prev) => [...prev, card]);
       } else {
         setUnknown((prev) => [...prev, card]);
       }
-      setDirection(isKnown ? 1 : -1);
+
       setFlipped(false);
       setSwipeHint(null);
+
+      const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 400;
+      const swipeTarget = (isKnown ? 1 : -1) * viewportWidth * 1.2;
+
+      await animate(dragX, swipeTarget, {
+        type: "tween",
+        ease: "easeIn",
+        duration: 0.22,
+      }).finished;
 
       if (index >= total - 1) {
         setFinished(true);
       } else {
         setIndex((i) => i + 1);
       }
+
+      dragX.set(0);
+      setIsTransitioning(false);
     },
-    [card, index, total]
+    [card, dragX, index, isTransitioning, total]
   );
 
   const handleDragEnd = useCallback(
-    (_: any, info: PanInfo) => {
+    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
       const threshold = 80;
+
       if (info.offset.x > threshold) {
-        handleResult(true);
-      } else if (info.offset.x < -threshold) {
-        handleResult(false);
+        void handleResult(true);
+        return;
       }
+
+      if (info.offset.x < -threshold) {
+        void handleResult(false);
+        return;
+      }
+
       setSwipeHint(null);
+      void animate(dragX, 0, {
+        type: "spring",
+        stiffness: 320,
+        damping: 28,
+      });
     },
-    [handleResult]
+    [dragX, handleResult]
   );
 
-  const handleDrag = useCallback((_: any, info: PanInfo) => {
+  const handleDrag = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (isTransitioning) return;
     if (info.offset.x > 40) setSwipeHint("right");
     else if (info.offset.x < -40) setSwipeHint("left");
     else setSwipeHint(null);
-  }, []);
+  }, [isTransitioning]);
 
   const restartAll = () => {
+    dragX.set(0);
     setCards(set.cards);
     setIndex(0);
     setFlipped(false);
-    setDirection(0);
     setKnown([]);
     setUnknown([]);
     setFinished(false);
     setSwipeHint(null);
+    setIsTransitioning(false);
   };
 
   const studyUnknown = () => {
+    dragX.set(0);
     setCards(unknown);
     setIndex(0);
     setFlipped(false);
-    setDirection(0);
     setKnown([]);
     setUnknown([]);
     setFinished(false);
     setSwipeHint(null);
+    setIsTransitioning(false);
   };
 
   if (finished) {
@@ -177,7 +206,6 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between">
         <button
           onClick={onExit}
@@ -204,7 +232,6 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
         </button>
       </header>
 
-      {/* Progress bar */}
       <div className="w-full max-w-lg mx-auto px-4 pb-6">
         <div className="h-1 rounded-full bg-secondary overflow-hidden">
           <motion.div
@@ -215,7 +242,6 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
         </div>
       </div>
 
-      {/* Swipe hints */}
       <div className="w-full max-w-lg mx-auto px-4 flex justify-between pointer-events-none">
         <motion.div
           animate={{ opacity: swipeHint === "left" ? 1 : 0, scale: swipeHint === "left" ? 1 : 0.8 }}
@@ -233,10 +259,8 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
         </motion.div>
       </div>
 
-      {/* Card */}
       <main className="flex-1 flex items-center justify-center px-4">
         <div className="relative w-full max-w-sm">
-          {/* Next card underneath */}
           {index < total - 1 && (
             <div className="absolute inset-0">
               <div className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-sm">
@@ -256,73 +280,63 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
             </div>
           )}
 
-          {/* Active draggable card */}
-          <AnimatePresence mode="popLayout" custom={direction}>
-            <motion.div
-              key={`${index}-${cards.length}`}
-              custom={direction}
-              initial={false}
-              animate={{ opacity: 1, x: 0, rotate: 0, y: 0 }}
-              exit={{ opacity: 0, x: direction * -300, rotate: direction * -12, y: 60, transition: { duration: 0.25, ease: "easeIn" } }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="w-full relative z-10"
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.7}
-              onDrag={handleDrag}
-              onDragEnd={(e, info) => {
-                handleDragEnd(e, info);
-                dragX.set(0);
-              }}
-              style={{ x: dragX, rotate: dragRotate, y: dragY, boxShadow: dragShadow }}
+          <motion.div
+            key={`${index}-${cards.length}`}
+            className="w-full relative z-10"
+            drag={isTransitioning ? false : "x"}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.7}
+            onDrag={handleDrag}
+            onDragEnd={handleDragEnd}
+            style={{ x: dragX, rotate: dragRotate, y: dragY, boxShadow: dragShadow }}
+          >
+            <motion.button
+              onClick={() => !isTransitioning && setFlipped((f) => !f)}
+              className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
+              style={{ border: dragBorder }}
+              whileTap={{ scale: 0.98 }}
+              disabled={isTransitioning}
             >
-              <motion.button
-                onClick={() => setFlipped((f) => !f)}
-                className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
-                style={{ border: dragBorder }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={flipped ? "back" : "front"}
-                    initial={{ opacity: 0, rotateY: 90 }}
-                    animate={{ opacity: 1, rotateY: 0 }}
-                    exit={{ opacity: 0, rotateY: -90 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex flex-col items-center gap-3 w-full"
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={flipped ? "back" : "front"}
+                  initial={{ opacity: 0, rotateY: 90 }}
+                  animate={{ opacity: 1, rotateY: 0 }}
+                  exit={{ opacity: 0, rotateY: -90 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex flex-col items-center gap-3 w-full"
+                >
+                  <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
+                    {flipped ? "Definicja" : "Termin"}
+                  </span>
+                  <p
+                    className="font-semibold leading-snug text-center break-words w-full"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: flipped
+                        ? `clamp(1rem, ${Math.max(1, 2 - card.definition.length / 150)}rem, 2rem)`
+                        : `clamp(1rem, ${Math.max(1, 1.875 - card.word.length / 80)}rem, 1.875rem)`,
+                    }}
                   >
-                    <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
-                      {flipped ? "Definicja" : "Termin"}
+                    {flipped ? card.definition : card.word}
+                  </p>
+                  {!flipped && (
+                    <span className="text-xs text-muted-foreground mt-2">
+                      Stuknij, aby obrócić
                     </span>
-                    <p
-                      className="font-semibold leading-snug text-center break-words w-full"
-                      style={{
-                        fontFamily: "var(--font-display)",
-                        fontSize: flipped
-                          ? `clamp(1rem, ${Math.max(1, 2 - card.definition.length / 150)}rem, 2rem)`
-                          : `clamp(1rem, ${Math.max(1, 1.875 - card.word.length / 80)}rem, 1.875rem)`,
-                      }}
-                    >
-                      {flipped ? card.definition : card.word}
-                    </p>
-                    {!flipped && (
-                      <span className="text-xs text-muted-foreground mt-2">
-                        Stuknij, aby obrócić
-                      </span>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </motion.button>
-            </motion.div>
-          </AnimatePresence>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </motion.button>
+          </motion.div>
         </div>
       </main>
 
-      {/* Navigation buttons */}
       <div className="w-full max-w-lg mx-auto px-4 pb-8 flex items-center justify-center gap-4">
         <button
-          onClick={() => handleResult(false)}
-          className="p-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors cursor-pointer flex items-center gap-2"
+          onClick={() => void handleResult(false)}
+          disabled={isTransitioning}
+          className="p-3 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors cursor-pointer flex items-center gap-2 disabled:opacity-50"
         >
           <ThumbsDown size={18} />
           <span className="text-xs font-medium">Nie umiem</span>
@@ -332,8 +346,9 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           <span>{total} fiszek</span>
         </div>
         <button
-          onClick={() => handleResult(true)}
-          className="p-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer flex items-center gap-2"
+          onClick={() => void handleResult(true)}
+          disabled={isTransitioning}
+          className="p-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer flex items-center gap-2 disabled:opacity-50"
         >
           <span className="text-xs font-medium">Umiem</span>
           <ThumbsUp size={18} />
