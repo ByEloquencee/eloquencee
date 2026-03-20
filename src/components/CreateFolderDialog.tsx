@@ -44,7 +44,7 @@ interface CreateFolderDialogProps {
 
 export function CreateFolderDialog({ open, onClose, onCreated }: CreateFolderDialogProps) {
   const [name, setName] = useState("");
-  const [selectedIcon, setSelectedIcon] = useState<string>("bookmark");
+  const [selectedIcon, setSelectedIcon] = useState<string>("star");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
