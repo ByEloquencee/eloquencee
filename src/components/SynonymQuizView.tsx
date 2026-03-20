@@ -64,6 +64,8 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
     setSelected(null);
     setScore(0);
     setFinished(false);
+    setHintsLeft(2);
+    setHintUsedOnCurrent(false);
 
     try {
       const wordPool = shuffle(words).slice(0, 30).map((w) => ({
