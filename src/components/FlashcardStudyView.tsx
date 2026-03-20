@@ -30,7 +30,6 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
     "0 12px 24px -6px rgba(0,0,0,0.18)",
     "0 20px 40px -8px rgba(0,0,0,0.3)",
   ]);
-  const nextCardScale = useTransform(dragX, [-200, 0, 200], [1, 0.92, 1]);
   const dragBorder = useTransform(dragX, [-120, -60, 0, 60, 120], [
     "2px solid hsl(0 84% 60%)",
     "2px solid hsl(0 84% 60% / 0.4)",
