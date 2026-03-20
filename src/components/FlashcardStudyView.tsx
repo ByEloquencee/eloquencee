@@ -31,6 +31,13 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
     "0 20px 40px -8px rgba(0,0,0,0.3)",
   ]);
   const nextCardScale = useTransform(dragX, [-200, 0, 200], [1, 0.92, 1]);
+  const dragBorder = useTransform(dragX, [-120, -60, 0, 60, 120], [
+    "2px solid hsl(0 84% 60%)",
+    "2px solid hsl(0 84% 60% / 0.4)",
+    "1px solid hsl(var(--border))",
+    "2px solid hsl(142 71% 45% / 0.4)",
+    "2px solid hsl(142 71% 45%)",
+  ]);
 
   const card = cards[index];
   const total = cards.length;
@@ -258,8 +265,8 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
             <motion.div
               key={`${index}-${cards.length}`}
               custom={direction}
-              initial={{ opacity: 0, x: direction * 300, rotate: direction * 12, y: 40 }}
-              animate={{ opacity: 1, x: 0, rotate: 0, y: 0 }}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, x: 0, rotate: 0, y: 0, scale: 1 }}
               exit={{ opacity: 0, x: -direction * 300, rotate: -direction * 12, y: 60 }}
               transition={{ type: "spring", stiffness: 300, damping: 28 }}
               className="w-full relative z-10"
@@ -275,7 +282,8 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
             >
               <motion.button
                 onClick={() => setFlipped((f) => !f)}
-                className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
+                className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
+                style={{ border: dragBorder }}
                 whileTap={{ scale: 0.98 }}
               >
                 <AnimatePresence mode="wait">
