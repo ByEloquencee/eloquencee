@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, X, Trophy, Loader2, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, X, Trophy, Loader2, RotateCcw, Sparkles, Lightbulb } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { PolishWord } from "@/data/words";
 import { toast } from "sonner";
