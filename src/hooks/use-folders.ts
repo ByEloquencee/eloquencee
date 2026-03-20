@@ -170,5 +170,19 @@ export function useFolders() {
     [savedFolder]
   );
 
-  return { folders, createFolder, deleteFolder, toggleWordInFolder, isWordInFolder, refetch: fetchFolders, toggleSaved, isWordSaved };
+  // Expose folders WITHOUT the built-in "Zapisane" folder
+  const publicFolders = folders.filter((f) => !(f.name === "Zapisane" && f.icon === "bookmark"));
+
+  return {
+    folders: publicFolders,
+    createFolder,
+    deleteFolder,
+    toggleWordInFolder,
+    isWordInFolder,
+    refetch: fetchFolders,
+    toggleSaved,
+    isWordSaved,
+    savedWordIds: savedFolder?.wordIds ?? [],
+    savedCount: savedFolder?.wordIds.length ?? 0,
+  };
 }
