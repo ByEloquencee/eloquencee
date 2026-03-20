@@ -23,6 +23,14 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
   const dragX = useMotionValue(0);
   const dragRotate = useTransform(dragX, [-200, 0, 200], [-12, 0, 12]);
   const dragY = useTransform(dragX, [-200, 0, 200], [30, 0, 30]);
+  const dragShadow = useTransform(dragX, [-200, -80, 0, 80, 200], [
+    "0 20px 40px -8px rgba(0,0,0,0.3)",
+    "0 12px 24px -6px rgba(0,0,0,0.18)",
+    "0 2px 8px -2px rgba(0,0,0,0.08)",
+    "0 12px 24px -6px rgba(0,0,0,0.18)",
+    "0 20px 40px -8px rgba(0,0,0,0.3)",
+  ]);
+  const nextCardScale = useTransform(dragX, [-200, 0, 200], [1, 0.92, 1]);
 
   const card = cards[index];
   const total = cards.length;
