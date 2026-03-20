@@ -234,7 +234,11 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.7}
             onDrag={handleDrag}
-            onDragEnd={handleDragEnd}
+            onDragEnd={(e, info) => {
+              handleDragEnd(e, info);
+              dragX.set(0);
+            }}
+            style={{ x: dragX, rotate: dragRotate, y: dragY }}
           >
             <motion.button
               onClick={() => setFlipped((f) => !f)}
