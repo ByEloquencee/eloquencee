@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, type PanInfo } from "framer-motion";
 import { RotateCcw, X, BookOpen, ThumbsUp, ThumbsDown, RotateCw } from "lucide-react";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
 import type { PolishWord } from "@/data/words";
