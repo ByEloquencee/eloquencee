@@ -161,7 +161,13 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
               <p className="text-xl font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
                 {question.question_word}
               </p>
-              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{question.question_definition}</p>
+              <AnimatePresence>
+                {selected !== null && (
+                  <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-xs text-muted-foreground mt-2 leading-relaxed overflow-hidden">
+                    {question.question_definition}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Options */}
