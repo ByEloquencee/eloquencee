@@ -21,6 +21,8 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
   const [swipeHint, setSwipeHint] = useState<SwipeDirection>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const dragX = useMotionValue(0);
+  const absDragX = useTransform(dragX, (v: number) => Math.abs(v));
+  const nextCardScale = useTransform(absDragX, [0, 150], [0.95, 1]);
   const dragRotate = useTransform(dragX, [-200, 0, 200], [-12, 0, 12]);
   const dragY = useTransform(dragX, [-200, 0, 200], [30, 0, 30]);
   const dragShadow = useTransform(dragX, [-200, -80, 0, 80, 200], [
@@ -264,7 +266,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           <div aria-hidden className="w-full aspect-[3/4] max-h-[50vh] pointer-events-none opacity-0" />
 
           {index < total - 1 && (
-            <div className="absolute inset-0">
+            <motion.div className="absolute inset-0" style={{ scale: nextCardScale }}>
               <div className="h-full w-full rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-sm">
                 <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
                   Termin
@@ -279,7 +281,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
                   {cards[index + 1].word}
                 </p>
               </div>
-            </div>
+            </motion.div>
           )}
 
           <motion.div
