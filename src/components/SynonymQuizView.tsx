@@ -53,6 +53,8 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [hintsLeft, setHintsLeft] = useState(2);
+  const [hintUsedOnCurrent, setHintUsedOnCurrent] = useState(false);
 
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
