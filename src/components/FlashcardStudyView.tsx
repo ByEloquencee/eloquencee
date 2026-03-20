@@ -20,6 +20,9 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
   const [unknown, setUnknown] = useState<PolishWord[]>([]);
   const [finished, setFinished] = useState(false);
   const [swipeHint, setSwipeHint] = useState<SwipeDirection>(null);
+  const dragX = useMotionValue(0);
+  const dragRotate = useTransform(dragX, [-200, 0, 200], [-12, 0, 12]);
+  const dragY = useTransform(dragX, [-200, 0, 200], [30, 0, 30]);
 
   const card = cards[index];
   const total = cards.length;
