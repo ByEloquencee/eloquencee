@@ -15,9 +15,7 @@ export function FolderDropdown({ folders, activeFolder, onSelectFolder, onDelete
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  // Hide until user has at least one non-built-in folder
-  const userFolders = folders.filter((f) => !(f.name === "Zapisane" && f.icon === "bookmark"));
-  if (userFolders.length === 0) return null;
+  if (folders.length === 0) return null;
 
   const activeF = folders.find((f) => f.id === activeFolder);
 

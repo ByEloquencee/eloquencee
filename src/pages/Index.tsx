@@ -46,7 +46,7 @@ import { PremiumDialog } from "@/components/PremiumDialog";
 import { WordLimitOverlay } from "@/components/WordLimitOverlay";
 import { toast } from "sonner";
 
-type ViewMode = "all" | "favorites";
+type ViewMode = "all" | "favorites" | "saved";
 
 function getRandomIndex(max: number, exclude?: number): number {
   if (max <= 1) return 0;
@@ -89,7 +89,7 @@ const Index = () => {
   const { weekFavData } = useWeeklyFavorites();
   const { masteredCount, addMastered } = useMasteredWords();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
-  const { folders, createFolder, deleteFolder, toggleWordInFolder, toggleSaved, isWordSaved } = useFolders();
+  const { folders, createFolder, deleteFolder, toggleWordInFolder, toggleSaved, isWordSaved, savedWordIds, savedCount } = useFolders();
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
@@ -276,10 +276,13 @@ const Index = () => {
       if (!folder) return [];
       return allWords.filter((w) => folder.wordIds.includes(w.id));
     }
+    if (viewMode === "saved") {
+      return allWords.filter((w) => savedWordIds.includes(w.id));
+    }
     const base = viewMode === "favorites" ? favoriteWords : allWords;
     if (selectedCategories.includes("all")) return base;
     return base.filter((w) => selectedCategories.includes(w.category));
-  }, [viewMode, favoriteWords, selectedCategories, allWords, activeFolderId, folders]);
+  }, [viewMode, favoriteWords, selectedCategories, allWords, activeFolderId, folders, savedWordIds]);
 
   const currentWord = filteredWords[currentIndex % filteredWords.length];
 
@@ -387,8 +390,6 @@ const Index = () => {
 
   const hasFavorites = favoriteWords.length > 0;
   const hasEnoughForQuiz = favoriteWords.length >= 4;
-  const savedFolder = folders.find((f) => f.name === "Zapisane" && f.icon === "bookmark");
-  const savedCount = savedFolder?.wordIds.length ?? 0;
   const hasSaved = savedCount > 0;
 
   const selectedCategoryLabels = useMemo(() => {
@@ -502,20 +503,18 @@ const Index = () => {
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
-                  if (savedFolder) {
-                    setActiveFolderId((prev) => prev === savedFolder.id ? null : savedFolder.id);
-                    setViewMode("all");
-                    setCurrentIndex(0);
-                  }
+                  setActiveFolderId(null);
+                  setViewMode((v) => (v === "saved" ? "all" : "saved"));
+                  setCurrentIndex(0);
                 }}
                 className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
-                  activeFolderId === savedFolder?.id
+                  viewMode === "saved" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Bookmark size={18} className={activeFolderId === savedFolder?.id ? "fill-primary-foreground" : ""} />
-                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none px-1">{savedCount}</span>
+                <Bookmark size={18} className={viewMode === "saved" && !activeFolderId ? "fill-primary-foreground" : ""} />
+                <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{savedCount}</span>
               </motion.button>
             )}
             <FolderDropdown
@@ -848,7 +847,7 @@ const Index = () => {
                       }
                     }}
                     onAskAI={() => setAiChatOpen(true)}
-                    folders={folders.filter(f => !(f.name === "Zapisane" && f.icon === "bookmark"))}
+                    folders={folders}
                     onToggleFolder={(folderId) => {
                       const folder = folders.find(f => f.id === folderId);
                       const isAlreadyInFolder = folder?.wordIds.includes(currentWord.id);

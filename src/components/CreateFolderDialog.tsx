@@ -2,13 +2,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check } from "lucide-react";
 import {
-  Bookmark, Star, Flame, Zap, Target, Crown, Gem, Rocket,
+  Heart, Star, Flame, Zap, Target, Crown, Gem, Rocket,
   BookOpen, Brain, Sparkles, Flag, Award, Coffee, Music,
   Palette, Globe, Compass, Anchor, Feather
 } from "lucide-react";
 
 const FOLDER_ICONS = [
-  { name: "bookmark", Icon: Bookmark },
+  { name: "heart", Icon: Heart },
   { name: "star", Icon: Star },
   { name: "flame", Icon: Flame },
   { name: "zap", Icon: Zap },
@@ -33,7 +33,7 @@ const FOLDER_ICONS = [
 export type FolderIconName = typeof FOLDER_ICONS[number]["name"];
 
 export function getFolderIcon(name: string) {
-  return FOLDER_ICONS.find((i) => i.name === name)?.Icon || Bookmark;
+  return FOLDER_ICONS.find((i) => i.name === name)?.Icon || Star;
 }
 
 interface CreateFolderDialogProps {
@@ -44,7 +44,7 @@ interface CreateFolderDialogProps {
 
 export function CreateFolderDialog({ open, onClose, onCreated }: CreateFolderDialogProps) {
   const [name, setName] = useState("");
-  const [selectedIcon, setSelectedIcon] = useState<string>("bookmark");
+  const [selectedIcon, setSelectedIcon] = useState<string>("star");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +54,7 @@ export function CreateFolderDialog({ open, onClose, onCreated }: CreateFolderDia
     try {
       await onCreated(name.trim(), selectedIcon);
       setName("");
-      setSelectedIcon("bookmark");
+      setSelectedIcon("star");
       onClose();
     } catch {
       // error handled upstream
