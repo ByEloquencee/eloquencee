@@ -52,22 +52,16 @@ export function useFolders() {
     fetchFolders();
   }, [fetchFolders]);
 
-  const MAX_USER_FOLDERS = 3;
-
   const createFolder = useCallback(
     async (name: string, icon: string) => {
       if (!user) throw new Error("Not authenticated");
-      const userFolders = folders.filter((f) => !(f.name === "Zapisane" && f.icon === "bookmark"));
-      if (userFolders.length >= MAX_USER_FOLDERS) {
-        throw new Error("Osiągnięto maksymalną liczbę folderów (3)");
-      }
       const { error } = await supabase
         .from("folders")
         .insert({ user_id: user.id, name, icon });
       if (error) throw error;
       await fetchFolders();
     },
-    [user, fetchFolders, folders]
+    [user, fetchFolders]
   );
 
   const deleteFolder = useCallback(
