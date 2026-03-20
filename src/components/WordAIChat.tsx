@@ -135,6 +135,8 @@ export function WordAIChat({ word, open, onClose }: WordAIChatProps) {
         className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm p-4 overscroll-none"
         style={{ touchAction: "none" }}
         onClick={onClose}
+        onTouchMove={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -162,7 +164,7 @@ export function WordAIChat({ word, open, onClose }: WordAIChatProps) {
           </div>
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px]">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px]" style={{ touchAction: "pan-y" }} onTouchMove={(e) => e.stopPropagation()}>
             {messages.length === 0 && (
               <div className="text-center space-y-3 py-6">
                 <p className="text-sm text-muted-foreground">

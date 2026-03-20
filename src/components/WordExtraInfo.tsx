@@ -88,8 +88,8 @@ export function WordExtraInfo({ word, difficultyLevel }: WordExtraInfoProps) {
           </button>
         </DialogTrigger>
 
-        <DialogContent className="max-w-[340px] sm:max-w-sm border-border bg-background p-0 rounded-2xl shadow-xl">
-          <div className="max-h-[70vh] overflow-y-auto scrollbar-none px-4 py-4">
+        <DialogContent className="max-w-[340px] sm:max-w-sm border-border bg-background p-0 rounded-2xl shadow-xl" onTouchMove={(e) => e.stopPropagation()} onWheel={(e) => e.stopPropagation()}>
+          <div className="max-h-[70vh] overflow-y-auto scrollbar-none px-4 py-4" style={{ touchAction: "pan-y" }} onTouchMove={(e) => e.stopPropagation()}>
             <DialogHeader className="pb-3 text-left">
               <DialogTitle className="text-lg" style={{ fontFamily: "var(--font-display)" }}>
                 {word.word}
