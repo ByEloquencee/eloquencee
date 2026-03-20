@@ -272,11 +272,11 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                   transition={{ duration: 0.25 }}
                   className="px-6 pb-6 flex items-center justify-between gap-2 min-w-0"
                 >
-                  <div className="flex items-center gap-1 min-w-0 overflow-x-auto flex-shrink [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  <div className="flex items-center gap-3 min-w-0 overflow-x-auto flex-shrink [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <motion.button
                       whileTap={{ scale: 0.9 }}
                       onClick={onToggleFavorite}
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                      className="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                     >
                       <Heart
                         size={20}
@@ -286,7 +286,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                     <motion.button
                       whileTap={{ scale: 0.9 }}
                       onClick={onToggleSaved}
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                      className="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                       title={isSaved ? "Usuń z zapisanych" : "Zapisz"}
                     >
                       <Bookmark
@@ -294,7 +294,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                         className={isSaved ? "fill-primary text-primary" : ""}
                       />
                     </motion.button>
-                    {folders.map((f) => {
+                    {folders.slice(0, 3).map((f) => {
                       const Icon = getFolderIcon(f.icon);
                       const isIn = f.wordIds.includes(word.id);
                       return (
@@ -302,12 +302,12 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                           key={f.id}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => onToggleFolder?.(f.id)}
-                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          className={`flex-shrink-0 transition-colors cursor-pointer ${
                             isIn ? "text-primary" : "text-muted-foreground hover:text-primary"
                           }`}
                           title={`${isIn ? "Usuń z" : "Dodaj do"} "${f.name}"`}
                         >
-                          <Icon size={18} className={isIn ? "fill-primary" : ""} />
+                          <Icon size={20} className={isIn ? "fill-primary" : ""} />
                         </motion.button>
                       );
                     })}
