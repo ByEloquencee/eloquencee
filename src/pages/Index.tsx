@@ -481,7 +481,7 @@ const Index = () => {
           >
             <Dumbbell size={18} />
           </motion.button>
-          {hasFavorites && (
+           {hasFavorites && (
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
@@ -489,7 +489,7 @@ const Index = () => {
                   setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
                   setCurrentIndex(0);
                 }}
-                className={`relative p-1.5 rounded-lg transition-colors cursor-pointer ${
+                className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
                   viewMode === "favorites" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -517,23 +517,32 @@ const Index = () => {
                 <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{savedCount}</span>
               </motion.button>
             )}
-            <FolderDropdown
-              folders={folders}
-              activeFolder={activeFolderId}
-              onSelectFolder={(id) => {
-                setActiveFolderId(id);
-                if (id) setViewMode("all");
-                setCurrentIndex(0);
-              }}
-              onDeleteFolder={async (id) => {
-                try {
-                  await deleteFolder(id);
-                  toast.success("Folder usunięty!");
-                } catch {
-                  toast.error("Nie udało się usunąć folderu");
-                }
-              }}
-            />
+            {folders.map((f) => {
+              const FIcon = getFolderIcon(f.icon);
+              const isActive = activeFolderId === f.id && viewMode === "all";
+              return (
+                <motion.button
+                  key={f.id}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    setActiveFolderId((prev) => prev === f.id ? null : f.id);
+                    setViewMode("all");
+                    setCurrentIndex(0);
+                  }}
+                  className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  }`}
+                  title={f.name}
+                >
+                  <FIcon size={18} />
+                  {f.wordIds.length > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{f.wordIds.length}</span>
+                  )}
+                </motion.button>
+              );
+            })}
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
