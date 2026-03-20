@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, type PanInfo } from "framer-motion";
 import { RotateCcw, X, BookOpen, ThumbsUp, ThumbsDown, RotateCw } from "lucide-react";
 import type { FlashcardSet } from "@/hooks/use-flashcard-sets";
 import type { PolishWord } from "@/data/words";
@@ -20,6 +20,9 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
   const [unknown, setUnknown] = useState<PolishWord[]>([]);
   const [finished, setFinished] = useState(false);
   const [swipeHint, setSwipeHint] = useState<SwipeDirection>(null);
+  const dragX = useMotionValue(0);
+  const dragRotate = useTransform(dragX, [-200, 0, 200], [-12, 0, 12]);
+  const dragY = useTransform(dragX, [-200, 0, 200], [30, 0, 30]);
 
   const card = cards[index];
   const total = cards.length;
@@ -222,16 +225,20 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           <motion.div
             key={`${index}-${cards.length}`}
             custom={direction}
-            initial={{ opacity: 0, x: direction * 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -direction * 100 }}
-            transition={{ duration: 0.25 }}
+            initial={{ opacity: 0, x: direction * 300, rotate: direction * 12, y: 40 }}
+            animate={{ opacity: 1, x: 0, rotate: 0, y: 0 }}
+            exit={{ opacity: 0, x: -direction * 300, rotate: -direction * 12, y: 60 }}
+            transition={{ type: "spring", stiffness: 300, damping: 28 }}
             className="w-full max-w-sm"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.7}
             onDrag={handleDrag}
-            onDragEnd={handleDragEnd}
+            onDragEnd={(e, info) => {
+              handleDragEnd(e, info);
+              dragX.set(0);
+            }}
+            style={{ x: dragX, rotate: dragRotate, y: dragY }}
           >
             <motion.button
               onClick={() => setFlipped((f) => !f)}
