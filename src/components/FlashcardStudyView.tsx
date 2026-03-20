@@ -280,7 +280,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
                   {cards[index + 1].word}
                 </p>
               </div>
-            </div>
+            </motion.div>
           )}
 
           <motion.div
