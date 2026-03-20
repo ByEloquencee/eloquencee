@@ -276,10 +276,13 @@ const Index = () => {
       if (!folder) return [];
       return allWords.filter((w) => folder.wordIds.includes(w.id));
     }
+    if (viewMode === "saved") {
+      return allWords.filter((w) => savedWordIds.includes(w.id));
+    }
     const base = viewMode === "favorites" ? favoriteWords : allWords;
     if (selectedCategories.includes("all")) return base;
     return base.filter((w) => selectedCategories.includes(w.category));
-  }, [viewMode, favoriteWords, selectedCategories, allWords, activeFolderId, folders]);
+  }, [viewMode, favoriteWords, selectedCategories, allWords, activeFolderId, folders, savedWordIds]);
 
   const currentWord = filteredWords[currentIndex % filteredWords.length];
 
