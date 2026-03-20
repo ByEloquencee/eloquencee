@@ -280,12 +280,14 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
                 >
                   {cards[index + 1].word}
                 </p>
+                <span className="text-xs text-muted-foreground mt-2">
+                  Stuknij, aby obrócić
+                </span>
               </div>
             </motion.div>
           )}
 
           <motion.div
-            key={`${index}-${cards.length}`}
             className="absolute inset-0 z-10"
             drag={isTransitioning ? false : "x"}
             dragConstraints={{ left: 0, right: 0 }}
