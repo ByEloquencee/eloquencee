@@ -135,6 +135,8 @@ export function WordAIChat({ word, open, onClose }: WordAIChatProps) {
         className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm p-4 overscroll-none"
         style={{ touchAction: "none" }}
         onClick={onClose}
+        onTouchMove={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 30 }}
