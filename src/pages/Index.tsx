@@ -27,6 +27,7 @@ import { StatsPanel } from "@/components/StatsPanel";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
+import { getFolderIcon } from "@/components/CreateFolderDialog";
 import { SpiderWeb } from "@/components/SpiderWeb";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useCustomWords } from "@/hooks/use-custom-words";
