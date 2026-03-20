@@ -46,7 +46,7 @@ import { PremiumDialog } from "@/components/PremiumDialog";
 import { WordLimitOverlay } from "@/components/WordLimitOverlay";
 import { toast } from "sonner";
 
-type ViewMode = "all" | "favorites";
+type ViewMode = "all" | "favorites" | "saved";
 
 function getRandomIndex(max: number, exclude?: number): number {
   if (max <= 1) return 0;
