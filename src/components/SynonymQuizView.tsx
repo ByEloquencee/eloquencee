@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, X, Trophy, Loader2, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, X, Trophy, Loader2, RotateCcw, Sparkles, Lightbulb } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { PolishWord } from "@/data/words";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ function ResultsScreen({ score, total, onExit, onRestart }: { score: number; tot
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center space-y-4 max-w-sm">
         <Trophy size={56} className="mx-auto text-primary" />
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--font-display)" }}>Wynik: {score}/{total}</h2>
+        <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--font-display)" }}>Wynik: {score % 1 === 0 ? score : score.toFixed(1)}/{total}</h2>
         <p className="text-muted-foreground text-sm">{pct}% poprawnych odpowiedzi</p>
         <div className="flex gap-3 justify-center pt-4">
           <motion.button whileTap={{ scale: 0.95 }} onClick={onExit} className="px-5 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors">Wróć</motion.button>
@@ -53,6 +53,8 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [hintsLeft, setHintsLeft] = useState(2);
+  const [hintUsedOnCurrent, setHintUsedOnCurrent] = useState(false);
 
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
@@ -62,6 +64,8 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
     setSelected(null);
     setScore(0);
     setFinished(false);
+    setHintsLeft(2);
+    setHintUsedOnCurrent(false);
 
     try {
       const wordPool = shuffle(words).slice(0, 30).map((w) => ({
@@ -95,7 +99,7 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
   const handleSelect = (idx: number) => {
     if (selected !== null) return;
     setSelected(idx);
-    if (idx === question.correct) setScore((s) => s + 1);
+    if (idx === question.correct) setScore((s) => s + (hintUsedOnCurrent ? 0.5 : 1));
   };
 
   const handleAdvance = () => {
@@ -106,6 +110,7 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
     } else {
       setCurrent((c) => c + 1);
       setSelected(null);
+      setHintUsedOnCurrent(false);
     }
   };
 
@@ -162,12 +167,22 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
                 {question.question_word}
               </p>
               <AnimatePresence>
-                {selected !== null && (
+                {(selected !== null || hintUsedOnCurrent) && (
                   <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-xs text-muted-foreground mt-2 leading-relaxed overflow-hidden">
                     {question.question_definition}
                   </motion.p>
                 )}
               </AnimatePresence>
+              {selected === null && !hintUsedOnCurrent && hintsLeft > 0 && (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => { setHintsLeft((h) => h - 1); setHintUsedOnCurrent(true); }}
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium cursor-pointer hover:bg-primary/20 transition-colors"
+                >
+                  <Lightbulb size={13} />
+                  Pokaż definicję ({hintsLeft} pozostało) · 0.5 pkt
+                </motion.button>
+              )}
             </div>
 
             {/* Options */}
