@@ -282,7 +282,8 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
             >
               <motion.button
                 onClick={() => setFlipped((f) => !f)}
-                className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
+                className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
+                style={{ border: dragBorder }}
                 whileTap={{ scale: 0.98 }}
               >
                 <AnimatePresence mode="wait">
