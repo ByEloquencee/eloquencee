@@ -261,9 +261,11 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
 
       <main className="flex-1 flex items-center justify-center px-4">
         <div className="relative w-full max-w-sm">
+          <div aria-hidden className="w-full aspect-[3/4] max-h-[50vh] pointer-events-none opacity-0" />
+
           {index < total - 1 && (
             <div className="absolute inset-0">
-              <div className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-sm">
+              <div className="h-full w-full rounded-2xl border border-border bg-card p-6 flex flex-col items-center justify-center text-center shadow-sm">
                 <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground">
                   Termin
                 </span>
@@ -282,7 +284,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
 
           <motion.div
             key={`${index}-${cards.length}`}
-            className="w-full relative z-10"
+            className="absolute inset-0 z-10"
             drag={isTransitioning ? false : "x"}
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.7}
@@ -292,7 +294,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           >
             <motion.button
               onClick={() => !isTransitioning && setFlipped((f) => !f)}
-              className="w-full aspect-[3/4] max-h-[50vh] rounded-2xl bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
+              className="h-full w-full rounded-2xl bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
               style={{ border: dragBorder }}
               whileTap={{ scale: 0.98 }}
               disabled={isTransitioning}
