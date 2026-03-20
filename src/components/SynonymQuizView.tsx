@@ -161,7 +161,17 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
         <AnimatePresence mode="wait">
           <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full relative z-10 space-y-6">
             {/* Question word */}
-            <div className="p-5 rounded-2xl bg-secondary/50 border border-border text-center">
+            <div className="p-5 rounded-2xl bg-secondary/50 border border-border text-center relative">
+              {selected === null && !hintUsedOnCurrent && hintsLeft > 0 && (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => { setHintsLeft((h) => h - 1); setHintUsedOnCurrent(true); }}
+                  className="absolute top-3 right-3 p-1.5 rounded-lg bg-primary/10 text-primary cursor-pointer hover:bg-primary/20 transition-colors"
+                  title={`Pokaż definicję (${hintsLeft} pozostało) · 0.5 pkt`}
+                >
+                  <Lightbulb size={15} />
+                </motion.button>
+              )}
               <p className="text-xs text-muted-foreground mb-2 font-medium">Znajdź synonim słowa:</p>
               <p className="text-xl font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
                 {question.question_word}
@@ -173,16 +183,6 @@ export function SynonymQuizView({ words, onExit, onComplete }: SynonymQuizViewPr
                   </motion.p>
                 )}
               </AnimatePresence>
-              {selected === null && !hintUsedOnCurrent && hintsLeft > 0 && (
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => { setHintsLeft((h) => h - 1); setHintUsedOnCurrent(true); }}
-                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium cursor-pointer hover:bg-primary/20 transition-colors"
-                >
-                  <Lightbulb size={13} />
-                  Pokaż definicję ({hintsLeft} pozostało) · 0.5 pkt
-                </motion.button>
-              )}
             </div>
 
             {/* Options */}
