@@ -34,7 +34,7 @@ function ResultsScreen({ score, total, onExit, onRestart }: { score: number; tot
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center space-y-4 max-w-sm">
         <Trophy size={56} className="mx-auto text-primary" />
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--font-display)" }}>Wynik: {score}/{total}</h2>
+        <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--font-display)" }}>Wynik: {score % 1 === 0 ? score : score.toFixed(1)}/{total}</h2>
         <p className="text-muted-foreground text-sm">{pct}% poprawnych odpowiedzi</p>
         <div className="flex gap-3 justify-center pt-4">
           <motion.button whileTap={{ scale: 0.95 }} onClick={onExit} className="px-5 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium cursor-pointer hover:bg-secondary/80 transition-colors">Wróć</motion.button>
