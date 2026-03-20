@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lightbulb, X, Send, Loader2 } from "lucide-react";
 import type { PolishWord } from "@/data/words";
+import { formatAIText } from "@/lib/format-ai-text";
 
 interface WordAIChatProps {
   word: PolishWord;
