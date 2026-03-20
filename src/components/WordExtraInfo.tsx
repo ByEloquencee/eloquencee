@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { BookOpen, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { PolishWord } from "@/data/words";
+import { formatAIText } from "@/lib/format-ai-text";
 import type { DifficultyLevel } from "@/hooks/use-profile";
 import {
   Dialog,
@@ -124,7 +125,7 @@ export function WordExtraInfo({ word, difficultyLevel }: WordExtraInfoProps) {
                       <span className="text-xs">Ładowanie...</span>
                     </div>
                   ) : (
-                    <div className="whitespace-pre-line">{info}</div>
+                    <div>{info ? formatAIText(info) : null}</div>
                   )}
                 </div>
               </section>
