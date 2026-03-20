@@ -257,13 +257,13 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           )}
 
           {/* Active draggable card */}
-          <AnimatePresence mode="wait" custom={direction}>
+          <AnimatePresence mode="popLayout" custom={direction}>
             <motion.div
               key={`${index}-${cards.length}`}
               custom={direction}
               initial={false}
               animate={{ opacity: 1, x: 0, rotate: 0, y: 0 }}
-              exit={{ opacity: 0, x: -direction * 300, rotate: -direction * 12, y: 60 }}
+              exit={{ opacity: 0, x: direction * -300, rotate: direction * -12, y: 60, transition: { duration: 0.25, ease: "easeIn" } }}
               transition={{ type: "spring", stiffness: 300, damping: 28 }}
               className="w-full relative z-10"
               drag="x"
