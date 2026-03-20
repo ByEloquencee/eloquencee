@@ -957,8 +957,13 @@ const Index = () => {
         open={createFolderOpen}
         onClose={() => setCreateFolderOpen(false)}
         onCreated={async (name, icon) => {
-          await createFolder(name, icon);
-          toast.success("Folder utworzony!");
+          try {
+            await createFolder(name, icon);
+            toast.success("Folder utworzony!");
+          } catch (err: any) {
+            toast.error(err?.message || "Nie udało się utworzyć folderu");
+            throw err;
+          }
         }}
       />
       <EditWordDialog open={!!editingWord} word={editingWord} onClose={() => setEditingWord(null)} onSave={updateWord} />
