@@ -222,16 +222,18 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
           <motion.div
             key={`${index}-${cards.length}`}
             custom={direction}
-            initial={{ opacity: 0, x: direction * 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -direction * 100 }}
-            transition={{ duration: 0.25 }}
+            initial={{ opacity: 0, x: direction * 300, rotate: direction * 12, y: 40 }}
+            animate={{ opacity: 1, x: 0, rotate: 0, y: 0 }}
+            exit={{ opacity: 0, x: -direction * 300, rotate: -direction * 12, y: 60 }}
+            transition={{ type: "spring", stiffness: 300, damping: 28 }}
             className="w-full max-w-sm"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.7}
             onDrag={handleDrag}
             onDragEnd={handleDragEnd}
+            style={{ rotate: 0 }}
+            whileDrag={(info: any) => undefined}
           >
             <motion.button
               onClick={() => setFlipped((f) => !f)}
