@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X } from "lucide-react";
+import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X, Instagram, Mail } from "lucide-react";
 import { useState } from "react";
 import {
   Area,
@@ -385,6 +385,37 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 <p className="text-xs text-muted-foreground">Ustaw powiadomienia o nauce</p>
               </div>
             </button>
+          </motion.div>
+
+          {/* Social & Contact */}
+          <motion.div variants={itemVariants} className="mt-3 rounded-2xl bg-card border border-border p-4 space-y-3">
+            <a
+              href="https://www.instagram.com/eloquenceepl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 hover:bg-secondary/50 rounded-xl p-2 -m-2 transition-colors"
+            >
+              <div className="p-2 rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10">
+                <Instagram size={18} className="text-pink-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">Zaobserwuj nas</p>
+                <p className="text-xs text-muted-foreground">@eloquenceepl na Instagramie</p>
+              </div>
+            </a>
+            <div className="border-t border-border" />
+            <a
+              href="mailto:eloquencee.app@gmail.com"
+              className="flex items-center gap-3 hover:bg-secondary/50 rounded-xl p-2 -m-2 transition-colors"
+            >
+              <div className="p-2 rounded-xl bg-primary/10">
+                <Mail size={18} className="text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">Kontakt</p>
+                <p className="text-xs text-muted-foreground">eloquencee.app@gmail.com</p>
+              </div>
+            </a>
           </motion.div>
 
         </motion.div>
