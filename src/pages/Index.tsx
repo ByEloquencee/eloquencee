@@ -103,7 +103,23 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
-  const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
+  const recentIndicesRef = useRef<number[]>([]);
+  const recentSetRef = useRef<Set<number>>(new Set());
+  const pushRecent = useCallback((idx: number) => {
+    recentIndicesRef.current.push(idx);
+    recentSetRef.current.add(idx);
+    if (recentIndicesRef.current.length > RECENT_BUFFER_SIZE) {
+      const removed = recentIndicesRef.current.shift()!;
+      // Only remove from set if not still in buffer
+      if (!recentIndicesRef.current.includes(removed)) {
+        recentSetRef.current.delete(removed);
+      }
+    }
+  }, []);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const idx = getRandomIndex(words.length, new Set());
+    return idx;
+  });
   const [history, setHistory] = useState<number[]>([]);
   const [forwardHistory, setForwardHistory] = useState<number[]>([]);
   const swipeDirRef = useRef<"up" | "down" | null>(null);
