@@ -274,7 +274,14 @@ const Index = () => {
           category: (override.category as WordCategory) || w.category,
         };
       });
-    return [...filteredBuiltIn, ...globalPolishWords, ...customWords];
+
+    // Deduplicate: hide global words whose name already exists in built-in words
+    const builtInNames = new Set(filteredBuiltIn.map(w => w.word.toLowerCase().trim()));
+    const uniqueGlobal = globalPolishWords.filter(
+      w => !builtInNames.has(w.word.toLowerCase().trim())
+    );
+
+    return [...filteredBuiltIn, ...uniqueGlobal, ...customWords];
   }, [customWords, globalPolishWords, hiddenIds, overrides]);
 
   const favoriteWords = useMemo(
