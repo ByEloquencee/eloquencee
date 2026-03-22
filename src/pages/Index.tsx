@@ -48,34 +48,36 @@ import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites" | "saved";
 
-function getRandomIndex(max: number, exclude?: number): number {
+const RECENT_BUFFER_SIZE = 25;
+
+function getRandomIndex(max: number, recentIndices: Set<number>): number {
   if (max <= 1) return 0;
-  let idx: number;
-  do {
-    idx = Math.floor(Math.random() * max);
-  } while (idx === exclude);
-  return idx;
+  const available: number[] = [];
+  for (let i = 0; i < max; i++) {
+    if (!recentIndices.has(i)) available.push(i);
+  }
+  if (available.length === 0) return Math.floor(Math.random() * max);
+  return available[Math.floor(Math.random() * available.length)];
 }
 
 function pickWeightedWord(
   allWords: PolishWord[],
   preferredCategories: WordCategory[],
-  exclude?: number
+  recentIndices: Set<number>
 ): number {
   if (allWords.length <= 1) return 0;
-  if (preferredCategories.length === 0) return getRandomIndex(allWords.length, exclude);
+  if (preferredCategories.length === 0) return getRandomIndex(allWords.length, recentIndices);
 
-  // 80% chance to pick from preferred categories
   const usePreferred = Math.random() < 0.8;
   if (usePreferred) {
     const preferredIndices = allWords
       .map((w, i) => (preferredCategories.includes(w.category) ? i : -1))
-      .filter((i) => i !== -1 && i !== exclude);
+      .filter((i) => i !== -1 && !recentIndices.has(i));
     if (preferredIndices.length > 0) {
       return preferredIndices[Math.floor(Math.random() * preferredIndices.length)];
     }
   }
-  return getRandomIndex(allWords.length, exclude);
+  return getRandomIndex(allWords.length, recentIndices);
 }
 
 const Index = () => {
