@@ -48,34 +48,36 @@ import { toast } from "sonner";
 
 type ViewMode = "all" | "favorites" | "saved";
 
-function getRandomIndex(max: number, exclude?: number): number {
+const RECENT_BUFFER_SIZE = 25;
+
+function getRandomIndex(max: number, recentIndices: Set<number>): number {
   if (max <= 1) return 0;
-  let idx: number;
-  do {
-    idx = Math.floor(Math.random() * max);
-  } while (idx === exclude);
-  return idx;
+  const available: number[] = [];
+  for (let i = 0; i < max; i++) {
+    if (!recentIndices.has(i)) available.push(i);
+  }
+  if (available.length === 0) return Math.floor(Math.random() * max);
+  return available[Math.floor(Math.random() * available.length)];
 }
 
 function pickWeightedWord(
   allWords: PolishWord[],
   preferredCategories: WordCategory[],
-  exclude?: number
+  recentIndices: Set<number>
 ): number {
   if (allWords.length <= 1) return 0;
-  if (preferredCategories.length === 0) return getRandomIndex(allWords.length, exclude);
+  if (preferredCategories.length === 0) return getRandomIndex(allWords.length, recentIndices);
 
-  // 80% chance to pick from preferred categories
   const usePreferred = Math.random() < 0.8;
   if (usePreferred) {
     const preferredIndices = allWords
       .map((w, i) => (preferredCategories.includes(w.category) ? i : -1))
-      .filter((i) => i !== -1 && i !== exclude);
+      .filter((i) => i !== -1 && !recentIndices.has(i));
     if (preferredIndices.length > 0) {
       return preferredIndices[Math.floor(Math.random() * preferredIndices.length)];
     }
   }
-  return getRandomIndex(allWords.length, exclude);
+  return getRandomIndex(allWords.length, recentIndices);
 }
 
 const Index = () => {
@@ -101,7 +103,23 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<(WordCategory | "all")[]>(["all"]);
-  const [currentIndex, setCurrentIndex] = useState(() => getRandomIndex(words.length));
+  const recentIndicesRef = useRef<number[]>([]);
+  const recentSetRef = useRef<Set<number>>(new Set());
+  const pushRecent = useCallback((idx: number) => {
+    recentIndicesRef.current.push(idx);
+    recentSetRef.current.add(idx);
+    if (recentIndicesRef.current.length > RECENT_BUFFER_SIZE) {
+      const removed = recentIndicesRef.current.shift()!;
+      // Only remove from set if not still in buffer
+      if (!recentIndicesRef.current.includes(removed)) {
+        recentSetRef.current.delete(removed);
+      }
+    }
+  }, []);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const idx = getRandomIndex(words.length, new Set());
+    return idx;
+  });
   const [history, setHistory] = useState<number[]>([]);
   const [forwardHistory, setForwardHistory] = useState<number[]>([]);
   const swipeDirRef = useRef<"up" | "down" | null>(null);
@@ -307,13 +325,18 @@ const Index = () => {
     if (forwardHistory.length > 0) {
       const nextIdx = forwardHistory[forwardHistory.length - 1];
       setForwardHistory((prev) => prev.slice(0, -1));
+      pushRecent(nextIdx);
       setCurrentIndex(nextIdx);
     } else if (selectedCategories.includes("all") && preferredCategories.length > 0) {
-      setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
+      const nextIdx = pickWeightedWord(filteredWords, preferredCategories, recentSetRef.current);
+      pushRecent(nextIdx);
+      setCurrentIndex(nextIdx);
     } else {
-      setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
+      const nextIdx = getRandomIndex(filteredWords.length, recentSetRef.current);
+      pushRecent(nextIdx);
+      setCurrentIndex(nextIdx);
     }
-  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress, forwardHistory]);
+  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress, forwardHistory, pushRecent]);
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
