@@ -325,13 +325,18 @@ const Index = () => {
     if (forwardHistory.length > 0) {
       const nextIdx = forwardHistory[forwardHistory.length - 1];
       setForwardHistory((prev) => prev.slice(0, -1));
+      pushRecent(nextIdx);
       setCurrentIndex(nextIdx);
     } else if (selectedCategories.includes("all") && preferredCategories.length > 0) {
-      setCurrentIndex((prev) => pickWeightedWord(filteredWords, preferredCategories, prev));
+      const nextIdx = pickWeightedWord(filteredWords, preferredCategories, recentSetRef.current);
+      pushRecent(nextIdx);
+      setCurrentIndex(nextIdx);
     } else {
-      setCurrentIndex((prev) => getRandomIndex(filteredWords.length, prev));
+      const nextIdx = getRandomIndex(filteredWords.length, recentSetRef.current);
+      pushRecent(nextIdx);
+      setCurrentIndex(nextIdx);
     }
-  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress, forwardHistory]);
+  }, [filteredWords, selectedCategories, preferredCategories, currentIndex, isPremium, todayCount, incrementProgress, forwardHistory, pushRecent]);
 
   const handlePrev = useCallback(() => {
     if (history.length === 0) return;
