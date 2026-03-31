@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import type { DayRecord } from "@/hooks/use-learning-history";
+import { WidgetSetupCard } from "@/components/WidgetSetupCard";
 
 interface StatsPanelProps {
   todayCount: number;
