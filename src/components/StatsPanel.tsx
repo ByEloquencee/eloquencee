@@ -282,7 +282,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
 
             <div className="h-36 -ml-2 mt-2">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
                   <defs>
                     <linearGradient id="weeklyChartFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
@@ -299,7 +299,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                     dy={4}
                   />
                   <YAxis
-                    domain={[0, WEEKLY_CHART_MAX]}
+                    domain={[-0.5, WEEKLY_CHART_MAX]}
                     ticks={[0, 5, 10, 15]}
                     tickLine={false}
                     axisLine={false}
