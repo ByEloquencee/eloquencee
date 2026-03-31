@@ -299,7 +299,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                     dy={4}
                   />
                   <YAxis
-                    domain={[0, WEEKLY_CHART_MAX]}
+                    domain={[-0.5, WEEKLY_CHART_MAX]}
                     ticks={[0, 5, 10, 15]}
                     tickLine={false}
                     axisLine={false}
