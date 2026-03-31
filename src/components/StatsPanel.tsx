@@ -268,55 +268,67 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
           </motion.div>
 
           {/* Weekly chart */}
-          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 mb-3">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-semibold">Ten tydzień</span>
-              <span className="text-xs text-muted-foreground font-medium bg-secondary px-2 py-0.5 rounded-full tabular-nums">
-                {weeklyTotal} polubionych
-              </span>
+          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 pb-3 mb-3">
+            <div className="flex items-center justify-between mb-1">
+              <div>
+                <span className="text-sm font-semibold">Ten tydzień</span>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Polubione słowa dziennie</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-bold text-foreground tabular-nums">{weeklyTotal}</span>
+                <p className="text-[10px] text-muted-foreground font-medium">łącznie</p>
+              </div>
             </div>
 
-            <div className="h-40 -ml-3">
+            <div className="h-36 -ml-2 mt-2">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="weeklyChartFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.24} />
-                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.03} />
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
+                      <stop offset="60%" stopColor="hsl(var(--primary))" stopOpacity={0.06} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="hsl(var(--border))" strokeOpacity={0.35} vertical={false} strokeDasharray="3 3" />
+                  <CartesianGrid stroke="hsl(var(--border))" strokeOpacity={0.25} vertical={false} strokeDasharray="3 3" />
                   <XAxis
                     dataKey="day"
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
-                    dy={6}
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 500 }}
+                    dy={4}
                   />
                   <YAxis
                     domain={[0, WEEKLY_CHART_MAX]}
                     ticks={[0, 5, 10, 15]}
                     tickLine={false}
                     axisLine={false}
-                    width={24}
+                    width={22}
                     tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }}
                   />
                   {dailyGoal <= WEEKLY_CHART_MAX && (
                     <ReferenceLine
                       y={dailyGoal}
                       stroke="hsl(var(--primary))"
-                      strokeOpacity={0.45}
-                      strokeDasharray="4 4"
+                      strokeOpacity={0.3}
+                      strokeDasharray="6 3"
+                      label={{
+                        value: "cel",
+                        position: "right",
+                        fill: "hsl(var(--muted-foreground))",
+                        fontSize: 9,
+                      }}
                     />
                   )}
                   <Tooltip
-                    cursor={false}
-                    content={({ active, payload }) => {
+                    cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1 }}
+                    content={({ active, payload, label }) => {
                       if (active && payload?.length) {
                         return (
-                          <div className="rounded-lg border bg-card px-3 py-1.5 shadow-md text-xs">
-                            <span className="font-semibold text-foreground">{payload[0].value}</span>
-                            <span className="text-muted-foreground"> słów</span>
+                          <div className="rounded-xl border border-border bg-card px-3 py-2 shadow-lg text-xs">
+                            <p className="text-[10px] text-muted-foreground mb-0.5">{label}</p>
+                            <span className="text-base font-bold text-foreground">{payload[0].value}</span>
+                            <span className="text-muted-foreground ml-1">słów</span>
                           </div>
                         );
                       }
@@ -324,19 +336,20 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                     }}
                   />
                   <Area
-                    type="linear"
+                    type="monotone"
                     dataKey="value"
                     stroke="none"
                     fill="url(#weeklyChartFill)"
                     isAnimationActive
                   />
                   <Line
-                    type="linear"
+                    type="monotone"
                     dataKey="value"
                     stroke="hsl(var(--primary))"
-                    strokeWidth={3.5}
-                    dot={{ r: 4, strokeWidth: 2.5, stroke: "hsl(var(--primary))", fill: "hsl(var(--card))" }}
-                    activeDot={{ r: 6, strokeWidth: 2.5, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    dot={{ r: 3.5, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--card))" }}
+                    activeDot={{ r: 5.5, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
                     isAnimationActive
                   />
                 </AreaChart>
