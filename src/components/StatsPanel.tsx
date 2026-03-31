@@ -385,10 +385,6 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
             </p>
           </motion.div>
 
-          {/* iOS Widget */}
-          <motion.div variants={itemVariants} className="mt-3">
-            <WidgetSetupCard />
-
           {/* Notification button */}
           <motion.div variants={itemVariants}>
             <button
@@ -403,6 +399,11 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 <p className="text-xs text-muted-foreground">Ustaw powiadomienia o nauce</p>
               </div>
             </button>
+          </motion.div>
+
+          {/* iOS Widget */}
+          <motion.div variants={itemVariants} className="mt-3">
+            <WidgetSetupCard />
           </motion.div>
 
           {/* Social & Contact */}
