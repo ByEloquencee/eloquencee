@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X, Instagram, Mail, Smartphone } from "lucide-react";
+import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X, Instagram, Mail } from "lucide-react";
 import { useState } from "react";
 import {
   Area,
