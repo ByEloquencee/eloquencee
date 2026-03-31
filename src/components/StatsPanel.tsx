@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import type { DayRecord } from "@/hooks/use-learning-history";
+import { WidgetSetupCard } from "@/components/WidgetSetupCard";
 
 interface StatsPanelProps {
   todayCount: number;
@@ -399,6 +400,11 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 <p className="text-xs text-muted-foreground">Ustaw powiadomienia o nauce</p>
               </div>
             </button>
+          </motion.div>
+
+          {/* iOS Widget */}
+          <motion.div variants={itemVariants} className="mt-3">
+            <WidgetSetupCard />
           </motion.div>
 
           {/* Social & Contact */}
