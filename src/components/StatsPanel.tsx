@@ -351,6 +351,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                     dot={{ r: 3.5, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--card))" }}
                     activeDot={{ r: 5.5, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
                     isAnimationActive
+                    connectNulls
                   />
                 </AreaChart>
               </ResponsiveContainer>
