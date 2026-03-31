@@ -385,6 +385,10 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
             </p>
           </motion.div>
 
+          {/* iOS Widget */}
+          <motion.div variants={itemVariants} className="mt-3">
+            <WidgetSetupCard />
+
           {/* Notification button */}
           <motion.div variants={itemVariants}>
             <button
