@@ -287,9 +287,9 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
                   <defs>
                     <linearGradient id="weeklyChartFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
-                      <stop offset="60%" stopColor="hsl(var(--primary))" stopOpacity={0.06} />
-                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      <stop offset="0%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0.25} />
+                      <stop offset="60%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0.08} />
+                      <stop offset="100%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="hsl(var(--border))" strokeOpacity={0.25} vertical={false} strokeDasharray="3 3" />
