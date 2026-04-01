@@ -816,6 +816,7 @@ const Index = () => {
                     totalViewed={totalViewed}
                     weekData={weekData}
                     weekFavData={weekFavData}
+                    weekViewData={weekViewData}
                     streak={streak}
                     masteredCount={masteredCount}
                   />
