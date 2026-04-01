@@ -22,6 +22,7 @@ interface StatsPanelProps {
   totalViewed: number;
   weekData?: DayRecord[];
   weekFavData?: DayRecord[];
+  weekViewData?: DayRecord[];
   streak?: number;
   masteredCount?: number;
 }
@@ -187,11 +188,11 @@ function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => v
   );
 }
 
-export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed, weekData = [], weekFavData = [], streak = 0, masteredCount = 0 }: StatsPanelProps) {
+export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed, weekData = [], weekFavData = [], weekViewData = [], streak = 0, masteredCount = 0 }: StatsPanelProps) {
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const displayData = weekFavData.length > 0
-    ? weekFavData
+  const displayData = weekViewData.length > 0
+    ? weekViewData
     : Array.from({ length: 7 }, (_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - (6 - i));
@@ -273,7 +274,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
             <div className="flex items-center justify-between mb-1">
               <div>
                 <span className="text-sm font-semibold">Ten tydzień</span>
-                <p className="text-[11px] text-muted-foreground mt-0.5">Polubione słowa dziennie</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Przejrzane słowa dziennie</p>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-bold text-foreground tabular-nums">{weeklyTotal}</span>

@@ -40,6 +40,7 @@ import { useGlobalWords } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { useLearningHistory } from "@/hooks/use-learning-history";
 import { useWeeklyFavorites } from "@/hooks/use-weekly-favorites";
+import { useWeeklyViews } from "@/hooks/use-weekly-views";
 import { useMasteredWords } from "@/hooks/use-mastered-words";
 import { useSubscription } from "@/hooks/use-subscription";
 import { PremiumDialog } from "@/components/PremiumDialog";
@@ -89,6 +90,7 @@ const Index = () => {
   const { todayCount, increment: incrementProgress, decrement: decrementProgress } = useDailyProgress();
   const { weekData, streak, recordToday } = useLearningHistory();
   const { weekFavData } = useWeeklyFavorites();
+  const { weekViewData, incrementView } = useWeeklyViews();
   const { masteredCount, addMastered } = useMasteredWords();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const { folders, createFolder, deleteFolder, toggleWordInFolder, toggleSaved, isWordSaved, savedWordIds, savedCount } = useFolders();
@@ -328,6 +330,7 @@ const Index = () => {
       localStorage.setItem("eloquencee-total-viewed", JSON.stringify(next));
       return next;
     });
+    incrementView();
     swipeDirRef.current = "up";
     if (forwardHistory.length > 0) {
       const nextIdx = forwardHistory[forwardHistory.length - 1];
@@ -813,6 +816,7 @@ const Index = () => {
                     totalViewed={totalViewed}
                     weekData={weekData}
                     weekFavData={weekFavData}
+                    weekViewData={weekViewData}
                     streak={streak}
                     masteredCount={masteredCount}
                   />
