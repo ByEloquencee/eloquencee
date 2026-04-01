@@ -330,6 +330,7 @@ const Index = () => {
       localStorage.setItem("eloquencee-total-viewed", JSON.stringify(next));
       return next;
     });
+    incrementView();
     swipeDirRef.current = "up";
     if (forwardHistory.length > 0) {
       const nextIdx = forwardHistory[forwardHistory.length - 1];
