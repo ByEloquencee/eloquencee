@@ -90,6 +90,7 @@ const Index = () => {
   const { todayCount, increment: incrementProgress, decrement: decrementProgress } = useDailyProgress();
   const { weekData, streak, recordToday } = useLearningHistory();
   const { weekFavData } = useWeeklyFavorites();
+  const { weekViewData, incrementView } = useWeeklyViews();
   const { masteredCount, addMastered } = useMasteredWords();
   const { customWords, refetch: refetchCustom, deleteWord, updateWord } = useCustomWords();
   const { folders, createFolder, deleteFolder, toggleWordInFolder, toggleSaved, isWordSaved, savedWordIds, savedCount } = useFolders();
