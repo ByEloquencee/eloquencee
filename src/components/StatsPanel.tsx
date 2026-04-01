@@ -22,6 +22,7 @@ interface StatsPanelProps {
   totalViewed: number;
   weekData?: DayRecord[];
   weekFavData?: DayRecord[];
+  weekViewData?: DayRecord[];
   streak?: number;
   masteredCount?: number;
 }
