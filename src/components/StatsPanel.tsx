@@ -347,11 +347,11 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2.5}
+                    stroke="hsl(25, 95%, 53%)"
+                    strokeWidth={3}
                     strokeLinecap="round"
-                    dot={{ r: 3.5, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--card))" }}
-                    activeDot={{ r: 5.5, strokeWidth: 2, stroke: "hsl(var(--primary))", fill: "hsl(var(--primary))" }}
+                    dot={{ r: 4, strokeWidth: 2.5, stroke: "hsl(25, 95%, 53%)", fill: "hsl(var(--card))" }}
+                    activeDot={{ r: 6, strokeWidth: 2.5, stroke: "hsl(25, 95%, 53%)", fill: "hsl(25, 95%, 53%)" }}
                     isAnimationActive
                     connectNulls
                   />
