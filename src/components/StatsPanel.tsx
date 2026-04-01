@@ -274,7 +274,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
             <div className="flex items-center justify-between mb-1">
               <div>
                 <span className="text-sm font-semibold">Ten tydzień</span>
-                <p className="text-[11px] text-muted-foreground mt-0.5">Polubione słowa dziennie</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Przejrzane słowa dziennie</p>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-bold text-foreground tabular-nums">{weeklyTotal}</span>
