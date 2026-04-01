@@ -659,8 +659,13 @@ const Index = () => {
         onPointerDown={(e) => {
           if (e.pointerType === "mouse" && e.button !== 0) return;
 
+          // Don't capture pointer on interactive elements (buttons, inputs, etc.)
+          const target = e.target as HTMLElement;
+          const interactive = target.closest?.('button, a, input, textarea, select, [role="button"], label');
+          if (interactive) return;
+
           // Allow vertical scrolling inside scroll panels on side pages, or card swipe on center
-          const scrollableParent = (e.target as HTMLElement).closest?.('[data-scroll-panel]');
+          const scrollableParent = target.closest?.('[data-scroll-panel]');
           const allowVertical = activePage === 1
             ? (() => {
                 const wordPageRect = wordPageRef.current?.getBoundingClientRect();
