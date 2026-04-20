@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X, Instagram, Mail } from "lucide-react";
-import { useState } from "react";
+import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X, Instagram, Mail, Smartphone } from "lucide-react";
+import { useState, useEffect } from "react";
 import {
   Area,
   AreaChart,
@@ -14,6 +14,9 @@ import {
 } from "recharts";
 import type { DayRecord } from "@/hooks/use-learning-history";
 import { WidgetSetupCard } from "@/components/WidgetSetupCard";
+import { useNotifications, isNativePlatform } from "@/hooks/use-notifications";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 interface StatsPanelProps {
   todayCount: number;
@@ -36,8 +39,48 @@ function getDayLabel(dateStr: string) {
   return DAY_LABELS[jsDay === 0 ? 6 : jsDay - 1];
 }
 
-function PremiumDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+const HOUR_OPTIONS = Array.from({ length: 16 }, (_, i) => i + 6); // 6:00 - 21:00
+
+function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { settings, isNative, saveSettings } = useNotifications();
+  const [enabled, setEnabled] = useState(settings.enabled);
+  const [hour1, setHour1] = useState(settings.hour1);
+  const [hour2, setHour2] = useState<number | null>(settings.hour2);
+  const [twoPerDay, setTwoPerDay] = useState(settings.hour2 !== null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setEnabled(settings.enabled);
+      setHour1(settings.hour1);
+      setHour2(settings.hour2);
+      setTwoPerDay(settings.hour2 !== null);
+    }
+  }, [open, settings]);
+
   if (!open) return null;
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const finalHour2 = twoPerDay ? (hour2 ?? 19) : null;
+      await saveSettings({ enabled, hour1, hour2: finalHour2 });
+      toast.success(
+        enabled
+          ? "Powiadomienia zaplanowane"
+          : "Powiadomienia wyłączone",
+      );
+      onClose();
+    } catch (e) {
+      const msg = e instanceof Error && e.message === "PERMISSION_DENIED"
+        ? "Brak zgody na powiadomienia. Włącz je w Ustawieniach iOS."
+        : "Nie udało się zapisać ustawień";
+      toast.error(msg);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -56,135 +99,93 @@ function PremiumDialog({ open, onClose }: { open: boolean; onClose: () => void }
         >
           <div className="flex items-center justify-between p-5 border-b border-border">
             <div className="flex items-center gap-2">
-              <Crown size={18} className="text-primary" />
-              <h2 className="text-lg font-semibold">Premium</h2>
+              <Bell size={18} className="text-primary" />
+              <h2 className="text-lg font-semibold">Przypomnienia</h2>
             </div>
             <button onClick={onClose} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
               <X size={18} />
             </button>
           </div>
-          <div className="p-5 space-y-4">
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Ta funkcja jest dostępna tylko dla użytkowników <span className="font-semibold text-foreground">Premium</span>. 
-              Wiele powiadomień dziennie oraz personalizacja godzin przypomnień to funkcje premium.
-            </p>
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2">
-                <Bell size={14} className="text-primary" />
-                <span>Do 5 powiadomień dziennie</span>
+
+          <div className="p-5 space-y-5">
+            {!isNative && (
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-secondary/60 text-xs text-muted-foreground">
+                <Smartphone size={14} className="mt-0.5 shrink-0" />
+                <p>Powiadomienia działają tylko w aplikacji mobilnej (iOS/Android). Tutaj możesz je skonfigurować — ustawienia synchronizują się po zalogowaniu w aplikacji.</p>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock size={14} className="text-primary" />
-                <span>Ustawienie godzin powiadomień</span>
+            )}
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold">Codzienne słowo</p>
+                <p className="text-xs text-muted-foreground">Powiadomienie z nowym słowem</p>
               </div>
-              <div className="flex items-center gap-2">
-                <Crown size={14} className="text-primary" />
-                <span>Więcej funkcji wkrótce...</span>
-              </div>
+              <Switch checked={enabled} onCheckedChange={setEnabled} />
             </div>
+
+            {enabled && (
+              <>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pierwsza godzina</p>
+                  <div className="grid grid-cols-4 gap-1.5 max-h-32 overflow-y-auto p-1 -m-1">
+                    {HOUR_OPTIONS.map((h) => (
+                      <button
+                        key={h}
+                        onClick={() => setHour1(h)}
+                        className={`py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
+                          hour1 === h
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-secondary text-secondary-foreground border-transparent hover:bg-secondary/80"
+                        }`}
+                      >
+                        {String(h).padStart(2, "0")}:00
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold">Druga godzina</p>
+                    <p className="text-xs text-muted-foreground">Drugie powiadomienie tego samego dnia</p>
+                  </div>
+                  <Switch checked={twoPerDay} onCheckedChange={setTwoPerDay} />
+                </div>
+
+                {twoPerDay && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Druga godzina</p>
+                    <div className="grid grid-cols-4 gap-1.5 max-h-32 overflow-y-auto p-1 -m-1">
+                      {HOUR_OPTIONS.filter((h) => h !== hour1).map((h) => (
+                        <button
+                          key={h}
+                          onClick={() => setHour2(h)}
+                          className={`py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
+                            (hour2 ?? 19) === h
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-secondary text-secondary-foreground border-transparent hover:bg-secondary/80"
+                          }`}
+                        >
+                          {String(h).padStart(2, "0")}:00
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
             <button
-              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-              onClick={onClose}
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-60"
             >
-              Wkrótce dostępne
+              {saving ? "Zapisywanie..." : "Zapisz"}
             </button>
           </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
-  );
-}
-
-function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [selectedCount, setSelectedCount] = useState(1);
-  const [premiumOpen, setPremiumOpen] = useState(false);
-  const countOptions = [1, 2, 3, 5];
-
-  if (!open) return null;
-
-  return (
-    <>
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm p-4"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
-          >
-            <div className="flex items-center justify-between p-5 border-b border-border">
-              <div className="flex items-center gap-2">
-                <Bell size={18} className="text-primary" />
-                <h2 className="text-lg font-semibold">Przypomnienia</h2>
-              </div>
-              <button onClick={onClose} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
-                <X size={18} />
-              </button>
-            </div>
-            <div className="p-5 space-y-4">
-              <div>
-                <p className="text-sm font-medium mb-2">Ile razy dziennie?</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {countOptions.map((count) => (
-                    <button
-                      key={count}
-                      onClick={() => {
-                        if (count > 1) {
-                          setPremiumOpen(true);
-                        } else {
-                          setSelectedCount(count);
-                        }
-                      }}
-                      className={`relative py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer border ${
-                        selectedCount === count
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-secondary text-secondary-foreground border-transparent hover:bg-secondary/80"
-                      }`}
-                    >
-                      {count}×
-                      {count > 1 && (
-                        <Crown size={10} className="absolute top-1 right-1 text-primary" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <button
-                  onClick={() => setPremiumOpen(true)}
-                  className="w-full flex items-center justify-between p-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <Clock size={16} className="text-muted-foreground" />
-                    <span className="text-sm font-medium">Ustaw godzinę</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Crown size={12} className="text-primary" />
-                    <span className="text-xs text-muted-foreground">Premium</span>
-                  </div>
-                </button>
-              </div>
-
-              <button
-                onClick={onClose}
-                className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                Zapisz
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-      <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
-    </>
   );
 }
 
