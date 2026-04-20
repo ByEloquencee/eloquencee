@@ -257,6 +257,9 @@ export type Database = {
           difficulty_level: string
           id: string
           name: string
+          notification_hour_1: number
+          notification_hour_2: number | null
+          notifications_enabled: boolean
           onboarding_done: boolean
           preferred_categories: string[]
           user_id: string
@@ -268,6 +271,9 @@ export type Database = {
           difficulty_level?: string
           id?: string
           name?: string
+          notification_hour_1?: number
+          notification_hour_2?: number | null
+          notifications_enabled?: boolean
           onboarding_done?: boolean
           preferred_categories?: string[]
           user_id: string
@@ -279,6 +285,9 @@ export type Database = {
           difficulty_level?: string
           id?: string
           name?: string
+          notification_hour_1?: number
+          notification_hour_2?: number | null
+          notifications_enabled?: boolean
           onboarding_done?: boolean
           preferred_categories?: string[]
           user_id?: string

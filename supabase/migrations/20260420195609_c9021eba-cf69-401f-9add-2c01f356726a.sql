@@ -1,0 +1,4 @@
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS notifications_enabled BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS notification_hour_1 INTEGER NOT NULL DEFAULT 8,
+  ADD COLUMN IF NOT EXISTS notification_hour_2 INTEGER;
