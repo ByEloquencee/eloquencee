@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X, Instagram, Mail } from "lucide-react";
-import { useState } from "react";
+import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Clock, Crown, X, Instagram, Mail, Smartphone } from "lucide-react";
+import { useState, useEffect } from "react";
 import {
   Area,
   AreaChart,
@@ -14,6 +14,9 @@ import {
 } from "recharts";
 import type { DayRecord } from "@/hooks/use-learning-history";
 import { WidgetSetupCard } from "@/components/WidgetSetupCard";
+import { useNotifications, isNativePlatform } from "@/hooks/use-notifications";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 interface StatsPanelProps {
   todayCount: number;
