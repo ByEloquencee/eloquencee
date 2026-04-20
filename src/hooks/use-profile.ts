@@ -12,6 +12,9 @@ export interface Profile {
   daily_email_enabled: boolean;
   daily_goal: number;
   difficulty_level: DifficultyLevel;
+  notifications_enabled: boolean;
+  notification_hour_1: number;
+  notification_hour_2: number | null;
 }
 
 export function useProfile() {
