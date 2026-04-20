@@ -15,6 +15,7 @@ import {
 import type { DayRecord } from "@/hooks/use-learning-history";
 import { WidgetSetupCard } from "@/components/WidgetSetupCard";
 import { useNotifications, isNativePlatform } from "@/hooks/use-notifications";
+import { useModerator } from "@/hooks/use-moderator";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
