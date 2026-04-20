@@ -183,6 +183,26 @@ function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => v
             >
               {saving ? "Zapisywanie..." : "Zapisz"}
             </button>
+
+            {isModerator && (
+              <div className="pt-3 border-t border-border space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <Crown size={12} className="text-primary" />
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Panel moderatora</p>
+                </div>
+                <button
+                  onClick={handleTest}
+                  disabled={testing}
+                  className="w-full py-2.5 rounded-xl border border-border bg-secondary/50 text-secondary-foreground text-sm font-medium hover:bg-secondary transition-colors cursor-pointer disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  <Bell size={14} />
+                  {testing ? "Wysyłanie..." : "Wyślij testowe powiadomienie"}
+                </button>
+                <p className="text-[10px] text-muted-foreground text-center">
+                  Pojawi się za ~5 sekund (tylko aplikacja mobilna)
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>
