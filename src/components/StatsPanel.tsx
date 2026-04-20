@@ -15,6 +15,7 @@ import {
 import type { DayRecord } from "@/hooks/use-learning-history";
 import { WidgetSetupCard } from "@/components/WidgetSetupCard";
 import { useNotifications, isNativePlatform } from "@/hooks/use-notifications";
+import { useModerator } from "@/hooks/use-moderator";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
@@ -42,12 +43,31 @@ function getDayLabel(dateStr: string) {
 const HOUR_OPTIONS = Array.from({ length: 16 }, (_, i) => i + 6); // 6:00 - 21:00
 
 function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { settings, isNative, saveSettings } = useNotifications();
+  const { settings, isNative, saveSettings, sendTestNotification } = useNotifications();
+  const { isModerator } = useModerator();
   const [enabled, setEnabled] = useState(settings.enabled);
   const [hour1, setHour1] = useState(settings.hour1);
   const [hour2, setHour2] = useState<number | null>(settings.hour2);
   const [twoPerDay, setTwoPerDay] = useState(settings.hour2 !== null);
   const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
+
+  const handleTest = async () => {
+    setTesting(true);
+    try {
+      await sendTestNotification();
+      toast.success("Powiadomienie pojawi się za ~5 sekund");
+    } catch (e) {
+      const msg = e instanceof Error && e.message === "NOT_NATIVE"
+        ? "Test działa tylko w aplikacji mobilnej (iOS/Android)"
+        : e instanceof Error && e.message === "PERMISSION_DENIED"
+        ? "Brak zgody na powiadomienia. Włącz je w Ustawieniach iOS."
+        : "Nie udało się wysłać testowego powiadomienia";
+      toast.error(msg);
+    } finally {
+      setTesting(false);
+    }
+  };
 
   useEffect(() => {
     if (open) {
@@ -182,6 +202,26 @@ function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => v
             >
               {saving ? "Zapisywanie..." : "Zapisz"}
             </button>
+
+            {isModerator && (
+              <div className="pt-3 border-t border-border space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <Crown size={12} className="text-primary" />
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Panel moderatora</p>
+                </div>
+                <button
+                  onClick={handleTest}
+                  disabled={testing}
+                  className="w-full py-2.5 rounded-xl border border-border bg-secondary/50 text-secondary-foreground text-sm font-medium hover:bg-secondary transition-colors cursor-pointer disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  <Bell size={14} />
+                  {testing ? "Wysyłanie..." : "Wyślij testowe powiadomienie"}
+                </button>
+                <p className="text-[10px] text-muted-foreground text-center">
+                  Pojawi się za ~5 sekund (tylko aplikacja mobilna)
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>

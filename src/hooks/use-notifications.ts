@@ -168,6 +168,44 @@ export function useNotifications() {
     return () => document.removeEventListener("visibilitychange", handler);
   }, [settings.enabled, scheduleNotifications]);
 
+  const sendTestNotification = useCallback(async () => {
+    if (!isNativePlatform()) {
+      throw new Error("NOT_NATIVE");
+    }
+    const granted = permissionGranted || (await requestPermission());
+    if (!granted) {
+      throw new Error("PERMISSION_DENIED");
+    }
+
+    const pool: PolishWord[] = [
+      ...staticWords,
+      ...globalWords.map((w) => ({
+        id: w.id,
+        word: w.word,
+        partOfSpeech: w.part_of_speech,
+        definition: w.definition,
+        example: w.example,
+        etymology: w.etymology ?? undefined,
+        category: w.category as PolishWord["category"],
+      })),
+    ];
+    const preferred = profile?.preferred_categories ?? [];
+    const [w] = pickWordsForUser(pool, preferred, 1);
+    const at = new Date(Date.now() + 5000);
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: 99999,
+          title: `📖 ${w.word}`,
+          body: buildBody(w),
+          schedule: { at },
+          extra: { wordId: w.id, test: true },
+        },
+      ],
+    });
+  }, [permissionGranted, requestPermission, globalWords, profile?.preferred_categories]);
+
   return {
     settings,
     isNative: isNativePlatform(),
@@ -175,5 +213,6 @@ export function useNotifications() {
     saveSettings,
     scheduleNotifications,
     cancelAll,
+    sendTestNotification,
   };
 }
