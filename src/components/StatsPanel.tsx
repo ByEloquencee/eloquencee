@@ -43,12 +43,31 @@ function getDayLabel(dateStr: string) {
 const HOUR_OPTIONS = Array.from({ length: 16 }, (_, i) => i + 6); // 6:00 - 21:00
 
 function NotificationDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { settings, isNative, saveSettings } = useNotifications();
+  const { settings, isNative, saveSettings, sendTestNotification } = useNotifications();
+  const { isModerator } = useModerator();
   const [enabled, setEnabled] = useState(settings.enabled);
   const [hour1, setHour1] = useState(settings.hour1);
   const [hour2, setHour2] = useState<number | null>(settings.hour2);
   const [twoPerDay, setTwoPerDay] = useState(settings.hour2 !== null);
   const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
+
+  const handleTest = async () => {
+    setTesting(true);
+    try {
+      await sendTestNotification();
+      toast.success("Powiadomienie pojawi się za ~5 sekund");
+    } catch (e) {
+      const msg = e instanceof Error && e.message === "NOT_NATIVE"
+        ? "Test działa tylko w aplikacji mobilnej (iOS/Android)"
+        : e instanceof Error && e.message === "PERMISSION_DENIED"
+        ? "Brak zgody na powiadomienia. Włącz je w Ustawieniach iOS."
+        : "Nie udało się wysłać testowego powiadomienia";
+      toast.error(msg);
+    } finally {
+      setTesting(false);
+    }
+  };
 
   useEffect(() => {
     if (open) {
