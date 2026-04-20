@@ -30,7 +30,7 @@ export function useProfile() {
     }
     const { data } = await supabase
       .from("profiles")
-      .select("name, preferred_categories, onboarding_done, daily_email_enabled, daily_goal, difficulty_level")
+      .select("name, preferred_categories, onboarding_done, daily_email_enabled, daily_goal, difficulty_level, notifications_enabled, notification_hour_1, notification_hour_2")
       .eq("user_id", user.id)
       .single();
 
@@ -42,6 +42,9 @@ export function useProfile() {
         daily_email_enabled: data.daily_email_enabled,
         daily_goal: data.daily_goal ?? 5,
         difficulty_level: (data.difficulty_level as DifficultyLevel) || "advanced",
+        notifications_enabled: data.notifications_enabled ?? false,
+        notification_hour_1: data.notification_hour_1 ?? 8,
+        notification_hour_2: data.notification_hour_2 ?? null,
       });
     }
     setLoading(false);
@@ -51,7 +54,7 @@ export function useProfile() {
     fetchProfile();
   }, [fetchProfile]);
 
-  const updateProfile = useCallback(async (updates: Partial<Pick<Profile, "name" | "preferred_categories" | "onboarding_done" | "daily_email_enabled" | "daily_goal" | "difficulty_level">>) => {
+  const updateProfile = useCallback(async (updates: Partial<Pick<Profile, "name" | "preferred_categories" | "onboarding_done" | "daily_email_enabled" | "daily_goal" | "difficulty_level" | "notifications_enabled" | "notification_hour_1" | "notification_hour_2">>) => {
     if (!user) return;
     const { error } = await supabase
       .from("profiles")

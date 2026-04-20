@@ -46,7 +46,7 @@ function buildBody(word: PolishWord): string {
 export function useNotifications() {
   const { user } = useAuth();
   const { profile, updateProfile } = useProfile();
-  const { words: globalWords } = useGlobalWords();
+  const { globalWords } = useGlobalWords();
   const [permissionGranted, setPermissionGranted] = useState(false);
 
   const settings: NotificationSettings = {
