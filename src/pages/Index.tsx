@@ -573,7 +573,7 @@ const Index = () => {
             className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Dodaj"
           >
-            <Plus size={20} strokeWidth={2.25} />
+            <Plus size={18} />
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
