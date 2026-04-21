@@ -25,7 +25,10 @@ struct Provider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (WordEntry) -> Void) {
-        completion(placeholder(in: context))
+        Task {
+            let entry = await loadEntry()
+            completion(entry)
+        }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<WordEntry>) -> Void) {
@@ -38,6 +41,8 @@ struct Provider: TimelineProvider {
 
     private func loadEntry() async -> WordEntry {
         var request = URLRequest(url: widgetFunctionURL)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.timeoutInterval = 15
         request.setValue(widgetAnonKey, forHTTPHeaderField: "apikey")
         request.setValue("Bearer \(widgetAnonKey)", forHTTPHeaderField: "Authorization")
 
@@ -63,30 +68,51 @@ struct EloquenceeWidgetEntryView: View {
     var entry: Provider.Entry
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemBackground))
-
-            VStack(alignment: .leading, spacing: 8) {
+        ZStack(alignment: .bottomTrailing) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text("Słowo dnia")
-                    .font(.caption2)
+                    .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .textCase(.uppercase)
+                    .tracking(0.8)
 
                 Text(entry.word)
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .font(.system(size: 18, weight: .bold, design: .serif))
                     .lineLimit(2)
+                    .minimumScaleFactor(0.8)
 
                 Text(entry.definition)
-                    .font(.caption)
+                    .font(.system(size: 11))
                     .foregroundStyle(.secondary)
-                    .lineLimit(4)
+                    .lineLimit(5)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding(14)
+
+            // Watermark in bottom-right corner
+            Text("eloquencee")
+                .font(.system(size: 8, weight: .medium, design: .serif))
+                .foregroundStyle(.secondary.opacity(0.5))
+                .tracking(0.5)
         }
-        .padding(0)
+        .widgetContainerBackground()
+    }
+}
+
+// Modifier compatible with iOS 14+ (uses containerBackground on iOS 17+)
+extension View {
+    @ViewBuilder
+    func widgetContainerBackground() -> some View {
+        if #available(iOS 17.0, *) {
+            self.containerBackground(for: .widget) {
+                Color(uiColor: .secondarySystemBackground)
+            }
+        } else {
+            self.padding(14)
+                .background(Color(uiColor: .secondarySystemBackground))
+        }
     }
 }
 
