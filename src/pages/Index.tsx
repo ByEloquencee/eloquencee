@@ -569,6 +569,14 @@ const Index = () => {
             />
           <motion.button
             whileTap={{ scale: 0.9 }}
+            onClick={() => setPlusMenuOpen(true)}
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            title="Dodaj"
+          >
+            <Plus size={18} />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
             className={`p-2 rounded-xl transition-colors cursor-pointer ${
               user
