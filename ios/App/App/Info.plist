@@ -45,5 +45,20 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Eloquencee używa mikrofonu, aby rozpoznać wypowiedziane przez Ciebie słowo i pokazać jego definicję.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Eloquencee przekształca Twoją wypowiedź w tekst, aby wyszukać słowo w słowniku.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>app.lovable.eloquencee</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>eloquencee</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

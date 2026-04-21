@@ -4,8 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Listen from "./pages/Listen";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
+import { DeepLinkHandler } from "./components/DeepLinkHandler";
 
 const queryClient = new QueryClient();
 
@@ -15,8 +17,10 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <DeepLinkHandler />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/listen" element={<Listen />} />
           <Route path="/success" element={<PaymentSuccess />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

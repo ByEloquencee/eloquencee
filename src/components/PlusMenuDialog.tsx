@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, FileText, FolderPlus } from "lucide-react";
+import { X, FileText, FolderPlus, Mic } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface PlusMenuDialogProps {
   open: boolean;
@@ -9,6 +10,7 @@ interface PlusMenuDialogProps {
 }
 
 export function PlusMenuDialog({ open, onClose, onAddWord, onCreateFolder }: PlusMenuDialogProps) {
+  const navigate = useNavigate();
   if (!open) return null;
 
   return (
@@ -54,6 +56,16 @@ export function PlusMenuDialog({ open, onClose, onAddWord, onCreateFolder }: Plu
               <div>
                 <p className="text-sm font-medium">Nowy folder</p>
                 <p className="text-xs text-muted-foreground">Stwórz kolekcję do organizacji słów</p>
+              </div>
+            </button>
+            <button
+              onClick={() => { onClose(); navigate("/listen"); }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+            >
+              <Mic size={20} className="text-primary flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium">Słuchaj słowa</p>
+                <p className="text-xs text-muted-foreground">Powiedz słowo, a my znajdziemy definicję</p>
               </div>
             </button>
           </div>
