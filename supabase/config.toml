@@ -2,3 +2,6 @@ project_id = "vcovontzkazhhatxyzsu"
 
 [functions.classify-words]
 verify_jwt = false
+
+[functions.daily-word-widget]
+verify_jwt = false
