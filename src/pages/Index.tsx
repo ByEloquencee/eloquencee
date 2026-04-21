@@ -569,6 +569,14 @@ const Index = () => {
             />
           <motion.button
             whileTap={{ scale: 0.9 }}
+            onClick={() => setPlusMenuOpen(true)}
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            title="Dodaj"
+          >
+            <Plus size={18} />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
             className={`p-2 rounded-xl transition-colors cursor-pointer ${
               user
@@ -971,6 +979,18 @@ const Index = () => {
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
+      <PlusMenuDialog
+        open={plusMenuOpen}
+        onClose={() => setPlusMenuOpen(false)}
+        onAddWord={() => setAddWordOpen(true)}
+        onCreateFolder={() => {
+          if (folders.length >= 3) {
+            toast.error("Możesz utworzyć maksymalnie 3 foldery");
+            return;
+          }
+          setCreateFolderOpen(true);
+        }}
+      />
       <FlashcardSetCreator
         open={createSetOpen}
         onClose={() => setCreateSetOpen(false)}
