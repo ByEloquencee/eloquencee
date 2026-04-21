@@ -522,7 +522,7 @@ const Index = () => {
                   setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
                   setCurrentIndex(0);
                 }}
-                className={`relative p-1.5 rounded-lg transition-colors cursor-pointer ${
+                className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
                   viewMode === "favorites" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
