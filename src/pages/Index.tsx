@@ -501,7 +501,7 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setQuizModeOpen(true)}
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Sprawdź się"
           >
             <GraduationCap size={18} />
@@ -509,7 +509,7 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setExercisesActive(true)}
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Ćwiczenia"
           >
             <Dumbbell size={18} />
@@ -522,7 +522,7 @@ const Index = () => {
                   setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
                   setCurrentIndex(0);
                 }}
-                className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
+                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
                   viewMode === "favorites" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -540,7 +540,7 @@ const Index = () => {
                   setViewMode((v) => (v === "saved" ? "all" : "saved"));
                   setCurrentIndex(0);
                 }}
-                className={`relative p-2 rounded-xl transition-colors cursor-pointer ${
+                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
                   viewMode === "saved" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -570,7 +570,7 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setPlusMenuOpen(true)}
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Dodaj"
           >
             <Plus size={18} />
@@ -578,7 +578,7 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
-            className={`p-2 rounded-xl transition-colors cursor-pointer ${
+            className={`w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
               user
                 ? "text-primary hover:bg-secondary"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary"
