@@ -500,6 +500,14 @@ const Index = () => {
         <div className="flex items-center gap-0.5 flex-shrink-0">
           <motion.button
             whileTap={{ scale: 0.9 }}
+            onClick={() => setPlusMenuOpen(true)}
+            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            title="Dodaj"
+          >
+            <Plus size={18} />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => setQuizModeOpen(true)}
             className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Sprawdź się"
@@ -567,14 +575,6 @@ const Index = () => {
                 }
               }}
             />
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setPlusMenuOpen(true)}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-            title="Dodaj"
-          >
-            <Plus size={18} />
-          </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
