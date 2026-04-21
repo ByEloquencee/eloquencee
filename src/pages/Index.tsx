@@ -979,6 +979,18 @@ const Index = () => {
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
+      <PlusMenuDialog
+        open={plusMenuOpen}
+        onClose={() => setPlusMenuOpen(false)}
+        onAddWord={() => setAddWordOpen(true)}
+        onCreateFolder={() => {
+          if (folders.length >= 3) {
+            toast.error("Możesz utworzyć maksymalnie 3 foldery");
+            return;
+          }
+          setCreateFolderOpen(true);
+        }}
+      />
       <FlashcardSetCreator
         open={createSetOpen}
         onClose={() => setCreateSetOpen(false)}
