@@ -74,7 +74,6 @@ struct EloquenceeWidgetEntryView: View {
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .textCase(.uppercase)
-                    .kerning(0.8)
 
                 Text(entry.word)
                     .font(.system(size: 18, weight: .bold, design: .serif))
@@ -95,7 +94,6 @@ struct EloquenceeWidgetEntryView: View {
             Text("eloquencee")
                 .font(.system(size: 8, weight: .medium, design: .serif))
                 .foregroundStyle(.secondary.opacity(0.5))
-                .kerning(0.5)
         }
         .widgetContainerBackground()
     }
