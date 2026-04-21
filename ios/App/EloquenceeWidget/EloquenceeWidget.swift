@@ -103,8 +103,15 @@ struct EloquenceeWidget: Widget {
     }
 }
 
-#Preview(as: .systemSmall) {
-    EloquenceeWidget()
-} timeline: {
-    WordEntry(date: .now, word: "Eloquencja", definition: "Sztuka pięknego i przekonującego mówienia.")
+struct EloquenceeWidget_Previews: PreviewProvider {
+    static var previews: some View {
+        EloquenceeWidgetEntryView(
+            entry: WordEntry(
+                date: .now,
+                word: "Eloquencja",
+                definition: "Sztuka pięknego i przekonującego mówienia."
+            )
+        )
+        .previewContext(WidgetPreviewContext(family: .systemSmall))
+    }
 }
