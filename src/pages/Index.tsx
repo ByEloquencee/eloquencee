@@ -585,7 +585,7 @@ const Index = () => {
             }`}
             title={user ? profile?.name || user.email || "Konto" : "Zaloguj się"}
           >
-            <User size={18} />
+            <User size={20} />
           </motion.button>
           <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
         </div>
