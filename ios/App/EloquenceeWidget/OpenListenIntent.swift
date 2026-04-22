@@ -1,8 +1,11 @@
 import AppIntents
 import SwiftUI
+import Foundation
 
 /// AppIntent uruchamiany po kliknięciu kafelka w Control Center.
 /// `openAppWhenRun = true` wymusza otwarcie aplikacji głównej.
+/// Zapisuje też flagę w UserDefaults (App Group), aby aplikacja po starcie
+/// wiedziała że ma przejść na ekran /listen.
 @available(iOS 18.0, *)
 struct OpenListenIntent: AppIntent {
     static let title: LocalizedStringResource = "Słuchaj słowa"
@@ -11,9 +14,15 @@ struct OpenListenIntent: AppIntent {
     static let openAppWhenRun: Bool = true
 
     @MainActor
-    func perform() async throws -> some IntentResult & OpensIntent {
-        // Otwarcie aplikacji następuje automatycznie dzięki openAppWhenRun.
-        // Deep link obsługuje AppDelegate przez URL scheme eloquencee://listen.
-        return .result(opensIntent: OpenURLIntent(URL(string: "eloquencee://listen")!))
+    func perform() async throws -> some IntentResult {
+        // Zapisz flagę w shared UserDefaults — aplikacja odczyta ją przy starcie.
+        if let defaults = UserDefaults(suiteName: "group.app.lovable.eloquencee") {
+            defaults.set(true, forKey: "openListenOnLaunch")
+            defaults.set(Date().timeIntervalSince1970, forKey: "openListenTimestamp")
+        }
+        // Fallback: standardowe UserDefaults
+        UserDefaults.standard.set(true, forKey: "openListenOnLaunch")
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "openListenTimestamp")
+        return .result()
     }
 }
