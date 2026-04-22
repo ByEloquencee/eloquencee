@@ -1,49 +1,49 @@
 import AppIntents
-import SwiftUI
 import Foundation
-#if canImport(UIKit)
-import UIKit
-#endif
 
-/// AppIntent uruchamiany po kliknięciu kafelka w Centrum Sterowania.
-///
-/// UWAGA: W iOS 18 `ControlWidgetButton(action:)` z AppIntent zgodnym z OpenIntent
-/// w praktyce często NIE otwiera aplikacji, jeśli intent nie jest zarejestrowany jako
-/// AppShortcut, albo gdy parametr `target` jest nietypowym `AppEnum`. Dlatego używamy
-/// najprostszego, sprawdzonego rozwiązania:
-///   - `openAppWhenRun = true` zmusza system do otwarcia aplikacji hostującej
-///   - dodatkowo zapisujemy flagę w shared UserDefaults (App Group), żeby aplikacja
-///     po starcie wiedziała, że ma od razu przejść do trybu /listen
-///   - w `perform()` próbujemy też otworzyć URL `eloquencee://listen`, który już jest
-///     obsłużony przez DeepLinkHandler w React (przekierowuje na /listen)
 @available(iOS 18.0, *)
-struct OpenListenIntent: AppIntent {
+enum EloquenceeOpenTarget: String, AppEnum {
+    case listen
+
+    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Ekran Eloquencee")
+    static let caseDisplayRepresentations: [Self: DisplayRepresentation] = [
+        .listen: DisplayRepresentation(title: "Nasłuchiwanie")
+    ]
+}
+
+/// Intent używany przez kontrolkę w Centrum Sterowania.
+/// Musi być dołączony zarówno do aplikacji, jak i do rozszerzenia widżetu,
+/// aby iOS mógł poprawnie otworzyć aplikację hostującą po kliknięciu.
+@available(iOS 18.0, *)
+struct OpenListenIntent: OpenIntent {
     static let title: LocalizedStringResource = "Słuchaj słowa"
-    static let description = IntentDescription("Otwiera Eloquencee w trybie słuchania mikrofonu.")
+    static let description = IntentDescription("Otwiera Eloquencee na ekranie nasłuchiwania słowa.")
+    static let openAppWhenRun = true
 
-    /// KLUCZOWE: to flaga, która faktycznie wymusza uruchomienie aplikacji hostującej
-    /// po wykonaniu intenta z poziomu Control Center / Lock Screen.
-    static let openAppWhenRun: Bool = true
+    @Parameter(title: "Ekran")
+    var target: EloquenceeOpenTarget
 
-    init() {}
+    init() {
+        self.target = .listen
+    }
 
-    @MainActor
-    func perform() async throws -> some IntentResult & OpensIntent {
-        // 1) Zapisz flagę w shared UserDefaults — aplikacja odczyta ją przy starcie.
-        if let defaults = UserDefaults(suiteName: "group.app.lovable.eloquencee") {
-            defaults.set(true, forKey: "openListenOnLaunch")
-            defaults.set(Date().timeIntervalSince1970, forKey: "openListenTimestamp")
-            defaults.synchronize()
+    init(target: EloquenceeOpenTarget) {
+        self.target = target
+    }
+
+    func perform() async throws -> some IntentResult {
+        let timestamp = Date().timeIntervalSince1970
+
+        if let sharedDefaults = UserDefaults(suiteName: "group.app.lovable.eloquencee") {
+            sharedDefaults.set(true, forKey: "openListenOnLaunch")
+            sharedDefaults.set(timestamp, forKey: "openListenTimestamp")
+            sharedDefaults.synchronize()
         }
-        // Fallback: standardowe UserDefaults
+
         UserDefaults.standard.set(true, forKey: "openListenOnLaunch")
-        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "openListenTimestamp")
+        UserDefaults.standard.set(timestamp, forKey: "openListenTimestamp")
         UserDefaults.standard.synchronize()
 
-        // 2) Zwróć OpenURLIntent z deep linkiem — system otworzy aplikację Eloquencee
-        //    przez zarejestrowany URL scheme `eloquencee://`, a DeepLinkHandler w React
-        //    przekieruje użytkownika na ekran /listen.
-        let url = URL(string: "eloquencee://listen")!
-        return .result(opensIntent: OpenURLIntent(url))
+        return .result()
     }
 }

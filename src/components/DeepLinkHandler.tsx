@@ -18,17 +18,24 @@ export function DeepLinkHandler() {
         if (!mod) return;
         const { App } = mod;
 
-        const handler = App.addListener("appUrlOpen", (event: { url: string }) => {
+        const routeFromUrl = (rawUrl?: string | null) => {
+          if (!rawUrl) return;
           try {
-            const url = new URL(event.url);
-            // eloquencee://listen  -> host = "listen"
+            const url = new URL(rawUrl);
             const target = url.host || url.pathname.replace(/^\/+/, "");
             if (target === "listen") {
               navigate("/listen");
             }
           } catch (e) {
-            console.warn("Bad deep link", event.url, e);
+            console.warn("Bad deep link", rawUrl, e);
           }
+        };
+
+        const launch = await App.getLaunchUrl().catch(() => null);
+        routeFromUrl(launch?.url);
+
+        const handler = App.addListener("appUrlOpen", (event: { url: string }) => {
+          routeFromUrl(event.url);
         });
 
         cleanup = () => {
