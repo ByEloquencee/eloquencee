@@ -12,12 +12,7 @@ struct EloquenceeListenControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(kind: Self.kind) {
             ControlWidgetButton(action: OpenListenIntent()) {
-                Label {
-                    Text("Eloquencee")
-                } icon: {
-                    Image("BookIcon")
-                        .renderingMode(.template)
-                }
+                Label("Eloquencee", systemImage: "book.fill")
             }
         }
         .displayName("Eloquencee — Słuchaj")
