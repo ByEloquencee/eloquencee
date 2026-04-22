@@ -7,8 +7,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        checkOpenListenFlag()
         return true
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // Sprawdź flagę z Control Widget za każdym razem gdy aplikacja staje się aktywna.
+        checkOpenListenFlag()
+    }
+
+    private func checkOpenListenFlag() {
+        let defaults = UserDefaults(suiteName: "group.app.lovable.eloquencee") ?? UserDefaults.standard
+        let stdDefaults = UserDefaults.standard
+        let shouldOpen = defaults.bool(forKey: "openListenOnLaunch") || stdDefaults.bool(forKey: "openListenOnLaunch")
+        if shouldOpen {
+            defaults.set(false, forKey: "openListenOnLaunch")
+            stdDefaults.set(false, forKey: "openListenOnLaunch")
+            // Otwórz URL eloquencee://listen aby wywołać DeepLinkHandler w JS
+            if let url = URL(string: "eloquencee://listen") {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -26,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        checkOpenListenFlag()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
