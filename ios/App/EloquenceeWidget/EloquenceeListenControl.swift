@@ -3,8 +3,8 @@ import SwiftUI
 import AppIntents
 
 /// Kafelek "Słuchaj" w Centrum Sterowania (iOS 18+).
-/// Po kliknięciu uruchamia OpenListenIntent, który otwiera aplikację Eloquencee
-/// na ekranie /listen z włączonym mikrofonem.
+/// Po kliknięciu uruchamia OpenListenIntent (zgodny z OpenIntent), który
+/// otwiera aplikację Eloquencee na ekranie /listen z włączonym mikrofonem.
 @available(iOS 18.0, *)
 struct EloquenceeListenControl: ControlWidget {
     static let kind: String = "app.lovable.c20ad8853dec429f978dd9d0a849170f.ListenControl"
@@ -15,8 +15,12 @@ struct EloquenceeListenControl: ControlWidget {
                 Label {
                     Text("Eloquencee")
                 } icon: {
-                    Image("BookIcon")
+                    // Custom PNG z assets widgetu (BookIcon) renderowane jako template.
+                    // Jeśli asset nie jest dostępny w bundle widgetu, system użyje
+                    // automatycznego fallbacku.
+                    Image("BookIcon", bundle: .main)
                         .renderingMode(.template)
+                        .resizable()
                 }
             }
         }
