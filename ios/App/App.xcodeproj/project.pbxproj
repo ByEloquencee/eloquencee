@@ -16,10 +16,11 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		70E100000000000000000006 /* EloquenceeWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E100000000000000000002 /* EloquenceeWidgetBundle.swift */; };
 		70E100000000000000000007 /* EloquenceeWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E100000000000000000003 /* EloquenceeWidget.swift */; };
+		70E100000000000000000008 /* EloquenceeWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 70E100000000000000000001 /* EloquenceeWidgetExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		70E100000000000000000020 /* OpenListenIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E100000000000000000021 /* OpenListenIntent.swift */; };
 		70E100000000000000000022 /* EloquenceeListenControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E100000000000000000023 /* EloquenceeListenControl.swift */; };
-		70E100000000000000000008 /* EloquenceeWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 70E100000000000000000001 /* EloquenceeWidgetExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
+		DEC7DF482F98482500F19F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DEC7DF472F98482500F19F5A /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,11 +60,12 @@
 		70E100000000000000000001 /* EloquenceeWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EloquenceeWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E100000000000000000002 /* EloquenceeWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EloquenceeWidgetBundle.swift; sourceTree = "<group>"; };
 		70E100000000000000000003 /* EloquenceeWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EloquenceeWidget.swift; sourceTree = "<group>"; };
+		70E100000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		70E100000000000000000021 /* OpenListenIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenListenIntent.swift; sourceTree = "<group>"; };
 		70E100000000000000000023 /* EloquenceeListenControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EloquenceeListenControl.swift; sourceTree = "<group>"; };
-		70E100000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
+		DEC7DF472F98482500F19F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -132,6 +134,7 @@
 		70E100000000000000000005 /* EloquenceeWidget */ = {
 			isa = PBXGroup;
 			children = (
+				DEC7DF472F98482500F19F5A /* Assets.xcassets */,
 				70E100000000000000000002 /* EloquenceeWidgetBundle.swift */,
 				70E100000000000000000003 /* EloquenceeWidget.swift */,
 				70E100000000000000000023 /* EloquenceeListenControl.swift */,
@@ -250,6 +253,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEC7DF482F98482500F19F5A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
