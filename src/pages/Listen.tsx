@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, ChevronLeft, Plus, Loader2, AlertCircle, RotateCcw } from "lucide-react";
+import { Mic, ChevronLeft, Plus, Loader2, AlertCircle, RotateCcw, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthDialog } from "@/components/AuthDialog";
@@ -60,8 +60,10 @@ export default function Listen() {
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [showAuth, setShowAuth] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [typedWord, setTypedWord] = useState("");
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const stoppedRef = useRef(false);
+  const silenceTimerRef = useRef<number | null>(null);
 
   const lookupWord = useCallback(async (rawWord: string) => {
     setPhase("processing");
@@ -80,6 +82,13 @@ export default function Listen() {
     }
   }, []);
 
+  const clearSilenceTimer = useCallback(() => {
+    if (silenceTimerRef.current !== null) {
+      window.clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+  }, []);
+
   const startListening = useCallback(() => {
     const SR = getSpeechRecognition();
     if (!SR) {
@@ -91,6 +100,7 @@ export default function Listen() {
     stoppedRef.current = false;
     setTranscript("");
     setErrorMsg("");
+    clearSilenceTimer();
 
     const rec = new SR();
     rec.lang = "pl-PL";
@@ -99,32 +109,60 @@ export default function Listen() {
     rec.maxAlternatives = 1;
 
     let finalText = "";
+    let interimText = "";
+
+    const finishWith = (text: string) => {
+      const firstWord = text.trim().split(/\s+/)[0]?.replace(/[.,!?;:]+$/g, "") || "";
+      if (!firstWord) return false;
+      stoppedRef.current = true;
+      clearSilenceTimer();
+      try { rec.abort(); } catch { /* noop */ }
+      void lookupWord(firstWord);
+      return true;
+    };
 
     rec.onstart = () => setPhase("listening");
 
     rec.onresult = (event) => {
-      let interim = "";
+      interimText = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const res = event.results[i];
         if (res.isFinal) {
           finalText += res[0].transcript;
         } else {
-          interim += res[0].transcript;
+          interimText += res[0].transcript;
         }
       }
-      setTranscript((finalText + interim).trim());
+      const combined = (finalText + interimText).trim();
+      setTranscript(combined);
+
+      // Got a final result — fire immediately, don't wait for natural end (~1-3s)
+      if (finalText.trim()) {
+        finishWith(finalText);
+        return;
+      }
+
+      // Got interim text — start a short silence timer; if no new speech in 600ms, take what we have
+      if (interimText.trim()) {
+        clearSilenceTimer();
+        silenceTimerRef.current = window.setTimeout(() => {
+          if (stoppedRef.current) return;
+          finishWith(interimText);
+        }, 600);
+      }
     };
 
     rec.onerror = (event) => {
       console.error("Speech error:", event.error);
       stoppedRef.current = true;
+      clearSilenceTimer();
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
         setPhase("denied");
       } else if (event.error === "no-speech") {
-        setErrorMsg("Nie usłyszałem żadnego słowa. Spróbuj ponownie.");
+        setErrorMsg("Nie usłyszałem żadnego słowa. Spróbuj ponownie lub wpisz słowo poniżej.");
         setPhase("error");
       } else if (event.error === "aborted") {
-        // ignore — user navigated away
+        // ignore — handled elsewhere
       } else {
         setErrorMsg("Wystąpił błąd rozpoznawania mowy.");
         setPhase("error");
@@ -132,15 +170,13 @@ export default function Listen() {
     };
 
     rec.onend = () => {
+      clearSilenceTimer();
       if (stoppedRef.current) return;
-      const text = finalText.trim() || transcript.trim();
-      const firstWord = text.split(/\s+/)[0]?.replace(/[.,!?;:]+$/g, "") || "";
-      if (!firstWord) {
-        setErrorMsg("Nie usłyszałem żadnego słowa. Spróbuj ponownie.");
+      const text = (finalText || interimText).trim();
+      if (!finishWith(text)) {
+        setErrorMsg("Nie usłyszałem żadnego słowa. Spróbuj ponownie lub wpisz słowo poniżej.");
         setPhase("error");
-        return;
       }
-      void lookupWord(firstWord);
     };
 
     try {
@@ -151,7 +187,7 @@ export default function Listen() {
       setErrorMsg("Nie udało się uruchomić mikrofonu.");
       setPhase("error");
     }
-  }, [lookupWord, transcript]);
+  }, [lookupWord, clearSilenceTimer]);
 
   // Auto-start on mount
   useEffect(() => {
@@ -159,6 +195,7 @@ export default function Listen() {
     return () => {
       clearTimeout(t);
       stoppedRef.current = true;
+      clearSilenceTimer();
       try { recognitionRef.current?.abort(); } catch { /* noop */ }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,9 +203,10 @@ export default function Listen() {
 
   const handleBack = useCallback(() => {
     stoppedRef.current = true;
+    clearSilenceTimer();
     try { recognitionRef.current?.abort(); } catch { /* noop */ }
     navigate("/");
-  }, [navigate]);
+  }, [navigate, clearSilenceTimer]);
 
   const handleAddWord = useCallback(async () => {
     if (!card) return;
@@ -204,6 +242,20 @@ export default function Listen() {
     setErrorMsg("");
     startListening();
   }, [startListening]);
+
+  const handleSubmitTyped = useCallback(() => {
+    const word = typedWord.trim().split(/\s+/)[0]?.replace(/[.,!?;:]+$/g, "") || "";
+    if (!word) return;
+    // stop any active recognition
+    stoppedRef.current = true;
+    clearSilenceTimer();
+    try { recognitionRef.current?.abort(); } catch { /* noop */ }
+    setTypedWord("");
+    setTranscript(word);
+    void lookupWord(word);
+  }, [typedWord, lookupWord, clearSilenceTimer]);
+
+  const showTypingBar = phase === "asking" || phase === "listening" || phase === "error";
 
   return (
     <div className="h-dvh w-full bg-background text-foreground flex flex-col overflow-hidden">
@@ -357,8 +409,8 @@ export default function Listen() {
         </AnimatePresence>
       </div>
 
-      {/* Bottom actions — only on result */}
-      {phase === "result" && card && (
+      {/* Bottom area */}
+      {phase === "result" && card ? (
         <motion.div
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -380,7 +432,37 @@ export default function Listen() {
             Dodaj słowo
           </button>
         </motion.div>
-      )}
+      ) : showTypingBar ? (
+        <div className="flex-shrink-0 px-4 pb-6 pt-3 max-w-md mx-auto w-full">
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground text-center mb-2">
+            lub wpisz słowo
+          </p>
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleSubmitTyped(); }}
+            className="flex items-center gap-2"
+          >
+            <input
+              type="text"
+              value={typedWord}
+              onChange={(e) => setTypedWord(e.target.value)}
+              placeholder="np. eskapizm"
+              className="flex-1 h-11 px-4 rounded-xl bg-secondary/60 text-foreground placeholder:text-muted-foreground text-sm border border-border/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+            />
+            <button
+              type="submit"
+              disabled={!typedWord.trim()}
+              className="h-11 w-11 flex items-center justify-center rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition cursor-pointer disabled:opacity-40"
+              aria-label="Sprawdź słowo"
+            >
+              <Send size={18} />
+            </button>
+          </form>
+        </div>
+      ) : null}
 
       <AuthDialog open={showAuth} onClose={() => setShowAuth(false)} />
     </div>
