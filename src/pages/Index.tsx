@@ -460,14 +460,6 @@ const Index = () => {
     );
   }
 
-  if (exercisesActive) {
-    return (
-      <ExercisesView
-        difficulty={profile?.difficulty_level || "advanced"}
-        onExit={() => { setExercisesActive(false); setActivePage(1); }}
-      />
-    );
-  }
 
 
   return (
