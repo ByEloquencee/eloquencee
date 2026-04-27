@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap, Plus, FileText, FolderPlus, Lightbulb, Crown, ChevronDown, Bell, BarChart3 } from "lucide-react";
+import { X, Mail, Lock, User as UserIcon, LogOut, UserCircle, GraduationCap, FileText, FolderPlus, Lightbulb, Crown, ChevronDown, Bell } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile, type DifficultyLevel } from "@/hooks/use-profile";
