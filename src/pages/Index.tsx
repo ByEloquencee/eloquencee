@@ -545,6 +545,16 @@ const Index = () => {
           >
             <Dumbbell size={18} />
           </motion.button>
+          {isModerator && (
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setAdminOpen(true)}
+              className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+              title="Panel moderatora"
+            >
+              <Shield size={18} />
+            </motion.button>
+          )}
           {hasFavorites && (
               <motion.button
                 whileTap={{ scale: 0.9 }}
