@@ -210,7 +210,7 @@ const Index = () => {
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, [quizActive, exercisesActive, studySet, typingSet, synonymQuizActive]);
+  }, [quizActive, studySet, typingSet, synonymQuizActive]);
 
   // Snap slider whenever page or width changes
   useEffect(() => {
