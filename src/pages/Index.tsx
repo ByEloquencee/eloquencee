@@ -505,14 +505,6 @@ const Index = () => {
           >
             <GraduationCap size={18} />
           </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setExercisesActive(true)}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-            title="Ćwiczenia"
-          >
-            <Dumbbell size={18} />
-          </motion.button>
           {hasFavorites && (
               <motion.button
                 whileTap={{ scale: 0.9 }}
