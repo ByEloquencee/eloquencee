@@ -474,7 +474,7 @@ const Index = () => {
     <div
       className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden"
       onWheel={(e) => {
-        if (activePage !== 1 || wheelCooldownRef.current) return;
+        if (activePage !== 0 || wheelCooldownRef.current) return;
         if (Math.abs(e.deltaY) < 20) return;
         wheelCooldownRef.current = true;
         cardDragY.set(e.deltaY > 0 ? -84 : 84);
@@ -592,7 +592,7 @@ const Index = () => {
 
       {/* Category filter - hidden on page 2 */}
       <AnimatePresence>
-        {activePage === 1 && !isPageTransitioning && (
+        {activePage === 0 && !isPageTransitioning && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -676,7 +676,7 @@ const Index = () => {
 
           // Allow vertical scrolling inside scroll panels on side pages, or card swipe on center
           const scrollableParent = target.closest?.('[data-scroll-panel]');
-          const allowVertical = activePage === 1
+          const allowVertical = activePage === 0
             ? (() => {
                 const wordPageRect = wordPageRef.current?.getBoundingClientRect();
                 return !!wordPageRect &&
@@ -717,14 +717,14 @@ const Index = () => {
             pointerRef.current.axis = pointerRef.current.allowVertical && Math.abs(dy) > Math.abs(dx) ? "y" : "x";
 
             // On side pages, release pointer capture for vertical scroll so native scroll works
-            if (pointerRef.current.axis === "y" && activePage !== 1) {
+            if (pointerRef.current.axis === "y" && activePage !== 0) {
               try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
               pointerRef.current = null;
               return;
             }
           }
 
-          if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
+          if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 0) {
             cardDragY.set(dy * 0.72);
             return;
           }
@@ -740,7 +740,7 @@ const Index = () => {
           const dx = pointerRef.current.currentX - pointerRef.current.startX;
           const axis = pointerRef.current.axis;
 
-          if (axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
+          if (axis === "y" && pointerRef.current.allowVertical && activePage === 0) {
             completeExternalCardSwipe(cardDragY.get());
           } else if (axis === "x") {
             const threshold = 40;
