@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, Shield, Bug, Bookmark } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, Bug, Bookmark } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -81,7 +81,6 @@ function pickWeightedWord(
 }
 
 const Index = () => {
-  const [adminOpen, setAdminOpen] = useState(false);
   const { isDark, toggle: toggleTheme } = useTheme();
   const { user } = useAuth();
   const { profile, updateProfile } = useProfile();
@@ -545,16 +544,6 @@ const Index = () => {
           >
             <Dumbbell size={18} />
           </motion.button>
-          {isModerator && (
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setAdminOpen(true)}
-              className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-              title="Panel moderatora"
-            >
-              <Shield size={18} />
-            </motion.button>
-          )}
           {hasFavorites && (
               <motion.button
                 whileTap={{ scale: 0.9 }}
