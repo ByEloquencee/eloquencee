@@ -74,15 +74,10 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
-      <div className="px-1 pb-3">
-        <h2 className="text-lg font-semibold">Twój progres</h2>
-        <p className="text-xs text-muted-foreground">Statystyki nauki słówek</p>
-      </div>
-
+    <div className="w-full flex flex-col">
       <div
         data-scroll-panel
-        className="flex-1 overflow-y-auto px-1 pb-4 space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="space-y-3"
         style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
       >
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
