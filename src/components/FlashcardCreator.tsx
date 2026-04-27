@@ -71,7 +71,7 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                           className="border-t border-border overflow-hidden"
                         >
                           <div className="p-2 flex gap-2">
-                            {set.cards.length >= 2 && (
+                            {set.cards.length >= 1 && (
                               <>
                                 <button
                                   onClick={() => { setShowAllSets(false); onStudySet(set); }}
