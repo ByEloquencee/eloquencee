@@ -15,7 +15,7 @@ import { WordAIChat } from "@/components/WordAIChat";
 import { FlashcardCreator } from "@/components/FlashcardCreator";
 import { FlashcardSetCreator } from "@/components/FlashcardSetCreator";
 import { FlashcardImportDialog } from "@/components/FlashcardImportDialog";
-import { FlashcardStudyView } from "@/components/FlashcardStudyView";
+
 import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
