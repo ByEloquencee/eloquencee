@@ -784,6 +784,23 @@ const Index = () => {
             animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
           >
+            {/* Page 0: Admin panel for moderators, empty for everyone else */}
+            <div className="w-full h-full min-h-0 flex-shrink-0 flex flex-col items-center px-4 pt-2 overflow-hidden">
+              <div className="flex-1 w-full min-h-0 flex items-start justify-center overflow-hidden">
+                {isModerator ? (
+                  <div
+                    data-scroll-panel
+                    className="w-full max-w-lg h-full overflow-y-auto px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                    style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
+                  >
+                    <AdminPanel />
+                  </div>
+                ) : (
+                  <div className="w-full h-full" />
+                )}
+              </div>
+            </div>
+
             {/* Word card page */}
             <div
               ref={wordPageRef}
@@ -903,13 +920,15 @@ const Index = () => {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          {activePage === 1
-            ? "Fiszki i zestawy"
-            : activeFolderId
-                ? `${filteredWords.length} słów w folderze`
-                : viewMode === "favorites"
-                  ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-                  : `${filteredWords.length} słów do nauki`}
+          {activePage === 0
+            ? (isModerator ? "Panel moderatora" : "")
+            : activePage === 2
+              ? "Fiszki i zestawy"
+              : activeFolderId
+                  ? `${filteredWords.length} słów w folderze`
+                  : viewMode === "favorites"
+                    ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+                    : `${filteredWords.length} słów do nauki`}
         </p>
       </div>
 
