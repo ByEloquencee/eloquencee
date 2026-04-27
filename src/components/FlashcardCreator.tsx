@@ -71,22 +71,13 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onTypingSet }
                         >
                           <div className="p-2 flex gap-2">
                             {set.cards.length >= 2 && (
-                              <>
-                                <button
-                                  onClick={() => { setShowAllSets(false); onStudySet(set); }}
-                                  className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                                >
-                                  <BookOpen size={14} />
-                                  Ucz się
-                                </button>
-                                <button
-                                  onClick={() => { setShowAllSets(false); onTypingSet(set); }}
-                                  className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                                >
-                                  <Keyboard size={14} />
-                                  Uzupełnij
-                                </button>
-                              </>
+                              <button
+                                onClick={() => { setShowAllSets(false); onTypingSet(set); }}
+                                className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                              >
+                                <Keyboard size={14} />
+                                Uzupełnij
+                              </button>
                             )}
                             <button
                               onClick={(e) => { e.stopPropagation(); onDeleteSet(set.id); }}
