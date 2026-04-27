@@ -676,7 +676,7 @@ const Index = () => {
 
           // Allow vertical scrolling inside scroll panels on side pages, or card swipe on center
           const scrollableParent = target.closest?.('[data-scroll-panel]');
-          const allowVertical = activePage === 0
+          const allowVertical = activePage === 1
             ? (() => {
                 const wordPageRect = wordPageRef.current?.getBoundingClientRect();
                 return !!wordPageRect &&
@@ -724,7 +724,7 @@ const Index = () => {
             }
           }
 
-          if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 0) {
+          if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
             cardDragY.set(dy * 0.72);
             return;
           }
@@ -740,7 +740,7 @@ const Index = () => {
           const dx = pointerRef.current.currentX - pointerRef.current.startX;
           const axis = pointerRef.current.axis;
 
-          if (axis === "y" && pointerRef.current.allowVertical && activePage === 0) {
+          if (axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
             completeExternalCardSwipe(cardDragY.get());
           } else if (axis === "x") {
             const threshold = 40;
