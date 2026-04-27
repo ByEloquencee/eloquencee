@@ -483,7 +483,7 @@ const Index = () => {
       {/* Nav */}
       <header className="w-full max-w-lg mx-auto px-4 pt-[max(env(safe-area-inset-top),3rem)] pb-4 flex items-center justify-between gap-2">
         <div className="flex flex-col min-w-0 flex-shrink-0">
-          <span className="text-xl sm:text-2xl font-semibold tracking-tight whitespace-nowrap" style={{ fontFamily: "var(--font-display)" }}>
+          <span className="text-lg sm:text-2xl font-semibold tracking-tight whitespace-nowrap" style={{ fontFamily: "var(--font-display)" }}>
             Eloquencee
           </span>
           <span className="text-[10px] sm:text-xs text-muted-foreground tracking-wide truncate">
