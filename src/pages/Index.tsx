@@ -784,52 +784,6 @@ const Index = () => {
             animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
           >
-            {/* Page 0: Stats panel with optional Admin tab for moderators */}
-            <div className="w-full h-full min-h-0 flex-shrink-0 flex flex-col items-center px-4 pt-2 overflow-hidden">
-              {isModerator && (
-                <div className="w-full max-w-lg flex gap-2 mb-3">
-                  <button
-                    onClick={() => setPage0Tab("stats")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
-                      page0Tab === "stats"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    <BarChart3 size={16} />
-                    Twój progres
-                  </button>
-                  <button
-                    onClick={() => setPage0Tab("admin")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
-                      page0Tab === "admin"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    <Shield size={16} />
-                    Panel moderatora
-                  </button>
-                </div>
-              )}
-              <div className="flex-1 w-full min-h-0 flex items-start justify-center overflow-hidden">
-                {isModerator && page0Tab === "admin" ? (
-                  <AdminPanel />
-                ) : (
-                  <StatsPanel
-                    todayCount={todayCount}
-                    dailyGoal={profile?.daily_goal ?? 5}
-                    totalFavorites={favoriteWords.length}
-                    totalViewed={totalViewed}
-                    weekData={weekData}
-                    weekFavData={weekFavData}
-                    weekViewData={weekViewData}
-                    streak={streak}
-                    masteredCount={masteredCount}
-                  />
-                )}
-              </div>
-            </div>
             {/* Word card page */}
             <div
               ref={wordPageRef}
