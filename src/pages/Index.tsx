@@ -15,7 +15,7 @@ import { WordAIChat } from "@/components/WordAIChat";
 import { FlashcardCreator } from "@/components/FlashcardCreator";
 import { FlashcardSetCreator } from "@/components/FlashcardSetCreator";
 import { FlashcardImportDialog } from "@/components/FlashcardImportDialog";
-
+import { FlashcardStudyView } from "@/components/FlashcardStudyView";
 import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
@@ -135,6 +135,7 @@ const Index = () => {
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [createSetOpen, setCreateSetOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [studySet, setStudySet] = useState<FlashcardSet | null>(null);
   const [typingSet, setTypingSet] = useState<FlashcardSet | null>(null);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
@@ -195,7 +196,7 @@ const Index = () => {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [typingSet, quizActive, exercisesActive, synonymQuizActive]);
+  }, [studySet, typingSet, quizActive, exercisesActive, synonymQuizActive]);
 
   // After returning from fullscreen, immediately set position then snap
   useEffect(() => {
@@ -209,7 +210,7 @@ const Index = () => {
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, [quizActive, exercisesActive, typingSet, synonymQuizActive]);
+  }, [quizActive, exercisesActive, studySet, typingSet, synonymQuizActive]);
 
   // Snap slider whenever page or width changes
   useEffect(() => {
@@ -429,6 +430,9 @@ const Index = () => {
       .join(", ");
   }, [selectedCategories]);
 
+  if (studySet) {
+    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(1); }} />;
+  }
 
   if (typingSet) {
     return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(1); }} />;
@@ -483,7 +487,7 @@ const Index = () => {
       {/* Nav */}
       <header className="w-full max-w-lg mx-auto px-4 pt-[max(env(safe-area-inset-top),3rem)] pb-4 flex items-center justify-between gap-2">
         <div className="flex flex-col min-w-0 flex-shrink-0">
-          <span className="text-lg sm:text-2xl font-semibold tracking-tight whitespace-nowrap" style={{ fontFamily: "var(--font-display)" }}>
+          <span className="text-xl sm:text-2xl font-semibold tracking-tight whitespace-nowrap" style={{ fontFamily: "var(--font-display)" }}>
             Eloquencee
           </span>
           <span className="text-[10px] sm:text-xs text-muted-foreground tracking-wide truncate">
@@ -496,26 +500,26 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setPlusMenuOpen(true)}
-            className="w-8 h-8 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Dodaj"
           >
-            <Plus size={17} />
+            <Plus size={18} />
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setQuizModeOpen(true)}
-            className="w-8 h-8 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Sprawdź się"
           >
-            <GraduationCap size={17} />
+            <GraduationCap size={18} />
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setExercisesActive(true)}
-            className="w-8 h-8 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Ćwiczenia"
           >
-            <Dumbbell size={17} />
+            <Dumbbell size={18} />
           </motion.button>
           {hasFavorites && (
               <motion.button
@@ -525,13 +529,13 @@ const Index = () => {
                   setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
                   setCurrentIndex(0);
                 }}
-                className={`relative w-8 h-8 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
                   viewMode === "favorites" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Heart size={17} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
+                <Heart size={18} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
                 <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{favoriteWords.length}</span>
               </motion.button>
             )}
@@ -543,13 +547,13 @@ const Index = () => {
                   setViewMode((v) => (v === "saved" ? "all" : "saved"));
                   setCurrentIndex(0);
                 }}
-                className={`relative w-8 h-8 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
                   viewMode === "saved" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Bookmark size={17} className={viewMode === "saved" && !activeFolderId ? "fill-primary-foreground" : ""} />
+                <Bookmark size={18} className={viewMode === "saved" && !activeFolderId ? "fill-primary-foreground" : ""} />
                 <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{savedCount}</span>
               </motion.button>
             )}
@@ -573,14 +577,14 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
-            className={`w-8 h-8 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+            className={`w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
               user
                 ? "text-primary hover:bg-secondary"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary"
             }`}
             title={user ? profile?.name || user.email || "Konto" : "Zaloguj się"}
           >
-            <User size={18} />
+            <User size={20} />
           </motion.button>
           <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
         </div>
@@ -891,6 +895,7 @@ const Index = () => {
                     toast.error("Nie udało się usunąć zestawu");
                   }
                 }}
+                onStudySet={(set) => setStudySet(set)}
                 onTypingSet={(set) => setTypingSet(set)}
               />
             </div>
