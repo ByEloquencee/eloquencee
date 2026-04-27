@@ -260,32 +260,160 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
 
-  const pills = [
-    { icon: Flame, value: streak, label: "Seria" },
-    { icon: BookOpen, value: masteredCount, label: "Nauczone" },
-    { icon: Eye, value: totalViewed, label: "Przejrzane" },
-    { icon: Target, value: `${todayCount}/${dailyGoal}`, label: "Dziś" },
-  ];
-
   return (
     <div className="w-full max-w-lg mx-auto h-full min-h-0 flex flex-col overflow-hidden">
+      <div className="px-1 pb-3">
+        <h2 className="text-lg font-semibold">Twój progres</h2>
+        <p className="text-xs text-muted-foreground">Statystyki nauki słówek</p>
+      </div>
+
       <div
         data-scroll-panel
-        className="flex-1 overflow-y-auto px-1 pt-1 pb-4 space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="flex-1 overflow-y-auto px-1 pb-4 space-y-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
       >
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
 
-          {/* Top pills row */}
-          <motion.div variants={itemVariants} className="flex gap-2 mb-3 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {pills.map(({ icon: Icon, value, label }) => (
-              <div
-                key={label}
-                className="flex items-center gap-1.5 rounded-full bg-card border border-border px-3 py-1.5 shrink-0"
-              >
-                <Icon size={13} className="text-primary" />
-                <span className="text-xs font-semibold text-foreground tabular-nums">{value}</span>
-                <span className="text-[11px] text-muted-foreground">{label}</span>
+          {/* Streak + Today's goal */}
+          <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 mb-3">
+            <div className="rounded-2xl bg-card border border-border p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-lg bg-primary/10">
+                  <Flame size={16} className="text-primary" />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium">Seria</span>
+              </div>
+              <p className="text-3xl font-bold text-foreground">{streak}</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {streak === 1 ? "dzień" : "dni z rzędu"}
+              </p>
+            </div>
+            <div className="rounded-2xl bg-card border border-border p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-lg bg-primary/10">
+                  <Target size={16} className="text-primary" />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium">Dziś</span>
+              </div>
+              <p className="text-3xl font-bold">
+                <span className="text-foreground">{todayCount}</span>
+                <span className="text-base text-muted-foreground font-normal">/{dailyGoal}</span>
+              </p>
+              <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${goalPercent}%` }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  className="h-full rounded-full bg-primary"
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Weekly chart */}
+          <motion.div variants={itemVariants} className="rounded-2xl bg-card border border-border p-4 pb-3 mb-3">
+            <div className="flex items-center justify-between mb-1">
+              <div>
+                <span className="text-sm font-semibold">Ten tydzień</span>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Przejrzane słowa dziennie</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-bold text-foreground tabular-nums">{weeklyTotal}</span>
+                <p className="text-[10px] text-muted-foreground font-medium">łącznie</p>
+              </div>
+            </div>
+
+            <div className="h-36 -ml-2 mt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
+                  <defs>
+                    <linearGradient id="weeklyChartFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0.25} />
+                      <stop offset="60%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0.08} />
+                      <stop offset="100%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="hsl(var(--border))" strokeOpacity={0.25} vertical={false} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="day"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 500 }}
+                    dy={4}
+                  />
+                  <YAxis
+                    domain={[-0.5, WEEKLY_CHART_MAX]}
+                    ticks={[0, 5, 10, 15]}
+                    tickLine={false}
+                    axisLine={false}
+                    width={22}
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }}
+                  />
+                  {dailyGoal <= WEEKLY_CHART_MAX && (
+                    <ReferenceLine
+                      y={dailyGoal}
+                      stroke="hsl(var(--primary))"
+                      strokeOpacity={0.3}
+                      strokeDasharray="6 3"
+                      label={{
+                        value: "cel",
+                        position: "right",
+                        fill: "hsl(var(--muted-foreground))",
+                        fontSize: 9,
+                      }}
+                    />
+                  )}
+                  <Tooltip
+                    cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1 }}
+                    content={({ active, payload, label }) => {
+                      if (active && payload?.length) {
+                        return (
+                          <div className="rounded-xl border border-border bg-card px-3 py-2 shadow-lg text-xs">
+                            <p className="text-[10px] text-muted-foreground mb-0.5">{label}</p>
+                            <span className="text-base font-bold text-foreground">{payload[0].value}</span>
+                            <span className="text-muted-foreground ml-1">słów</span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke="none"
+                    fill="url(#weeklyChartFill)"
+                    isAnimationActive
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="hsl(25, 95%, 53%)"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    dot={{ r: 4, strokeWidth: 2.5, stroke: "hsl(25, 95%, 53%)", fill: "hsl(var(--card))" }}
+                    activeDot={{ r: 6, strokeWidth: 2.5, stroke: "hsl(25, 95%, 53%)", fill: "hsl(25, 95%, 53%)" }}
+                    isAnimationActive
+                    connectNulls
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+
+          {/* Summary stats */}
+          <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 mb-3">
+            {[
+              { icon: BookOpen, value: masteredCount, label: "Nauczone" },
+              { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
+              { icon: Eye, value: totalViewed, label: "Przejrzane" },
+            ].map(({ icon: Icon, value, label }) => (
+              <div key={label} className="rounded-2xl bg-card border border-border p-3 text-center">
+                <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
+                  <Icon size={14} className="text-muted-foreground" />
+                </div>
+                <p className="text-lg font-bold text-foreground">{value}</p>
+                <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
               </div>
             ))}
           </motion.div>
