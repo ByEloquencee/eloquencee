@@ -62,7 +62,6 @@ export function AuthDialog({
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
