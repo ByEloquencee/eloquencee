@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, Shield, Bug, Bookmark } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, Bug, Bookmark } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -81,7 +81,6 @@ function pickWeightedWord(
 }
 
 const Index = () => {
-  const [adminOpen, setAdminOpen] = useState(false);
   const { isDark, toggle: toggleTheme } = useTheme();
   const { user } = useAuth();
   const { profile, updateProfile } = useProfile();
@@ -147,7 +146,7 @@ const Index = () => {
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
   const [quizMode, setQuizMode] = useState<QuizMode>("multiple-choice");
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [exercisesActive, setExercisesActive] = useState(false);
@@ -218,7 +217,7 @@ const Index = () => {
     snapToActivePage();
   }, [snapToActivePage]);
 
-  const totalPages = 2;
+  const totalPages = 3;
 
   const switchPage = useCallback((nextPage: number) => {
     if (nextPage === activePage) return;
@@ -432,11 +431,11 @@ const Index = () => {
   }, [selectedCategories]);
 
   if (studySet) {
-    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(0); }} />;
+    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(1); }} />;
   }
 
   if (typingSet) {
-    return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(0); }} />;
+    return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(1); }} />;
   }
 
   if (quizActive) {
@@ -444,7 +443,7 @@ const Index = () => {
       <QuizView
         words={quizWords}
         allWords={allWords}
-        onExit={() => { setQuizActive(false); setActivePage(0); }}
+        onExit={() => { setQuizActive(false); setActivePage(1); }}
         onComplete={(correctCount) => addMastered(correctCount)}
         mode={quizMode}
       />
@@ -455,7 +454,7 @@ const Index = () => {
     return (
       <SynonymQuizView
         words={synonymQuizWords}
-        onExit={() => { setSynonymQuizActive(false); setActivePage(0); }}
+        onExit={() => { setSynonymQuizActive(false); setActivePage(1); }}
         onComplete={(correctCount) => addMastered(correctCount)}
       />
     );
@@ -465,40 +464,17 @@ const Index = () => {
     return (
       <ExercisesView
         difficulty={profile?.difficulty_level || "advanced"}
-        onExit={() => { setExercisesActive(false); setActivePage(0); }}
+        onExit={() => { setExercisesActive(false); setActivePage(1); }}
       />
     );
   }
 
-  if (adminOpen) {
-    return (
-      <div className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden">
-        <header className="w-full max-w-lg mx-auto px-4 pt-[max(env(safe-area-inset-top),3rem)] pb-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Shield size={18} className="text-primary" />
-            <span className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-              Panel moderatora
-            </span>
-          </div>
-          <button
-            onClick={() => setAdminOpen(false)}
-            className="px-3 py-1.5 rounded-xl bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-colors cursor-pointer"
-          >
-            Zamknij
-          </button>
-        </header>
-        <main className="flex-1 min-h-0 w-full max-w-lg mx-auto px-4 pb-6 overflow-y-auto">
-          <AdminPanel />
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div
       className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden"
       onWheel={(e) => {
-        if (activePage !== 0 || wheelCooldownRef.current) return;
+        if (activePage !== 1 || wheelCooldownRef.current) return;
         if (Math.abs(e.deltaY) < 20) return;
         wheelCooldownRef.current = true;
         cardDragY.set(e.deltaY > 0 ? -84 : 84);
@@ -545,16 +521,6 @@ const Index = () => {
           >
             <Dumbbell size={18} />
           </motion.button>
-          {isModerator && (
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setAdminOpen(true)}
-              className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-              title="Panel moderatora"
-            >
-              <Shield size={18} />
-            </motion.button>
-          )}
           {hasFavorites && (
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -626,7 +592,7 @@ const Index = () => {
 
       {/* Category filter - hidden on page 2 */}
       <AnimatePresence>
-        {activePage === 0 && !isPageTransitioning && (
+        {activePage === 1 && !isPageTransitioning && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -710,7 +676,7 @@ const Index = () => {
 
           // Allow vertical scrolling inside scroll panels on side pages, or card swipe on center
           const scrollableParent = target.closest?.('[data-scroll-panel]');
-          const allowVertical = activePage === 0
+          const allowVertical = activePage === 1
             ? (() => {
                 const wordPageRect = wordPageRef.current?.getBoundingClientRect();
                 return !!wordPageRect &&
@@ -751,14 +717,14 @@ const Index = () => {
             pointerRef.current.axis = pointerRef.current.allowVertical && Math.abs(dy) > Math.abs(dx) ? "y" : "x";
 
             // On side pages, release pointer capture for vertical scroll so native scroll works
-            if (pointerRef.current.axis === "y" && activePage !== 0) {
+            if (pointerRef.current.axis === "y" && activePage !== 1) {
               try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
               pointerRef.current = null;
               return;
             }
           }
 
-          if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 0) {
+          if (pointerRef.current.axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
             cardDragY.set(dy * 0.72);
             return;
           }
@@ -774,7 +740,7 @@ const Index = () => {
           const dx = pointerRef.current.currentX - pointerRef.current.startX;
           const axis = pointerRef.current.axis;
 
-          if (axis === "y" && pointerRef.current.allowVertical && activePage === 0) {
+          if (axis === "y" && pointerRef.current.allowVertical && activePage === 1) {
             completeExternalCardSwipe(cardDragY.get());
           } else if (axis === "x") {
             const threshold = 40;
@@ -818,6 +784,23 @@ const Index = () => {
             animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
           >
+            {/* Page 0: Admin panel for moderators, empty for everyone else */}
+            <div className="w-full h-full min-h-0 flex-shrink-0 flex flex-col items-center px-4 pt-2 overflow-hidden">
+              <div className="flex-1 w-full min-h-0 flex items-start justify-center overflow-hidden">
+                {isModerator ? (
+                  <div
+                    data-scroll-panel
+                    className="w-full max-w-lg h-full overflow-y-auto px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                    style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
+                  >
+                    <AdminPanel />
+                  </div>
+                ) : (
+                  <div className="w-full h-full" />
+                )}
+              </div>
+            </div>
+
             {/* Word card page */}
             <div
               ref={wordPageRef}
@@ -937,13 +920,15 @@ const Index = () => {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          {activePage === 1
-            ? "Fiszki i zestawy"
-            : activeFolderId
-                ? `${filteredWords.length} słów w folderze`
-                : viewMode === "favorites"
-                  ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-                  : `${filteredWords.length} słów do nauki`}
+          {activePage === 0
+            ? (isModerator ? "Panel moderatora" : "")
+            : activePage === 2
+              ? "Fiszki i zestawy"
+              : activeFolderId
+                  ? `${filteredWords.length} słów w folderze`
+                  : viewMode === "favorites"
+                    ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+                    : `${filteredWords.length} słów do nauki`}
         </p>
       </div>
 
