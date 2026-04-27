@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, BarChart3, Shield, Bug, Bookmark } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, Shield, Bug, Bookmark } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -23,7 +23,6 @@ import { SynonymQuizView } from "@/components/SynonymQuizView";
 import { ExercisesView } from "@/components/ExercisesView";
 import { AdminPanel } from "@/components/AdminPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
-import { StatsPanel } from "@/components/StatsPanel";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
@@ -82,7 +81,7 @@ function pickWeightedWord(
 }
 
 const Index = () => {
-  const [page0Tab, setPage0Tab] = useState<"stats" | "admin">("stats");
+  const [adminOpen, setAdminOpen] = useState(false);
   const { isDark, toggle: toggleTheme } = useTheme();
   const { user } = useAuth();
   const { profile, updateProfile } = useProfile();
@@ -148,7 +147,7 @@ const Index = () => {
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
   const [quizMode, setQuizMode] = useState<QuizMode>("multiple-choice");
-  const [activePage, setActivePage] = useState(1);
+  const [activePage, setActivePage] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [exercisesActive, setExercisesActive] = useState(false);
@@ -219,7 +218,7 @@ const Index = () => {
     snapToActivePage();
   }, [snapToActivePage]);
 
-  const totalPages = isModerator ? 3 : 3;
+  const totalPages = 2;
 
   const switchPage = useCallback((nextPage: number) => {
     if (nextPage === activePage) return;
