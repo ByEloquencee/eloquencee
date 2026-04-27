@@ -10,11 +10,10 @@ interface FlashcardCreatorProps {
   onCreateSet: () => void;
   sets: FlashcardSet[];
   onDeleteSet: (id: string) => void;
-  onStudySet: (set: FlashcardSet) => void;
   onTypingSet: (set: FlashcardSet) => void;
 }
 
-export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, onTypingSet }: FlashcardCreatorProps) {
+export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onTypingSet }: FlashcardCreatorProps) {
   const { user } = useAuth();
   const [expandedSet, setExpandedSet] = useState<string | null>(null);
   const [showAllSets, setShowAllSets] = useState(false);
