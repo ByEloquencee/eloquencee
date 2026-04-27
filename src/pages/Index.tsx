@@ -429,9 +429,6 @@ const Index = () => {
       .join(", ");
   }, [selectedCategories]);
 
-  if (studySet) {
-    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(1); }} />;
-  }
 
   if (typingSet) {
     return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(1); }} />;
