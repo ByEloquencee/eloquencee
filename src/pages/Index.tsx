@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Dumbbell, Bug, Bookmark } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Bug, Bookmark } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -20,7 +20,7 @@ import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { SynonymQuizView } from "@/components/SynonymQuizView";
-import { ExercisesView } from "@/components/ExercisesView";
+
 import { AdminPanel } from "@/components/AdminPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
@@ -149,7 +149,7 @@ const Index = () => {
   const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
-  const [exercisesActive, setExercisesActive] = useState(false);
+  
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [forceSpider, setForceSpider] = useState(false);
@@ -196,7 +196,7 @@ const Index = () => {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [studySet, typingSet, quizActive, exercisesActive, synonymQuizActive]);
+  }, [studySet, typingSet, quizActive, synonymQuizActive]);
 
   // After returning from fullscreen, immediately set position then snap
   useEffect(() => {
@@ -210,7 +210,7 @@ const Index = () => {
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, [quizActive, exercisesActive, studySet, typingSet, synonymQuizActive]);
+  }, [quizActive, studySet, typingSet, synonymQuizActive]);
 
   // Snap slider whenever page or width changes
   useEffect(() => {
@@ -460,14 +460,6 @@ const Index = () => {
     );
   }
 
-  if (exercisesActive) {
-    return (
-      <ExercisesView
-        difficulty={profile?.difficulty_level || "advanced"}
-        onExit={() => { setExercisesActive(false); setActivePage(1); }}
-      />
-    );
-  }
 
 
   return (
@@ -500,7 +492,7 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setPlusMenuOpen(true)}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Dodaj"
           >
             <Plus size={18} />
@@ -508,18 +500,10 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setQuizModeOpen(true)}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Sprawdź się"
           >
             <GraduationCap size={18} />
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setExercisesActive(true)}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-            title="Ćwiczenia"
-          >
-            <Dumbbell size={18} />
           </motion.button>
           {hasFavorites && (
               <motion.button
@@ -529,7 +513,7 @@ const Index = () => {
                   setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
                   setCurrentIndex(0);
                 }}
-                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+                className={`relative w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
                   viewMode === "favorites" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -547,7 +531,7 @@ const Index = () => {
                   setViewMode((v) => (v === "saved" ? "all" : "saved"));
                   setCurrentIndex(0);
                 }}
-                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+                className={`relative w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
                   viewMode === "saved" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -577,7 +561,7 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
-            className={`w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+            className={`w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
               user
                 ? "text-primary hover:bg-secondary"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary"
