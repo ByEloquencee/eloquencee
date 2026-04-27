@@ -149,7 +149,7 @@ const Index = () => {
   const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
-  const [exercisesActive, setExercisesActive] = useState(false);
+  
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [forceSpider, setForceSpider] = useState(false);
