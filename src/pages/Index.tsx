@@ -431,11 +431,11 @@ const Index = () => {
   }, [selectedCategories]);
 
   if (studySet) {
-    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(0); }} />;
+    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(1); }} />;
   }
 
   if (typingSet) {
-    return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(0); }} />;
+    return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(1); }} />;
   }
 
   if (quizActive) {
@@ -443,7 +443,7 @@ const Index = () => {
       <QuizView
         words={quizWords}
         allWords={allWords}
-        onExit={() => { setQuizActive(false); setActivePage(0); }}
+        onExit={() => { setQuizActive(false); setActivePage(1); }}
         onComplete={(correctCount) => addMastered(correctCount)}
         mode={quizMode}
       />
@@ -454,7 +454,7 @@ const Index = () => {
     return (
       <SynonymQuizView
         words={synonymQuizWords}
-        onExit={() => { setSynonymQuizActive(false); setActivePage(0); }}
+        onExit={() => { setSynonymQuizActive(false); setActivePage(1); }}
         onComplete={(correctCount) => addMastered(correctCount)}
       />
     );
@@ -464,7 +464,7 @@ const Index = () => {
     return (
       <ExercisesView
         difficulty={profile?.difficulty_level || "advanced"}
-        onExit={() => { setExercisesActive(false); setActivePage(0); }}
+        onExit={() => { setExercisesActive(false); setActivePage(1); }}
       />
     );
   }
@@ -474,7 +474,7 @@ const Index = () => {
     <div
       className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden"
       onWheel={(e) => {
-        if (activePage !== 0 || wheelCooldownRef.current) return;
+        if (activePage !== 1 || wheelCooldownRef.current) return;
         if (Math.abs(e.deltaY) < 20) return;
         wheelCooldownRef.current = true;
         cardDragY.set(e.deltaY > 0 ? -84 : 84);
@@ -592,7 +592,7 @@ const Index = () => {
 
       {/* Category filter - hidden on page 2 */}
       <AnimatePresence>
-        {activePage === 0 && !isPageTransitioning && (
+        {activePage === 1 && !isPageTransitioning && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -717,7 +717,7 @@ const Index = () => {
             pointerRef.current.axis = pointerRef.current.allowVertical && Math.abs(dy) > Math.abs(dx) ? "y" : "x";
 
             // On side pages, release pointer capture for vertical scroll so native scroll works
-            if (pointerRef.current.axis === "y" && activePage !== 0) {
+            if (pointerRef.current.axis === "y" && activePage !== 1) {
               try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
               pointerRef.current = null;
               return;
