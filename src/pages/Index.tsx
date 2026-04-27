@@ -432,11 +432,11 @@ const Index = () => {
   }, [selectedCategories]);
 
   if (studySet) {
-    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(1); }} />;
+    return <FlashcardStudyView set={studySet} onExit={() => { setStudySet(null); setActivePage(0); }} />;
   }
 
   if (typingSet) {
-    return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(1); }} />;
+    return <FlashcardTypingView set={typingSet} onExit={() => { setTypingSet(null); setActivePage(0); }} />;
   }
 
   if (quizActive) {
@@ -444,7 +444,7 @@ const Index = () => {
       <QuizView
         words={quizWords}
         allWords={allWords}
-        onExit={() => { setQuizActive(false); setActivePage(1); }}
+        onExit={() => { setQuizActive(false); setActivePage(0); }}
         onComplete={(correctCount) => addMastered(correctCount)}
         mode={quizMode}
       />
@@ -455,7 +455,7 @@ const Index = () => {
     return (
       <SynonymQuizView
         words={synonymQuizWords}
-        onExit={() => { setSynonymQuizActive(false); setActivePage(1); }}
+        onExit={() => { setSynonymQuizActive(false); setActivePage(0); }}
         onComplete={(correctCount) => addMastered(correctCount)}
       />
     );
@@ -465,7 +465,7 @@ const Index = () => {
     return (
       <ExercisesView
         difficulty={profile?.difficulty_level || "advanced"}
-        onExit={() => { setExercisesActive(false); setActivePage(1); }}
+        onExit={() => { setExercisesActive(false); setActivePage(0); }}
       />
     );
   }
