@@ -469,29 +469,6 @@ const Index = () => {
     );
   }
 
-  if (adminOpen) {
-    return (
-      <div className="min-h-screen h-dvh bg-background flex flex-col overflow-hidden">
-        <header className="w-full max-w-lg mx-auto px-4 pt-[max(env(safe-area-inset-top),3rem)] pb-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Shield size={18} className="text-primary" />
-            <span className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-              Panel moderatora
-            </span>
-          </div>
-          <button
-            onClick={() => setAdminOpen(false)}
-            className="px-3 py-1.5 rounded-xl bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-colors cursor-pointer"
-          >
-            Zamknij
-          </button>
-        </header>
-        <main className="flex-1 min-h-0 w-full max-w-lg mx-auto px-4 pb-6 overflow-y-auto">
-          <AdminPanel />
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div
