@@ -891,7 +891,6 @@ const Index = () => {
                     toast.error("Nie udało się usunąć zestawu");
                   }
                 }}
-                onStudySet={(set) => setStudySet(set)}
                 onTypingSet={(set) => setTypingSet(set)}
               />
             </div>
