@@ -496,26 +496,26 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setPlusMenuOpen(true)}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-8 h-8 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Dodaj"
           >
-            <Plus size={18} />
+            <Plus size={17} />
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setQuizModeOpen(true)}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-8 h-8 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Sprawdź się"
           >
-            <GraduationCap size={18} />
+            <GraduationCap size={17} />
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setExercisesActive(true)}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+            className="w-8 h-8 inline-flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
             title="Ćwiczenia"
           >
-            <Dumbbell size={18} />
+            <Dumbbell size={17} />
           </motion.button>
           {hasFavorites && (
               <motion.button
@@ -525,13 +525,13 @@ const Index = () => {
                   setViewMode((v) => (v === "favorites" ? "all" : "favorites"));
                   setCurrentIndex(0);
                 }}
-                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+                className={`relative w-8 h-8 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
                   viewMode === "favorites" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Heart size={18} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
+                <Heart size={17} className={viewMode === "favorites" && !activeFolderId ? "fill-primary-foreground" : ""} />
                 <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{favoriteWords.length}</span>
               </motion.button>
             )}
@@ -543,13 +543,13 @@ const Index = () => {
                   setViewMode((v) => (v === "saved" ? "all" : "saved"));
                   setCurrentIndex(0);
                 }}
-                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+                className={`relative w-8 h-8 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
                   viewMode === "saved" && !activeFolderId
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Bookmark size={18} className={viewMode === "saved" && !activeFolderId ? "fill-primary-foreground" : ""} />
+                <Bookmark size={17} className={viewMode === "saved" && !activeFolderId ? "fill-primary-foreground" : ""} />
                 <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold leading-none px-0.5">{savedCount}</span>
               </motion.button>
             )}
@@ -573,14 +573,14 @@ const Index = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setAuthOpen(true)}
-            className={`w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+            className={`w-8 h-8 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
               user
                 ? "text-primary hover:bg-secondary"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary"
             }`}
             title={user ? profile?.name || user.email || "Konto" : "Zaloguj się"}
           >
-            <User size={20} />
+            <User size={18} />
           </motion.button>
           <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
         </div>
