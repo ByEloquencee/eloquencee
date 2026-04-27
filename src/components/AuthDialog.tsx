@@ -210,58 +210,30 @@ export function AuthDialog({
                   </div>
                 </div>
 
-                {/* Inline accordion for quick actions */}
-                <div className="rounded-xl border border-border overflow-hidden">
+                {/* Quick actions */}
+                <div className="space-y-1">
                   <button
-                    onClick={() => setAddOpen((v) => !v)}
-                    className="w-full flex items-center justify-between gap-3 px-3 py-2.5 hover:bg-secondary/60 transition-colors cursor-pointer text-left"
+                    onClick={() => { onClose(); onAddWord?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
                   >
-                    <span className="flex items-center gap-2.5">
-                      <Plus size={16} className="text-primary flex-shrink-0" />
-                      <span className="text-sm font-medium">Dodaj…</span>
-                    </span>
-                    <ChevronDown
-                      size={16}
-                      className={`text-muted-foreground transition-transform ${addOpen ? "rotate-180" : ""}`}
-                    />
+                    <FileText size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Dodaj nowe słowo</span>
                   </button>
-                  <AnimatePresence initial={false}>
-                    {addOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden border-t border-border"
-                      >
-                        <div className="p-1.5 space-y-1">
-                          <button
-                            onClick={() => { onClose(); onAddWord?.(); }}
-                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary transition-colors cursor-pointer text-left"
-                          >
-                            <FileText size={15} className="text-primary flex-shrink-0" />
-                            <span className="text-sm">Dodaj nowe słowo</span>
-                          </button>
-                          <button
-                            onClick={() => { onClose(); onCreateFolder?.(); }}
-                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary transition-colors cursor-pointer text-left"
-                          >
-                            <FolderPlus size={15} className="text-primary flex-shrink-0" />
-                            <span className="text-sm">Utwórz folder</span>
-                          </button>
-                          <button
-                            onClick={() => { onClose(); onSuggestWord?.(); }}
-                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-secondary transition-colors cursor-pointer text-left"
-                          >
-                            <Lightbulb size={15} className="text-primary flex-shrink-0" />
-                            <span className="text-sm">Zaproponuj słowo</span>
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <button
+                    onClick={() => { onClose(); onCreateFolder?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+                  >
+                    <FolderPlus size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Utwórz folder</span>
+                  </button>
+                  <button
+                    onClick={() => { onClose(); onSuggestWord?.(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
+                  >
+                    <Lightbulb size={16} className="text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium">Zaproponuj słowo</span>
+                  </button>
                 </div>
-
                 <p className="text-xs text-muted-foreground">
                   Twoje ulubione słowa i własne słowa są synchronizowane z kontem.
                 </p>
