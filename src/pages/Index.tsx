@@ -20,7 +20,7 @@ import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { SynonymQuizView } from "@/components/SynonymQuizView";
-import { ExercisesView } from "@/components/ExercisesView";
+
 import { AdminPanel } from "@/components/AdminPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
