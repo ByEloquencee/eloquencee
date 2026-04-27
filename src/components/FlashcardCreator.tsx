@@ -10,11 +10,10 @@ interface FlashcardCreatorProps {
   onCreateSet: () => void;
   sets: FlashcardSet[];
   onDeleteSet: (id: string) => void;
-  onStudySet: (set: FlashcardSet) => void;
   onTypingSet: (set: FlashcardSet) => void;
 }
 
-export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, onTypingSet }: FlashcardCreatorProps) {
+export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onTypingSet }: FlashcardCreatorProps) {
   const { user } = useAuth();
   const [expandedSet, setExpandedSet] = useState<string | null>(null);
   const [showAllSets, setShowAllSets] = useState(false);
@@ -72,22 +71,13 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                         >
                           <div className="p-2 flex gap-2">
                             {set.cards.length >= 2 && (
-                              <>
-                                <button
-                                  onClick={() => { setShowAllSets(false); onStudySet(set); }}
-                                  className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                                >
-                                  <BookOpen size={14} />
-                                  Ucz się
-                                </button>
-                                <button
-                                  onClick={() => { setShowAllSets(false); onTypingSet(set); }}
-                                  className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                                >
-                                  <Keyboard size={14} />
-                                  Uzupełnij
-                                </button>
-                              </>
+                              <button
+                                onClick={() => { setShowAllSets(false); onTypingSet(set); }}
+                                className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                              >
+                                <Keyboard size={14} />
+                                Uzupełnij
+                              </button>
                             )}
                             <button
                               onClick={(e) => { e.stopPropagation(); onDeleteSet(set.id); }}

@@ -24,16 +24,16 @@ export function FolderDropdown({ folders, activeFolder, onSelectFolder, onDelete
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={() => setMenuOpen((v) => !v)}
-        className={`w-9 h-9 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
+        className={`w-8 h-8 inline-flex items-center justify-center rounded-xl transition-colors cursor-pointer ${
           activeFolder
             ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:text-foreground hover:bg-secondary"
         }`}
       >
         {activeF ? (
-          (() => { const Icon = getFolderIcon(activeF.icon); return <Icon size={18} />; })()
+          (() => { const Icon = getFolderIcon(activeF.icon); return <Icon size={17} />; })()
         ) : (
-          <FolderOpen size={18} />
+          <FolderOpen size={17} />
         )}
       </motion.button>
 
