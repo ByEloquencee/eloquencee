@@ -111,7 +111,7 @@ export function AuthDialog({
           onClick={(e) => e.stopPropagation()}
           className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-h-[90vh] flex flex-col"
         >
-          <div className="flex items-center justify-between p-5 border-b border-border flex-shrink-0">
+          <div className="flex items-center justify-between p-5 flex-shrink-0">
             <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
               {user
                 ? tab === "stats"
@@ -128,7 +128,7 @@ export function AuthDialog({
 
           {/* Tabs (only when logged in) */}
           {user && (
-            <div className="flex gap-1 p-2 border-b border-border flex-shrink-0">
+            <div className="flex gap-1 p-2 flex-shrink-0">
               <button
                 onClick={() => setTab("account")}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
