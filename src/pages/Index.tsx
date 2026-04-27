@@ -903,15 +903,13 @@ const Index = () => {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          {activePage === 0
-            ? (isModerator && page0Tab === "admin" ? "Panel moderatora" : "Twój progres")
-            : activePage === 2
-              ? "Fiszki i zestawy"
-              : activeFolderId
-                  ? `${filteredWords.length} słów w folderze`
-                  : viewMode === "favorites"
-                    ? `Uczysz się z ${filteredWords.length} ulubionych słów`
-                    : `${filteredWords.length} słów do nauki`}
+          {activePage === 1
+            ? "Fiszki i zestawy"
+            : activeFolderId
+                ? `${filteredWords.length} słów w folderze`
+                : viewMode === "favorites"
+                  ? `Uczysz się z ${filteredWords.length} ulubionych słów`
+                  : `${filteredWords.length} słów do nauki`}
         </p>
       </div>
 
