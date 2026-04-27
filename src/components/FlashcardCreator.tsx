@@ -19,6 +19,20 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
   const [expandedSet, setExpandedSet] = useState<string | null>(null);
   const [showAllSets, setShowAllSets] = useState(false);
 
+  const openStudyMode = (set: FlashcardSet) => {
+    const selectedSet = { ...set, cards: [...set.cards] };
+    setShowAllSets(false);
+    setExpandedSet(null);
+    requestAnimationFrame(() => onStudySet(selectedSet));
+  };
+
+  const openTypingMode = (set: FlashcardSet) => {
+    const selectedSet = { ...set, cards: [...set.cards] };
+    setShowAllSets(false);
+    setExpandedSet(null);
+    requestAnimationFrame(() => onTypingSet(selectedSet));
+  };
+
   const sortedSets = [...sets].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   const allSetsOverlay = showAllSets
@@ -74,14 +88,22 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
                             {set.cards.length >= 1 && (
                               <>
                                 <button
-                                  onClick={() => { setShowAllSets(false); onStudySet(set); }}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openStudyMode(set);
+                                  }}
                                   className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                                 >
                                   <BookOpen size={14} />
                                   Ucz się
                                 </button>
                                 <button
-                                  onClick={() => { setShowAllSets(false); onTypingSet(set); }}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openTypingMode(set);
+                                  }}
                                   className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                                 >
                                   <Keyboard size={14} />
