@@ -146,7 +146,7 @@ const Index = () => {
   const [quizActive, setQuizActive] = useState(false);
   const [quizWords, setQuizWords] = useState<PolishWord[]>([]);
   const [quizMode, setQuizMode] = useState<QuizMode>("multiple-choice");
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [exercisesActive, setExercisesActive] = useState(false);
@@ -217,7 +217,7 @@ const Index = () => {
     snapToActivePage();
   }, [snapToActivePage]);
 
-  const totalPages = 2;
+  const totalPages = 3;
 
   const switchPage = useCallback((nextPage: number) => {
     if (nextPage === activePage) return;
