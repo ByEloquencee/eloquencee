@@ -927,6 +927,15 @@ const Index = () => {
         onSuggestWord={() => setSuggestWordOpen(true)}
         onOpenPremium={() => { setAuthOpen(false); setPremiumOpen(true); }}
         isPremium={isPremium}
+        todayCount={todayCount}
+        dailyGoal={profile?.daily_goal ?? 5}
+        totalFavorites={favoriteWords.length}
+        totalViewed={totalViewed}
+        weekData={weekData}
+        weekFavData={weekFavData}
+        weekViewData={weekViewData}
+        streak={streak}
+        masteredCount={masteredCount}
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
