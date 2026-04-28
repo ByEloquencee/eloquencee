@@ -51,6 +51,20 @@ type ViewMode = "all" | "favorites" | "saved";
 
 const RECENT_BUFFER_SIZE = 25;
 
+const categoryIconMap: Record<string, typeof BookOpen> = {
+  all: Sparkles,
+  filozofia: Brain,
+  literatura: BookOpen,
+  psychologia: Lightbulb,
+  ciekawi_ludzie: Users,
+  biznes_finanse: Briefcase,
+  religia: Church,
+  historia: Landmark,
+  sztuka: Palette,
+  ogólne: Globe,
+  własne: HeartIcon,
+};
+
 function getRandomIndex(max: number, recentIndices: Set<number>): number {
   if (max <= 1) return 0;
   const available: number[] = [];
