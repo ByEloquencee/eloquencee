@@ -1,35 +1,35 @@
 import { motion } from "framer-motion";
-import { Crown, BookOpen, Brain, Users, Briefcase, Church, Landmark, Palette, Sparkles, Music, Film, Scroll, FlaskConical, Trophy, Globe, Heart } from "lucide-react";
+import {
+  Crown,
+  BookOpen,
+  Brain,
+  Users,
+  Briefcase,
+  Church,
+  Landmark,
+  Palette,
+  Music,
+  Film,
+  Scroll,
+  FlaskConical,
+  Trophy,
+  Globe,
+  Heart,
+  Lightbulb,
+} from "lucide-react";
 import { categories } from "@/data/words";
-
-import imgFilozofia from "@/assets/packs/filozofia.jpg";
-import imgLiteratura from "@/assets/packs/literatura.jpg";
-import imgPsychologia from "@/assets/packs/psychologia.jpg";
-import imgCiekawiLudzie from "@/assets/packs/ciekawi_ludzie.jpg";
-import imgBiznes from "@/assets/packs/biznes_finanse.jpg";
-import imgReligia from "@/assets/packs/religia.jpg";
-import imgHistoria from "@/assets/packs/historia.jpg";
-import imgSztuka from "@/assets/packs/sztuka.jpg";
-import imgOgolne from "@/assets/packs/ogolne.jpg";
-import imgWlasne from "@/assets/packs/wlasne.jpg";
-import imgShowbiznes from "@/assets/packs/showbiznes.jpg";
-import imgMuzyka from "@/assets/packs/muzyka.jpg";
-import imgArchaizmy from "@/assets/packs/archaizmy.jpg";
-import imgNauka from "@/assets/packs/nauka.jpg";
-import imgSport from "@/assets/packs/sport.jpg";
 
 interface WordPack {
   id: string;
   label: string;
   icon: typeof BookOpen;
-  image: string;
   isPremium: boolean;
 }
 
 const categoryIcons: Record<string, typeof BookOpen> = {
   filozofia: Brain,
   literatura: BookOpen,
-  psychologia: Sparkles,
+  psychologia: Lightbulb,
   ciekawi_ludzie: Users,
   biznes_finanse: Briefcase,
   religia: Church,
@@ -39,25 +39,12 @@ const categoryIcons: Record<string, typeof BookOpen> = {
   własne: Heart,
 };
 
-const categoryImages: Record<string, string> = {
-  filozofia: imgFilozofia,
-  literatura: imgLiteratura,
-  psychologia: imgPsychologia,
-  ciekawi_ludzie: imgCiekawiLudzie,
-  biznes_finanse: imgBiznes,
-  religia: imgReligia,
-  historia: imgHistoria,
-  sztuka: imgSztuka,
-  ogólne: imgOgolne,
-  własne: imgWlasne,
-};
-
 const premiumPacks: WordPack[] = [
-  { id: "showbiznes", label: "Show-biznes", icon: Film, image: imgShowbiznes, isPremium: true },
-  { id: "muzyka", label: "Muzyka", icon: Music, image: imgMuzyka, isPremium: true },
-  { id: "archaizmy", label: "Archaizmy", icon: Scroll, image: imgArchaizmy, isPremium: true },
-  { id: "nauka", label: "Nauka", icon: FlaskConical, image: imgNauka, isPremium: true },
-  { id: "sport", label: "Sport", icon: Trophy, image: imgSport, isPremium: true },
+  { id: "showbiznes", label: "Show-biznes", icon: Film, isPremium: true },
+  { id: "muzyka", label: "Muzyka", icon: Music, isPremium: true },
+  { id: "archaizmy", label: "Archaizmy", icon: Scroll, isPremium: true },
+  { id: "nauka", label: "Nauka", icon: FlaskConical, isPremium: true },
+  { id: "sport", label: "Sport", icon: Trophy, isPremium: true },
 ];
 
 export function WordPacksPanel() {
@@ -67,7 +54,6 @@ export function WordPacksPanel() {
       id: c.value,
       label: c.label,
       icon: categoryIcons[c.value] || BookOpen,
-      image: categoryImages[c.value] || imgOgolne,
       isPremium: false,
     }));
 
@@ -86,6 +72,7 @@ export function WordPacksPanel() {
 
       <div className="grid grid-cols-2 gap-3">
         {allPacks.map((pack, i) => {
+          const Icon = pack.icon;
           return (
             <motion.button
               key={pack.id}
@@ -93,19 +80,19 @@ export function WordPacksPanel() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.02 }}
               whileTap={{ scale: 0.97 }}
-              className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-[hsl(24,95%,53%)]/20 hover:ring-[hsl(24,95%,53%)]/60 transition-all"
+              className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-[hsl(24,95%,53%)]/20 hover:ring-[hsl(24,95%,53%)]/60 transition-all bg-[#1a1a1a]"
             >
-              {/* Tło: ilustracja line-art */}
-              <img
-                src={pack.image}
-                alt={pack.label}
-                loading="lazy"
-                width={768}
-                height={960}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
+              {/* Duża ikona pomarańczowa */}
+              <div className="absolute inset-0 flex items-center justify-center pb-12">
+                <Icon
+                  size={88}
+                  strokeWidth={1.25}
+                  className="text-[hsl(24,95%,53%)] transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_20px_hsl(24,95%,53%,0.35)]"
+                />
+              </div>
+
               {/* Subtelny gradient u dołu dla czytelności tytułu */}
-              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
 
               {/* Premium badge */}
               {pack.isPremium && (
@@ -117,7 +104,10 @@ export function WordPacksPanel() {
 
               {/* Tytuł */}
               <div className="absolute bottom-0 left-0 right-0 p-3">
-                <span className="block text-white text-base font-bold leading-tight drop-shadow-md" style={{ fontFamily: "var(--font-display)" }}>
+                <span
+                  className="block text-white text-base font-bold leading-tight drop-shadow-md"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
                   {pack.label}
                 </span>
                 <div className="mt-1 h-0.5 w-8 bg-[hsl(24,95%,53%)] rounded-full" />
