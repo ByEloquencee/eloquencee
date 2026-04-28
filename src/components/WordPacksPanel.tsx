@@ -2,14 +2,30 @@ import { motion } from "framer-motion";
 import { Crown, BookOpen, Brain, Users, Briefcase, Church, Landmark, Palette, Sparkles, Music, Film, Scroll, FlaskConical, Trophy, Globe, Heart } from "lucide-react";
 import { categories } from "@/data/words";
 
+import imgFilozofia from "@/assets/packs/filozofia.jpg";
+import imgLiteratura from "@/assets/packs/literatura.jpg";
+import imgPsychologia from "@/assets/packs/psychologia.jpg";
+import imgCiekawiLudzie from "@/assets/packs/ciekawi_ludzie.jpg";
+import imgBiznes from "@/assets/packs/biznes_finanse.jpg";
+import imgReligia from "@/assets/packs/religia.jpg";
+import imgHistoria from "@/assets/packs/historia.jpg";
+import imgSztuka from "@/assets/packs/sztuka.jpg";
+import imgOgolne from "@/assets/packs/ogolne.jpg";
+import imgWlasne from "@/assets/packs/wlasne.jpg";
+import imgShowbiznes from "@/assets/packs/showbiznes.jpg";
+import imgMuzyka from "@/assets/packs/muzyka.jpg";
+import imgArchaizmy from "@/assets/packs/archaizmy.jpg";
+import imgNauka from "@/assets/packs/nauka.jpg";
+import imgSport from "@/assets/packs/sport.jpg";
+
 interface WordPack {
   id: string;
   label: string;
   icon: typeof BookOpen;
+  image: string;
   isPremium: boolean;
 }
 
-// Mapowanie ikon dla podstawowych kategorii
 const categoryIcons: Record<string, typeof BookOpen> = {
   filozofia: Brain,
   literatura: BookOpen,
@@ -23,13 +39,25 @@ const categoryIcons: Record<string, typeof BookOpen> = {
   własne: Heart,
 };
 
-// Paczki premium (na razie nie funkcjonalne)
+const categoryImages: Record<string, string> = {
+  filozofia: imgFilozofia,
+  literatura: imgLiteratura,
+  psychologia: imgPsychologia,
+  ciekawi_ludzie: imgCiekawiLudzie,
+  biznes_finanse: imgBiznes,
+  religia: imgReligia,
+  historia: imgHistoria,
+  sztuka: imgSztuka,
+  ogólne: imgOgolne,
+  własne: imgWlasne,
+};
+
 const premiumPacks: WordPack[] = [
-  { id: "showbiznes", label: "Show-biznes", icon: Film, isPremium: true },
-  { id: "muzyka", label: "Muzyka", icon: Music, isPremium: true },
-  { id: "archaizmy", label: "Archaizmy", icon: Scroll, isPremium: true },
-  { id: "nauka", label: "Nauka", icon: FlaskConical, isPremium: true },
-  { id: "sport", label: "Sport", icon: Trophy, isPremium: true },
+  { id: "showbiznes", label: "Show-biznes", icon: Film, image: imgShowbiznes, isPremium: true },
+  { id: "muzyka", label: "Muzyka", icon: Music, image: imgMuzyka, isPremium: true },
+  { id: "archaizmy", label: "Archaizmy", icon: Scroll, image: imgArchaizmy, isPremium: true },
+  { id: "nauka", label: "Nauka", icon: FlaskConical, image: imgNauka, isPremium: true },
+  { id: "sport", label: "Sport", icon: Trophy, image: imgSport, isPremium: true },
 ];
 
 export function WordPacksPanel() {
@@ -39,6 +67,7 @@ export function WordPacksPanel() {
       id: c.value,
       label: c.label,
       icon: categoryIcons[c.value] || BookOpen,
+      image: categoryImages[c.value] || imgOgolne,
       isPremium: false,
     }));
 
@@ -55,7 +84,7 @@ export function WordPacksPanel() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-2 gap-3">
         {allPacks.map((pack, i) => {
           const Icon = pack.icon;
           return (
@@ -65,16 +94,41 @@ export function WordPacksPanel() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.02 }}
               whileTap={{ scale: 0.97 }}
-              className="relative aspect-[4/3] rounded-2xl bg-secondary hover:bg-secondary/80 transition-colors cursor-pointer p-3 flex flex-col justify-between text-left overflow-hidden"
+              className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-[hsl(24,95%,53%)]/20 hover:ring-[hsl(24,95%,53%)]/60 transition-all"
             >
+              {/* Tło: obrazek */}
+              <img
+                src={pack.image}
+                alt={pack.label}
+                loading="lazy"
+                width={768}
+                height={576}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              {/* Gradient na czytelność tekstu + pomarańczowy akcent */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-[hsl(24,95%,53%)]/30 via-transparent to-transparent mix-blend-overlay" />
+
+              {/* Premium badge */}
               {pack.isPremium && (
-                <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-primary/15 text-primary">
-                  <Crown size={10} />
-                  <span className="text-[9px] font-semibold uppercase tracking-wide">Premium</span>
+                <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-[hsl(24,95%,53%)] text-white shadow-lg">
+                  <Crown size={11} />
+                  <span className="text-[10px] font-bold uppercase tracking-wide">Premium</span>
                 </div>
               )}
-              <Icon size={22} className={pack.isPremium ? "text-primary" : "text-foreground"} />
-              <span className="text-sm font-medium leading-tight">{pack.label}</span>
+
+              {/* Ikona w lewym górnym rogu */}
+              <div className="absolute top-2 left-2 w-9 h-9 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
+                <Icon size={18} />
+              </div>
+
+              {/* Tytuł */}
+              <div className="absolute bottom-0 left-0 right-0 p-3">
+                <span className="block text-white text-base font-bold leading-tight drop-shadow-md" style={{ fontFamily: "var(--font-display)" }}>
+                  {pack.label}
+                </span>
+                <div className="mt-1 h-0.5 w-8 bg-[hsl(24,95%,53%)] rounded-full" />
+              </div>
             </motion.button>
           );
         })}
