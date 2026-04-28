@@ -440,7 +440,7 @@ const Index = () => {
   const hasSaved = savedCount > 0;
 
   const selectedCategoryLabels = useMemo(() => {
-    if (selectedCategories.includes("all")) return "Wszystkie";
+    if (selectedCategories.includes("all")) return "Wybierz kategorie";
     return selectedCategories
       .map((c) => categories.find((cat) => cat.value === c)?.label || c)
       .join(", ");
