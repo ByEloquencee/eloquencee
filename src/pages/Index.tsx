@@ -780,7 +780,13 @@ const Index = () => {
                     <AdminPanel />
                   </div>
                 ) : (
-                  <div className="w-full h-full" />
+                  <div
+                    data-scroll-panel
+                    className="w-full max-w-lg h-full overflow-y-auto px-1 pt-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                    style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
+                  >
+                    <WordPacksPanel />
+                  </div>
                 )}
               </div>
             </div>
