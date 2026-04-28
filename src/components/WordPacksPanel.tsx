@@ -127,20 +127,20 @@ export function WordPacksPanel() {
               className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/20 hover:ring-primary/60 transition-all bg-[#1a1a1a]"
               style={{ containerType: "inline-size" }}
             >
-              {/* Znaki wodne — słowa rozłożone po całym tle, każde wypełnia szerokość karty */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-2">
-                {pack.watermarks.map((word, idx) => (
-                  <span
-                    key={idx}
-                    className="block text-primary/15 font-bold whitespace-nowrap leading-none w-full text-center"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: `clamp(14px, ${100 / Math.max(word.length, 4)}cqw, 48px)`,
-                    }}
-                  >
-                    {word}
-                  </span>
-                ))}
+              {/* Znaki wodne — wiele słów w linijce, wypełniają całą szerokość karty */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-1.5 px-1.5 gap-1">
+                {Array.from({ length: 7 }).map((_, rowIdx) => {
+                  const repeated = Array.from({ length: 6 }, (_, i) => pack.watermarks[(rowIdx + i) % pack.watermarks.length]).join(" · ");
+                  return (
+                    <span
+                      key={rowIdx}
+                      className="block text-primary/15 font-bold whitespace-nowrap leading-none w-full text-[11px]"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      {repeated}
+                    </span>
+                  );
+                })}
               </div>
 
               {/* Duża ikona pomarańczowa */}
