@@ -22,6 +22,7 @@ import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { SynonymQuizView } from "@/components/SynonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
+import { WordPacksPanel } from "@/components/WordPacksPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
