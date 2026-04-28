@@ -22,6 +22,7 @@ import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { SynonymQuizView } from "@/components/SynonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
+import { WordPacksPanel } from "@/components/WordPacksPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
@@ -780,7 +781,13 @@ const Index = () => {
                     <AdminPanel />
                   </div>
                 ) : (
-                  <div className="w-full h-full" />
+                  <div
+                    data-scroll-panel
+                    className="w-full max-w-lg h-full overflow-y-auto px-1 pt-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                    style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
+                  >
+                    <WordPacksPanel />
+                  </div>
                 )}
               </div>
             </div>
