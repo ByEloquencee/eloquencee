@@ -150,6 +150,7 @@ const Index = () => {
   const [activePage, setActivePage] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+  const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
   
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
@@ -769,7 +770,7 @@ const Index = () => {
             animate={sliderControls}
             onAnimationComplete={() => setIsPageTransitioning(false)}
           >
-            {/* Page 0: Admin panel for moderators, empty for everyone else */}
+            {/* Page 0: Admin panel for moderators (with toggle to packs), Word packs for everyone else */}
             <div className="w-full h-full min-h-0 flex-shrink-0 flex flex-col items-center px-4 pt-2 overflow-hidden">
               <div className="flex-1 w-full min-h-0 flex items-start justify-center overflow-hidden">
                 {isModerator ? (
@@ -778,7 +779,29 @@ const Index = () => {
                     className="w-full max-w-lg h-full overflow-y-auto px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
                   >
-                    <AdminPanel />
+                    <div className="flex gap-2 mb-3 sticky top-0 z-10 bg-background/80 backdrop-blur-sm py-1">
+                      <button
+                        onClick={() => setModeratorView("admin")}
+                        className={`flex-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                          moderatorView === "admin"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                        }`}
+                      >
+                        Panel moderatora
+                      </button>
+                      <button
+                        onClick={() => setModeratorView("packs")}
+                        className={`flex-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                          moderatorView === "packs"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                        }`}
+                      >
+                        Paczki słów
+                      </button>
+                    </div>
+                    {moderatorView === "admin" ? <AdminPanel /> : <WordPacksPanel />}
                   </div>
                 ) : (
                   <div
