@@ -129,7 +129,7 @@ export function WordPacksPanel() {
             >
               {/* Znaki wodne — wiele słów w linijce, wypełniają całą szerokość karty */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-1.5 px-1.5 gap-1">
-                {Array.from({ length: 7 }).map((_, rowIdx) => {
+                {Array.from({ length: 13 }).map((_, rowIdx) => {
                   const repeated = Array.from({ length: 6 }, (_, i) => pack.watermarks[(rowIdx + i) % pack.watermarks.length]).join(" · ");
                   return (
                     <span
