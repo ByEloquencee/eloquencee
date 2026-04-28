@@ -633,24 +633,28 @@ const Index = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute left-4 right-4 top-full z-30 mt-3 rounded-2xl border border-border bg-background/95 p-3 shadow-sm backdrop-blur-sm"
+                  className="absolute left-4 right-4 top-full z-30 mt-3 rounded-2xl border border-border/50 bg-background/40 p-3 shadow-lg backdrop-blur-md"
                 >
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="grid grid-cols-3 gap-2">
                     {visibleCategories.map((cat) => {
                       const isSelected = cat.value === "all"
                         ? selectedCategories.includes("all")
                         : selectedCategories.includes(cat.value);
+                      const Icon = categoryIconMap[cat.value] || BookOpen;
                       return (
                         <button
                           key={cat.value}
                           onClick={() => toggleCategory(cat.value)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                          className={`flex flex-col items-center justify-center gap-1.5 aspect-square rounded-xl p-2 transition-all cursor-pointer ${
                             isSelected
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                              ? "bg-primary/90 text-primary-foreground ring-1 ring-primary shadow-md"
+                              : "bg-secondary/40 text-foreground hover:bg-secondary/70 ring-1 ring-border/40"
                           }`}
                         >
-                          {cat.label}
+                          <Icon size={22} strokeWidth={1.6} className={isSelected ? "" : "text-primary"} />
+                          <span className="text-[10.5px] font-medium leading-tight text-center line-clamp-2">
+                            {cat.label}
+                          </span>
                         </button>
                       );
                     })}
