@@ -86,7 +86,6 @@ export function WordPacksPanel() {
 
       <div className="grid grid-cols-2 gap-3">
         {allPacks.map((pack, i) => {
-          const Icon = pack.icon;
           return (
             <motion.button
               key={pack.id}
