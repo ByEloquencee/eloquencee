@@ -126,26 +126,17 @@ export function WordPacksPanel() {
               whileTap={{ scale: 0.97 }}
               className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/20 hover:ring-primary/60 transition-all bg-[#1a1a1a]"
             >
-              {/* Znaki wodne — słowa związane z kategorią */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
-                {watermarkPositions.map((pos, idx) => {
-                  const word = pack.watermarks[idx % pack.watermarks.length];
-                  return (
-                    <span
-                      key={idx}
-                      className="absolute text-primary/10 font-semibold whitespace-nowrap"
-                      style={{
-                        top: pos.top,
-                        left: pos.left,
-                        fontSize: `${pos.size}px`,
-                        transform: `rotate(${pos.rotate}deg)`,
-                        fontFamily: "var(--font-display)",
-                      }}
-                    >
-                      {word}
-                    </span>
-                  );
-                })}
+              {/* Znaki wodne — słowa związane z kategorią, linijka po linijce */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-center pb-12 px-2 gap-1">
+                {pack.watermarks.map((word, idx) => (
+                  <span
+                    key={idx}
+                    className="block text-primary/15 font-bold whitespace-nowrap text-[15px] leading-tight"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {word}
+                  </span>
+                ))}
               </div>
 
               {/* Duża ikona pomarańczowa */}
@@ -153,7 +144,7 @@ export function WordPacksPanel() {
                 <Icon
                   size={88}
                   strokeWidth={1.25}
-                  className="text-primary transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_20px_hsl(var(--primary)/0.4)]"
+                  className="text-primary transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
 
