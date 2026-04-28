@@ -125,14 +125,18 @@ export function WordPacksPanel() {
               transition={{ delay: i * 0.02 }}
               whileTap={{ scale: 0.97 }}
               className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/20 hover:ring-primary/60 transition-all bg-[#1a1a1a]"
+              style={{ containerType: "inline-size" }}
             >
-              {/* Znaki wodne — słowa związane z kategorią, linijka po linijce */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-center pb-12 px-2 gap-1">
+              {/* Znaki wodne — słowa rozłożone po całym tle, każde wypełnia szerokość karty */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-2">
                 {pack.watermarks.map((word, idx) => (
                   <span
                     key={idx}
-                    className="block text-primary/15 font-bold whitespace-nowrap text-[15px] leading-tight"
-                    style={{ fontFamily: "var(--font-display)" }}
+                    className="block text-primary/15 font-bold whitespace-nowrap leading-none w-full text-center"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: `clamp(14px, ${100 / Math.max(word.length, 4)}cqw, 48px)`,
+                    }}
                   >
                     {word}
                   </span>
@@ -147,9 +151,6 @@ export function WordPacksPanel() {
                   className="text-primary transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
-
-              {/* Subtelny gradient u dołu dla czytelności tytułu */}
-              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
 
               {/* Premium badge */}
               {pack.isPremium && (
