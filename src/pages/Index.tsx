@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Bug, Bookmark } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Bug, Bookmark, Brain, BookOpen, Lightbulb, Users, Briefcase, Church, Landmark, Palette, Globe, Heart as HeartIcon, Sparkles } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -50,6 +50,20 @@ import { toast } from "sonner";
 type ViewMode = "all" | "favorites" | "saved";
 
 const RECENT_BUFFER_SIZE = 25;
+
+const categoryIconMap: Record<string, typeof BookOpen> = {
+  all: Sparkles,
+  filozofia: Brain,
+  literatura: BookOpen,
+  psychologia: Lightbulb,
+  ciekawi_ludzie: Users,
+  biznes_finanse: Briefcase,
+  religia: Church,
+  historia: Landmark,
+  sztuka: Palette,
+  ogólne: Globe,
+  własne: HeartIcon,
+};
 
 function getRandomIndex(max: number, recentIndices: Set<number>): number {
   if (max <= 1) return 0;
@@ -426,7 +440,7 @@ const Index = () => {
   const hasSaved = savedCount > 0;
 
   const selectedCategoryLabels = useMemo(() => {
-    if (selectedCategories.includes("all")) return "Wszystkie";
+    if (selectedCategories.includes("all")) return "Wybierz kategorie";
     return selectedCategories
       .map((c) => categories.find((cat) => cat.value === c)?.label || c)
       .join(", ");
@@ -619,24 +633,28 @@ const Index = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute left-4 right-4 top-full z-30 mt-3 rounded-2xl border border-border bg-background/95 p-3 shadow-sm backdrop-blur-sm"
+                  className="absolute left-4 right-4 top-full z-30 mt-3 rounded-2xl border border-border/50 bg-background/40 p-3 shadow-lg backdrop-blur-md"
                 >
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="grid grid-cols-3 gap-2">
                     {visibleCategories.map((cat) => {
                       const isSelected = cat.value === "all"
                         ? selectedCategories.includes("all")
                         : selectedCategories.includes(cat.value);
+                      const Icon = categoryIconMap[cat.value] || BookOpen;
                       return (
                         <button
                           key={cat.value}
                           onClick={() => toggleCategory(cat.value)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                          className={`flex flex-col items-center justify-center gap-1.5 aspect-square rounded-xl p-2 transition-all cursor-pointer ${
                             isSelected
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                              ? "bg-primary/90 text-primary-foreground ring-1 ring-primary shadow-md"
+                              : "bg-secondary/40 text-foreground hover:bg-secondary/70 ring-1 ring-border/40"
                           }`}
                         >
-                          {cat.label}
+                          <Icon size={22} strokeWidth={1.6} className={isSelected ? "" : "text-primary"} />
+                          <span className="text-[10.5px] font-medium leading-tight text-center line-clamp-2">
+                            {cat.label}
+                          </span>
                         </button>
                       );
                     })}
