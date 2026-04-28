@@ -96,18 +96,17 @@ export function WordPacksPanel() {
               whileTap={{ scale: 0.97 }}
               className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-[hsl(24,95%,53%)]/20 hover:ring-[hsl(24,95%,53%)]/60 transition-all"
             >
-              {/* Tło: obrazek */}
+              {/* Tło: ilustracja line-art */}
               <img
                 src={pack.image}
                 alt={pack.label}
                 loading="lazy"
                 width={768}
-                height={576}
+                height={960}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              {/* Gradient na czytelność tekstu + pomarańczowy akcent */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-[hsl(24,95%,53%)]/30 via-transparent to-transparent mix-blend-overlay" />
+              {/* Subtelny gradient u dołu dla czytelności tytułu */}
+              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
               {/* Premium badge */}
               {pack.isPremium && (
@@ -116,11 +115,6 @@ export function WordPacksPanel() {
                   <span className="text-[10px] font-bold uppercase tracking-wide">Premium</span>
                 </div>
               )}
-
-              {/* Ikona w lewym górnym rogu */}
-              <div className="absolute top-2 left-2 w-9 h-9 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
-                <Icon size={18} />
-              </div>
 
               {/* Tytuł */}
               <div className="absolute bottom-0 left-0 right-0 p-3">
