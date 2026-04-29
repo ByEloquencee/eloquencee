@@ -1,0 +1,1 @@
+ALTER TABLE public.static_word_overrides ADD COLUMN IF NOT EXISTS difficulty text;
