@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { BrainCircuit, Sparkles, Zap, Flame, Crown, MousePointerClick, Keyboard, Replace, Heart, Check } from "lucide-react";
+import { BrainCircuit, Sparkles, Zap, Flame, Crown, MousePointerClick, Keyboard, Replace, Heart, Check, Scale } from "lucide-react";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 import type { Folder } from "@/hooks/use-folders";
 import type { DifficultyLevel } from "@/hooks/use-profile";
@@ -13,6 +13,7 @@ interface QuizModeDialogProps {
   onStartQuiz: (source: "favorites" | string, mode: QuizMode) => void;
   onStartRandomQuiz: (difficulty: DifficultyLevel, mode: QuizMode) => void;
   onStartSynonymQuiz: (source: "favorites" | string | "__random__", difficulty?: DifficultyLevel) => void;
+  onStartAntonymQuiz: (source: "favorites" | string | "__random__", difficulty?: DifficultyLevel) => void;
   hasFavorites: boolean;
   folders: Folder[];
 }
@@ -25,7 +26,7 @@ const difficultyOptions: { value: DifficultyLevel; label: string; description: s
 
 type Step = "source" | "packs" | "mode" | "difficulty";
 
-export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, onStartSynonymQuiz, hasFavorites, folders }: QuizModeDialogProps) {
+export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, onStartSynonymQuiz, onStartAntonymQuiz, hasFavorites, folders }: QuizModeDialogProps) {
   const [step, setStep] = useState<Step>("source");
   const [pendingSource, setPendingSource] = useState<string | null>(null);
   const [selectedPacks, setSelectedPacks] = useState<Set<string>>(new Set());
@@ -75,6 +76,15 @@ export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, 
       onStartSynonymQuiz("__random__");
     } else if (pendingSource) {
       onStartSynonymQuiz(pendingSource);
+    }
+    handleClose();
+  };
+
+  const startAntonym = () => {
+    if (pendingSource === "__random__") {
+      onStartAntonymQuiz("__random__");
+    } else if (pendingSource) {
+      onStartAntonymQuiz(pendingSource);
     }
     handleClose();
   };
