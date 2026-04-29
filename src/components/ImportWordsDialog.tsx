@@ -5,6 +5,7 @@ import { categories, type WordCategory } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { estimateDifficulty } from "@/lib/difficulty-heuristic";
 import { toast } from "sonner";
 
 const editableCategories = categories.filter(c => c.value !== "all" && c.value !== "własne");
