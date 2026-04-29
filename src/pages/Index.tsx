@@ -1047,14 +1047,33 @@ const Index = () => {
         onClose={() => setQuizModeOpen(false)}
         onStartQuiz={(source, mode) => {
           setQuizModeOpen(false);
-          if (source === "favorites") {
-            setQuizWords(favoriteWords);
-          } else {
-            const folder = folders.find((f) => f.id === source);
-            if (folder) {
-              setQuizWords(allWords.filter((w) => folder.wordIds.includes(w.id)));
+          const resolveIds = (src: string): string[] => {
+            if (src.startsWith("multi:")) return src.slice(6).split(",").filter(Boolean);
+            return [src];
+          };
+          const collectWords = (src: string): PolishWord[] => {
+            const ids = resolveIds(src);
+            const wordIdSet = new Set<string>();
+            const collected: PolishWord[] = [];
+            for (const id of ids) {
+              if (id === "favorites") {
+                for (const w of favoriteWords) {
+                  if (!wordIdSet.has(w.id)) { wordIdSet.add(w.id); collected.push(w); }
+                }
+              } else {
+                const folder = folders.find((f) => f.id === id);
+                if (folder) {
+                  for (const w of allWords) {
+                    if (folder.wordIds.includes(w.id) && !wordIdSet.has(w.id)) {
+                      wordIdSet.add(w.id); collected.push(w);
+                    }
+                  }
+                }
+              }
             }
-          }
+            return collected;
+          };
+          setQuizWords(collectWords(source));
           setQuizMode(mode);
           setQuizActive(true);
         }}
@@ -1070,10 +1089,26 @@ const Index = () => {
         onStartSynonymQuiz={(source) => {
           setQuizModeOpen(false);
           let pool: PolishWord[];
-          if (source === "favorites") {
-            pool = favoriteWords;
-          } else if (source === "__random__") {
+          if (source === "__random__") {
             pool = [...allWords].sort(() => Math.random() - 0.5).slice(0, 30);
+          } else if (typeof source === "string" && source.startsWith("multi:")) {
+            const ids = source.slice(6).split(",").filter(Boolean);
+            const seen = new Set<string>();
+            pool = [];
+            for (const id of ids) {
+              if (id === "favorites") {
+                for (const w of favoriteWords) if (!seen.has(w.id)) { seen.add(w.id); pool.push(w); }
+              } else {
+                const folder = folders.find((f) => f.id === id);
+                if (folder) {
+                  for (const w of allWords) {
+                    if (folder.wordIds.includes(w.id) && !seen.has(w.id)) { seen.add(w.id); pool.push(w); }
+                  }
+                }
+              }
+            }
+          } else if (source === "favorites") {
+            pool = favoriteWords;
           } else {
             const folder = folders.find((f) => f.id === source);
             pool = folder ? allWords.filter((w) => folder.wordIds.includes(w.id)) : allWords;
