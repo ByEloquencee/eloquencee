@@ -59,6 +59,7 @@ export function EditWordDialog({ open, word, onClose, onSave, showDifficulty = f
         example: form.example.trim(),
         etymology: form.etymology.trim() || null,
         category: form.category,
+        ...(showDifficulty ? { difficulty: form.difficulty } : {}),
       });
       toast.success("Słowo zaktualizowane!");
       onClose();
