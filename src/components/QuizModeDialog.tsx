@@ -245,6 +245,17 @@ export function QuizModeDialog({ open, onClose, onStartQuiz, onStartRandomQuiz, 
             </motion.button>
             <motion.button
               whileTap={{ scale: 0.97 }}
+              onClick={startAntonym}
+              className="flex items-center gap-4 p-4 rounded-xl bg-secondary text-left transition-colors hover:bg-secondary/80 cursor-pointer"
+            >
+              <div className="p-2.5 rounded-lg bg-primary/10 text-primary"><Scale size={22} /></div>
+              <div className="flex-1">
+                <p className="font-semibold text-sm text-foreground">Antonimy</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Wybierz przeciwieństwo na podstawie definicji</p>
+              </div>
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
               onClick={() => setStep(pendingSource === "__random__" ? "source" : "packs")}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-1"
             >
