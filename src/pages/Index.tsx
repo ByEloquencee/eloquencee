@@ -288,6 +288,7 @@ const Index = () => {
           example: override.example || w.example,
           etymology: override.etymology || w.etymology,
           category: (override.category as WordCategory) || w.category,
+          difficulty: (override.difficulty as PolishWord["difficulty"]) || w.difficulty,
         };
       });
 
