@@ -19,51 +19,53 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    if (!words || words.length < 4 || !pool || pool.length < 8) {
+    if (!words || words.length < 4) {
       return new Response(JSON.stringify({ error: "Za mało słów do wygenerowania quizu antonimów." }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     // Limit prompt size
-    const candidatePool = pool.slice(0, 250);
     const focusWords = words.slice(0, 30);
 
     const focusList = focusWords.map((w, i) => `${i}. ${w.word}${w.part_of_speech ? ` (${w.part_of_speech})` : ""} — ${w.definition}`).join("\n");
-    const poolList = candidatePool.map((w) => `- ${w.word}${w.part_of_speech ? ` (${w.part_of_speech})` : ""}`).join("\n");
 
-    const systemPrompt = `Jesteś ekspertem od języka polskiego. Otrzymasz dwie listy:
-1) FOCUS — słowa kandydaci na pytania (z definicjami).
-2) POOL — pełna pula DOSTĘPNYCH słów aplikacji (tylko te wolno użyć jako odpowiedzi i dystraktory).
+    const systemPrompt = `Jesteś ekspertem od języka polskiego. Otrzymasz listę FOCUS — słowa z aplikacji wraz z definicjami.
 
 Twoim zadaniem jest stworzenie do 8 pytań quizowych o ANTONIMY (przeciwieństwa).
 
-ABSOLUTNE ZASADY:
-- Antonim ORAZ wszystkie 3 dystraktory MUSZĄ pochodzić z POOL — zacytuj je dokładnie tak, jak występują w POOL (ta sama pisownia, ta sama forma).
-- NIGDY nie wymyślaj nowych słów. Jeśli dla danego słowa FOCUS nie ma dobrego antonimu w POOL — POMIŃ to słowo.
-- Wszystkie 4 opcje (antonim + 3 dystraktory) MUSZĄ być w IDENTYCZNEJ formie gramatycznej i tej samej części mowy.
-  · Jeżeli antonim to przymiotnik męski l.poj. — wszystkie 4 są przymiotnikami męskimi l.poj.
-  · Jeżeli czasownik w bezokoliczniku — wszystkie 4 są czasownikami w bezokoliczniku.
-  · Jeżeli rzeczownik w mianowniku — wszystkie 4 są rzeczownikami w mianowniku.
-- Opcje powinny być podobnej długości i stylu — poprawna odpowiedź NIE może wyróżniać się wizualnie.
-- Pytanie pokazuje TYLKO definicję pytanego słowa (nie samo słowo). Zapisz słowo w polu question_word, a definicję w question_definition.
-- Każde pytanie MUSI dotyczyć INNEGO słowa.
+JAK MA DZIAŁAĆ PYTANIE:
+- Pokazujemy użytkownikowi DEFINICJĘ słowa z FOCUS (samo słowo jest ukryte).
+- Użytkownik wybiera spośród 4 opcji PRZECIWIEŃSTWO tego słowa.
+- Przykład: słowo "Dywersyfikacja" (definicja: "rozproszenie inwestycji w celu zmniejszenia ryzyka") → poprawna odpowiedź: "Koncentracja", dystraktory: np. "Ekspansja", "Stagnacja", "Akumulacja".
 
-Odpowiedz WYŁĄCZNIE w formacie JSON (bez markdown):
+ZASADY:
+- WYBIERZ ze słów FOCUS tylko te, które mają WYRAŹNY, jednoznaczny antonim w języku polskim. Słowa bez sensownego przeciwieństwa POMIŃ (np. nazwy konkretnych rzeczy, terminy techniczne bez opozycji).
+- Antonim oraz 3 dystraktory WYMYŚLASZ samodzielnie — to mają być prawdziwe, poprawne polskie słowa (NIE muszą występować w aplikacji).
+- Antonim musi być naprawdę przeciwieństwem semantycznym pytanego słowa.
+- Dystraktory MUSZĄ być wiarygodne: tej samej części mowy co antonim, podobne tematycznie/stylistycznie, ale NIE będące przeciwieństwem pytanego słowa. Nie mogą być synonimami pytanego słowa ani jego antonimu.
+- Wszystkie 4 opcje MUSZĄ być w IDENTYCZNEJ formie gramatycznej:
+  · rzeczowniki — wszystkie w mianowniku liczby pojedynczej, ten sam rodzaj jeśli możliwe
+  · przymiotniki — ten sam rodzaj, liczba i przypadek
+  · czasowniki — wszystkie w bezokresoniku (lub wszystkie w tej samej formie osobowej)
+- Opcje powinny być podobnej długości — poprawna odpowiedź NIE może wyróżniać się wizualnie (np. wszystkie 1-słowne, zbliżona liczba znaków).
+- Każde pytanie dotyczy INNEGO słowa z FOCUS.
+
+Odpowiedz WYŁĄCZNIE w formacie JSON (bez markdown, bez komentarzy):
 {
   "questions": [
     {
-      "question_word": "słowo z FOCUS",
-      "question_definition": "definicja tego słowa",
-      "options": ["antonim", "dystraktor1", "dystraktor2", "dystraktor3"],
+      "question_word": "Dywersyfikacja",
+      "question_definition": "rozproszenie inwestycji w celu zmniejszenia ryzyka",
+      "options": ["Koncentracja", "Ekspansja", "Stagnacja", "Akumulacja"],
       "correct": 0,
-      "explanation": "krótkie wyjaśnienie dlaczego to przeciwieństwo"
+      "explanation": "Koncentracja to skupienie zasobów w jednym miejscu — dokładne przeciwieństwo dywersyfikacji."
     }
   ]
 }
 
-correct = indeks (0-3) antonimu w options. Wymieszaj kolejność opcji — antonim NIE zawsze na pozycji 0.
-Zwróć od 4 do 8 pytań — preferuj 8 jeśli da się znaleźć tyle solidnych antonimów w POOL.`;
+correct = indeks (0-3) antonimu w options. Wymieszaj kolejność — antonim NIE zawsze na pozycji 0.
+Zwróć od 4 do 8 pytań (preferuj 8, jeśli FOCUS na to pozwala).`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -75,7 +77,7 @@ Zwróć od 4 do 8 pytań — preferuj 8 jeśli da się znaleźć tyle solidnych 
         model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `FOCUS:\n${focusList}\n\nPOOL (dozwolone słowa):\n${poolList}\n\nWygeneruj pytania o antonimy.` },
+          { role: "user", content: `FOCUS:\n${focusList}\n\nWygeneruj pytania o antonimy zgodnie z zasadami.` },
         ],
       }),
     });
@@ -111,16 +113,18 @@ Zwróć od 4 do 8 pytań — preferuj 8 jeśli da się znaleźć tyle solidnych 
       });
     }
 
-    // Validate: all 4 options MUST exist in pool (case-insensitive match), correct index sane, dedupe
+    // Validate: 4 unique options, valid correct index, non-empty fields, dedupe questions
     const norm = (s: string) => s.trim().toLowerCase();
-    const poolSet = new Set(candidatePool.map((p) => norm(p.word)));
     const seen = new Set<string>();
     const cleaned = result.questions.filter((q) => {
       if (!q || !Array.isArray(q.options) || q.options.length !== 4) return false;
       if (typeof q.correct !== "number" || q.correct < 0 || q.correct > 3) return false;
+      if (!q.question_word?.trim() || !q.question_definition?.trim()) return false;
       const optKeys = q.options.map(norm);
+      if (optKeys.some((o) => !o)) return false;
       if (new Set(optKeys).size !== 4) return false;
-      if (!optKeys.every((o) => poolSet.has(o))) return false;
+      // Antonim nie może być tym samym słowem co pytane
+      if (optKeys[q.correct] === norm(q.question_word)) return false;
       const key = norm(q.question_word);
       if (seen.has(key)) return false;
       seen.add(key);
