@@ -16,13 +16,21 @@ interface EditWordDialogProps {
     example: string;
     etymology: string | null;
     category: string;
+    difficulty?: string;
   }) => Promise<void>;
+  showDifficulty?: boolean;
+  title?: string;
 }
 
 const editableCategories = categories.filter(c => c.value !== "all" && c.value !== "własne");
+const difficultyOptions = [
+  { value: "beginner", label: "Łatwe" },
+  { value: "intermediate", label: "Średnie" },
+  { value: "advanced", label: "Trudne" },
+];
 
-export function EditWordDialog({ open, word, onClose, onSave }: EditWordDialogProps) {
-  const [form, setForm] = useState({ word: "", partOfSpeech: "", definition: "", example: "", etymology: "", category: "własne" });
+export function EditWordDialog({ open, word, onClose, onSave, showDifficulty = false, title = "Edytuj słowo" }: EditWordDialogProps) {
+  const [form, setForm] = useState({ word: "", partOfSpeech: "", definition: "", example: "", etymology: "", category: "własne", difficulty: "advanced" });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
