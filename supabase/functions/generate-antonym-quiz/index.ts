@@ -79,7 +79,7 @@ Zwróć od 4 do 8 pytań (preferuj 8, jeśli FOCUS na to pozwala).`;
         model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `FOCUS:\n${focusList}\n\nPOOL (dozwolone słowa):\n${poolList}\n\nWygeneruj pytania o antonimy.` },
+          { role: "user", content: `FOCUS:\n${focusList}\n\nWygeneruj pytania o antonimy zgodnie z zasadami.` },
         ],
       }),
     });
