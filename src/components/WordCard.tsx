@@ -205,27 +205,6 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                         <EyeOff size={14} />
                       </button>
                     )}
-                      <>
-                        <button
-                          onClick={onEdit}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-                          title="Edytuj"
-                        >
-                          <Pencil size={14} />
-                        </button>
-                        <button
-                          onClick={handleDelete}
-                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                            confirmDelete
-                              ? "bg-destructive text-destructive-foreground"
-                              : "text-muted-foreground hover:text-destructive hover:bg-secondary"
-                          }`}
-                          title={confirmDelete ? "Kliknij ponownie, aby usunąć" : "Usuń"}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </>
-                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
