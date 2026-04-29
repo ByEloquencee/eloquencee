@@ -1040,6 +1040,26 @@ const Index = () => {
         }}
       />
       <EditWordDialog open={!!editingWord} word={editingWord} onClose={() => setEditingWord(null)} onSave={updateWord} />
+      <EditWordDialog
+        open={!!editingStaticWord}
+        word={editingStaticWord}
+        onClose={() => setEditingStaticWord(null)}
+        showDifficulty
+        title="Edytuj słowo (moderator)"
+        onSave={async (wordId, updates) => {
+          await saveOverride({
+            word_id: wordId,
+            word: updates.word,
+            part_of_speech: updates.part_of_speech,
+            definition: updates.definition,
+            example: updates.example,
+            etymology: updates.etymology,
+            category: updates.category,
+            difficulty: updates.difficulty ?? null,
+            updated_by: user?.id ?? null,
+          });
+        }}
+      />
       <OnboardingDialog
         open={showOnboarding}
         name={profile?.name || ""}
