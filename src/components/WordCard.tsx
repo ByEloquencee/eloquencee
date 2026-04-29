@@ -28,6 +28,7 @@ interface WordCardProps {
   externalDragY?: MotionValue<number>;
   onExternalDragEnd?: (offsetY: number) => void;
   onModeratorHide?: () => void;
+  onModeratorEdit?: () => void;
 }
 
 export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd, onModeratorHide }: WordCardProps) {
