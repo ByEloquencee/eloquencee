@@ -81,7 +81,8 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
           ...w,
           part_of_speech: c?.part_of_speech || "rzeczownik",
           category: c?.category || "ogólne",
-          difficulty: c?.difficulty || "advanced",
+          // Heurystyka długość + rzadkość liter (deterministyczna ocena trudności)
+          difficulty: estimateDifficulty(w.word),
         };
       });
     } catch (e) {
@@ -91,7 +92,7 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
         ...w,
         part_of_speech: "rzeczownik",
         category: "ogólne",
-        difficulty: "advanced",
+        difficulty: estimateDifficulty(w.word),
       }));
     } finally {
       setClassifying(false);
