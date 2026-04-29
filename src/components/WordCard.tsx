@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence, type MotionValue } from "framer-motion";
-import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2, ChevronUp, Bookmark } from "lucide-react";
+import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2, ChevronUp, Bookmark, EyeOff } from "lucide-react";
 import type { PolishWord } from "@/data/words";
 import { getFolderIcon } from "@/components/CreateFolderDialog";
 
@@ -27,11 +27,13 @@ interface WordCardProps {
   difficultyLevel?: DifficultyLevel;
   externalDragY?: MotionValue<number>;
   onExternalDragEnd?: (offsetY: number) => void;
+  onModeratorHide?: () => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd, onModeratorHide }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmHide, setConfirmHide] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [zenMode, setZenMode] = useState(false);
   
@@ -182,6 +184,26 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                           <Trash2 size={14} />
                         </button>
                       </>
+                    )}
+                    {!isCustom && onModeratorHide && (
+                      <button
+                        onClick={() => {
+                          if (!confirmHide) {
+                            setConfirmHide(true);
+                            return;
+                          }
+                          onModeratorHide();
+                          setConfirmHide(false);
+                        }}
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          confirmHide
+                            ? "bg-destructive text-destructive-foreground"
+                            : "text-muted-foreground hover:text-destructive hover:bg-secondary"
+                        }`}
+                        title={confirmHide ? "Kliknij ponownie, aby ukryć słowo" : "Ukryj słowo (moderator)"}
+                      >
+                        <EyeOff size={14} />
+                      </button>
                     )}
                   </motion.div>
                 )}
