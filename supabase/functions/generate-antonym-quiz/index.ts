@@ -26,11 +26,9 @@ serve(async (req) => {
     }
 
     // Limit prompt size
-    const candidatePool = pool.slice(0, 250);
     const focusWords = words.slice(0, 30);
 
     const focusList = focusWords.map((w, i) => `${i}. ${w.word}${w.part_of_speech ? ` (${w.part_of_speech})` : ""} — ${w.definition}`).join("\n");
-    const poolList = candidatePool.map((w) => `- ${w.word}${w.part_of_speech ? ` (${w.part_of_speech})` : ""}`).join("\n");
 
     const systemPrompt = `Jesteś ekspertem od języka polskiego. Otrzymasz listę FOCUS — słowa z aplikacji wraz z definicjami.
 
