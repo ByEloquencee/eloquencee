@@ -20,6 +20,7 @@ import { FlashcardTypingView } from "@/components/FlashcardTypingView";
 import { useFlashcardSets, type FlashcardSet } from "@/hooks/use-flashcard-sets";
 import { ShareWordDialog } from "@/components/ShareWordDialog";
 import { SynonymQuizView } from "@/components/SynonymQuizView";
+import { AntonymQuizView } from "@/components/AntonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
@@ -169,6 +170,8 @@ const Index = () => {
   
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
+  const [antonymQuizActive, setAntonymQuizActive] = useState(false);
+  const [antonymQuizWords, setAntonymQuizWords] = useState<PolishWord[]>([]);
   const [forceSpider, setForceSpider] = useState(false);
   const [sliderWidth, setSliderWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 400);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -213,7 +216,7 @@ const Index = () => {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [studySet, typingSet, quizActive, synonymQuizActive]);
+  }, [studySet, typingSet, quizActive, synonymQuizActive, antonymQuizActive]);
 
   // After returning from fullscreen, immediately set position then snap
   useEffect(() => {
@@ -227,7 +230,7 @@ const Index = () => {
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, [quizActive, studySet, typingSet, synonymQuizActive]);
+  }, [quizActive, studySet, typingSet, synonymQuizActive, antonymQuizActive]);
 
   // Snap slider whenever page or width changes
   useEffect(() => {
@@ -473,6 +476,17 @@ const Index = () => {
       <SynonymQuizView
         words={synonymQuizWords}
         onExit={() => { setSynonymQuizActive(false); setActivePage(1); }}
+        onComplete={(correctCount) => addMastered(correctCount)}
+      />
+    );
+  }
+
+  if (antonymQuizActive) {
+    return (
+      <AntonymQuizView
+        words={antonymQuizWords}
+        allWords={allWords}
+        onExit={() => { setAntonymQuizActive(false); setActivePage(1); }}
         onComplete={(correctCount) => addMastered(correctCount)}
       />
     );
@@ -1138,6 +1152,36 @@ const Index = () => {
           }
           setSynonymQuizWords(pool.length >= 8 ? pool : allWords);
           setSynonymQuizActive(true);
+        }}
+        onStartAntonymQuiz={(source) => {
+          setQuizModeOpen(false);
+          let pool: PolishWord[];
+          if (source === "__random__") {
+            pool = [...allWords].sort(() => Math.random() - 0.5).slice(0, 30);
+          } else if (typeof source === "string" && source.startsWith("multi:")) {
+            const ids = source.slice(6).split(",").filter(Boolean);
+            const seen = new Set<string>();
+            pool = [];
+            for (const id of ids) {
+              if (id === "favorites") {
+                for (const w of favoriteWords) if (!seen.has(w.id)) { seen.add(w.id); pool.push(w); }
+              } else {
+                const folder = folders.find((f) => f.id === id);
+                if (folder) {
+                  for (const w of allWords) {
+                    if (folder.wordIds.includes(w.id) && !seen.has(w.id)) { seen.add(w.id); pool.push(w); }
+                  }
+                }
+              }
+            }
+          } else if (source === "favorites") {
+            pool = favoriteWords;
+          } else {
+            const folder = folders.find((f) => f.id === source);
+            pool = folder ? allWords.filter((w) => folder.wordIds.includes(w.id)) : allWords;
+          }
+          setAntonymQuizWords(pool.length >= 4 ? pool : allWords);
+          setAntonymQuizActive(true);
         }}
         hasFavorites={hasEnoughForQuiz}
         folders={folders}
