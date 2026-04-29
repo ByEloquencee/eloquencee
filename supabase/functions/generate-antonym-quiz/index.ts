@@ -115,16 +115,18 @@ Zwróć od 4 do 8 pytań (preferuj 8, jeśli FOCUS na to pozwala).`;
       });
     }
 
-    // Validate: all 4 options MUST exist in pool (case-insensitive match), correct index sane, dedupe
+    // Validate: 4 unique options, valid correct index, non-empty fields, dedupe questions
     const norm = (s: string) => s.trim().toLowerCase();
-    const poolSet = new Set(candidatePool.map((p) => norm(p.word)));
     const seen = new Set<string>();
     const cleaned = result.questions.filter((q) => {
       if (!q || !Array.isArray(q.options) || q.options.length !== 4) return false;
       if (typeof q.correct !== "number" || q.correct < 0 || q.correct > 3) return false;
+      if (!q.question_word?.trim() || !q.question_definition?.trim()) return false;
       const optKeys = q.options.map(norm);
+      if (optKeys.some((o) => !o)) return false;
       if (new Set(optKeys).size !== 4) return false;
-      if (!optKeys.every((o) => poolSet.has(o))) return false;
+      // Antonim nie może być tym samym słowem co pytane
+      if (optKeys[q.correct] === norm(q.question_word)) return false;
       const key = norm(q.question_word);
       if (seen.has(key)) return false;
       seen.add(key);
