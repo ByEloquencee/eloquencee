@@ -164,7 +164,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                     >
                       <Lightbulb size={14} />
                     </button>
-                    {isCustom && (
+                    {revealed && isCustom && (
                       <>
                         <button
                           onClick={onEdit}
@@ -186,7 +186,16 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                         </button>
                       </>
                     )}
-                    {!isCustom && onModeratorHide && (
+                    {revealed && !isCustom && onModeratorEdit && (
+                      <button
+                        onClick={onModeratorEdit}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                        title="Edytuj słowo (moderator)"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                    )}
+                    {revealed && !isCustom && onModeratorHide && (
                       <button
                         onClick={() => {
                           if (!confirmHide) {
