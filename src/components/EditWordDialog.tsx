@@ -42,6 +42,7 @@ export function EditWordDialog({ open, word, onClose, onSave, showDifficulty = f
         example: word.example,
         etymology: word.etymology || "",
         category: word.category,
+        difficulty: (word.difficulty as string) || "advanced",
       });
     }
   }, [word]);
