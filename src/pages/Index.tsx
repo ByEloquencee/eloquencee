@@ -916,6 +916,7 @@ const Index = () => {
                         toast.error("Nie udało się ukryć słowa");
                       }
                     } : undefined}
+                    onModeratorEdit={isModerator && !currentWord.id.startsWith("custom-") ? () => setEditingStaticWord(currentWord) : undefined}
                     difficultyLevel={profile?.difficulty_level || "advanced"}
                     externalDragY={cardDragY}
                     onExternalDragEnd={completeExternalCardSwipe}
