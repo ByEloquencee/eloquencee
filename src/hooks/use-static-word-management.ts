@@ -9,6 +9,7 @@ export interface StaticWordOverride {
   example?: string | null;
   etymology?: string | null;
   category?: string | null;
+  difficulty?: string | null;
 }
 
 export function useStaticWordManagement() {

@@ -5,6 +5,7 @@ import { categories, type WordCategory } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { estimateDifficulty } from "@/lib/difficulty-heuristic";
 import { toast } from "sonner";
 
 const editableCategories = categories.filter(c => c.value !== "all" && c.value !== "własne");
@@ -80,7 +81,8 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
           ...w,
           part_of_speech: c?.part_of_speech || "rzeczownik",
           category: c?.category || "ogólne",
-          difficulty: c?.difficulty || "advanced",
+          // Heurystyka długość + rzadkość liter (deterministyczna ocena trudności)
+          difficulty: estimateDifficulty(w.word),
         };
       });
     } catch (e) {
@@ -90,7 +92,7 @@ export function ImportWordsDialog({ open, onClose }: ImportWordsDialogProps) {
         ...w,
         part_of_speech: "rzeczownik",
         category: "ogólne",
-        difficulty: "advanced",
+        difficulty: estimateDifficulty(w.word),
       }));
     } finally {
       setClassifying(false);

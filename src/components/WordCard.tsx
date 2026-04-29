@@ -28,9 +28,10 @@ interface WordCardProps {
   externalDragY?: MotionValue<number>;
   onExternalDragEnd?: (offsetY: number) => void;
   onModeratorHide?: () => void;
+  onModeratorEdit?: () => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd, onModeratorHide }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd, onModeratorHide, onModeratorEdit }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmHide, setConfirmHide] = useState(false);
@@ -163,7 +164,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                     >
                       <Lightbulb size={14} />
                     </button>
-                    {isCustom && (
+                    {revealed && isCustom && (
                       <>
                         <button
                           onClick={onEdit}
@@ -185,7 +186,16 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                         </button>
                       </>
                     )}
-                    {!isCustom && onModeratorHide && (
+                    {revealed && !isCustom && onModeratorEdit && (
+                      <button
+                        onClick={onModeratorEdit}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                        title="Edytuj słowo (moderator)"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                    )}
+                    {revealed && !isCustom && onModeratorHide && (
                       <button
                         onClick={() => {
                           if (!confirmHide) {

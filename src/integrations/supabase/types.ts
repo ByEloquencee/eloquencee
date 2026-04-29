@@ -299,6 +299,7 @@ export type Database = {
           category: string | null
           created_at: string
           definition: string | null
+          difficulty: string | null
           etymology: string | null
           example: string | null
           id: string
@@ -311,6 +312,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           definition?: string | null
+          difficulty?: string | null
           etymology?: string | null
           example?: string | null
           id?: string
@@ -323,6 +325,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           definition?: string | null
+          difficulty?: string | null
           etymology?: string | null
           example?: string | null
           id?: string

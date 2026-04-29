@@ -110,7 +110,7 @@ const Index = () => {
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
-  const { hiddenIds, overrides, hideWord } = useStaticWordManagement();
+  const { hiddenIds, overrides, hideWord, saveOverride } = useStaticWordManagement();
   const { isPremium, loading: subLoading } = useSubscription();
   const [premiumOpen, setPremiumOpen] = useState(false);
 
@@ -154,6 +154,7 @@ const Index = () => {
   const [typingSet, setTypingSet] = useState<FlashcardSet | null>(null);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
+  const [editingStaticWord, setEditingStaticWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [quizModeOpen, setQuizModeOpen] = useState(false);
   const [suggestWordOpen, setSuggestWordOpen] = useState(false);
@@ -288,6 +289,7 @@ const Index = () => {
           example: override.example || w.example,
           etymology: override.etymology || w.etymology,
           category: (override.category as WordCategory) || w.category,
+          difficulty: (override.difficulty as PolishWord["difficulty"]) || w.difficulty,
         };
       });
 
@@ -914,6 +916,7 @@ const Index = () => {
                         toast.error("Nie udało się ukryć słowa");
                       }
                     } : undefined}
+                    onModeratorEdit={isModerator && !currentWord.id.startsWith("custom-") ? () => setEditingStaticWord(currentWord) : undefined}
                     difficultyLevel={profile?.difficulty_level || "advanced"}
                     externalDragY={cardDragY}
                     onExternalDragEnd={completeExternalCardSwipe}
@@ -1037,6 +1040,26 @@ const Index = () => {
         }}
       />
       <EditWordDialog open={!!editingWord} word={editingWord} onClose={() => setEditingWord(null)} onSave={updateWord} />
+      <EditWordDialog
+        open={!!editingStaticWord}
+        word={editingStaticWord}
+        onClose={() => setEditingStaticWord(null)}
+        showDifficulty
+        title="Edytuj słowo (moderator)"
+        onSave={async (wordId, updates) => {
+          await saveOverride({
+            word_id: wordId,
+            word: updates.word,
+            part_of_speech: updates.part_of_speech,
+            definition: updates.definition,
+            example: updates.example,
+            etymology: updates.etymology,
+            category: updates.category,
+            difficulty: updates.difficulty ?? null,
+            updated_by: user?.id ?? null,
+          });
+        }}
+      />
       <OnboardingDialog
         open={showOnboarding}
         name={profile?.name || ""}

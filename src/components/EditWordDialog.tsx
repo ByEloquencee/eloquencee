@@ -16,13 +16,21 @@ interface EditWordDialogProps {
     example: string;
     etymology: string | null;
     category: string;
+    difficulty?: string;
   }) => Promise<void>;
+  showDifficulty?: boolean;
+  title?: string;
 }
 
 const editableCategories = categories.filter(c => c.value !== "all" && c.value !== "własne");
+const difficultyOptions = [
+  { value: "beginner", label: "Łatwe" },
+  { value: "intermediate", label: "Średnie" },
+  { value: "advanced", label: "Trudne" },
+];
 
-export function EditWordDialog({ open, word, onClose, onSave }: EditWordDialogProps) {
-  const [form, setForm] = useState({ word: "", partOfSpeech: "", definition: "", example: "", etymology: "", category: "własne" });
+export function EditWordDialog({ open, word, onClose, onSave, showDifficulty = false, title = "Edytuj słowo" }: EditWordDialogProps) {
+  const [form, setForm] = useState({ word: "", partOfSpeech: "", definition: "", example: "", etymology: "", category: "własne", difficulty: "advanced" });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -34,6 +42,7 @@ export function EditWordDialog({ open, word, onClose, onSave }: EditWordDialogPr
         example: word.example,
         etymology: word.etymology || "",
         category: word.category,
+        difficulty: (word.difficulty as string) || "advanced",
       });
     }
   }, [word]);
@@ -50,6 +59,7 @@ export function EditWordDialog({ open, word, onClose, onSave }: EditWordDialogPr
         example: form.example.trim(),
         etymology: form.etymology.trim() || null,
         category: form.category,
+        ...(showDifficulty ? { difficulty: form.difficulty } : {}),
       });
       toast.success("Słowo zaktualizowane!");
       onClose();
@@ -82,7 +92,7 @@ export function EditWordDialog({ open, word, onClose, onSave }: EditWordDialogPr
         >
           <div className="flex items-center justify-between p-5 border-b border-border">
             <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-              Edytuj słowo
+              {title}
             </h2>
             <button onClick={onClose} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
               <X size={18} />
@@ -101,6 +111,13 @@ export function EditWordDialog({ open, word, onClose, onSave }: EditWordDialogPr
                 <option key={c.value} value={c.value}>{c.label}</option>
               ))}
             </select>
+            {showDifficulty && (
+              <select value={form.difficulty} onChange={(e) => setForm(f => ({ ...f, difficulty: e.target.value }))} className={inputClass}>
+                {difficultyOptions.map(d => (
+                  <option key={d.value} value={d.value}>Trudność: {d.label}</option>
+                ))}
+              </select>
+            )}
 
             <button
               type="submit"
