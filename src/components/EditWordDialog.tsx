@@ -92,7 +92,7 @@ export function EditWordDialog({ open, word, onClose, onSave, showDifficulty = f
         >
           <div className="flex items-center justify-between p-5 border-b border-border">
             <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-              Edytuj słowo
+              {title}
             </h2>
             <button onClick={onClose} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
               <X size={18} />
