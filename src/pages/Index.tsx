@@ -905,6 +905,15 @@ const Index = () => {
                       else decrementProgress();
                     }}
                     onShare={() => setShareOpen(true)}
+                    onModeratorHide={isModerator && !currentWord.id.startsWith("custom-") ? async () => {
+                      try {
+                        await hideWord(currentWord.id, user?.id);
+                        toast.success("Słowo ukryte z aplikacji");
+                        handleNext();
+                      } catch {
+                        toast.error("Nie udało się ukryć słowa");
+                      }
+                    } : undefined}
                     difficultyLevel={profile?.difficulty_level || "advanced"}
                     externalDragY={cardDragY}
                     onExternalDragEnd={completeExternalCardSwipe}
