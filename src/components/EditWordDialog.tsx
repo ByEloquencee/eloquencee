@@ -111,6 +111,13 @@ export function EditWordDialog({ open, word, onClose, onSave, showDifficulty = f
                 <option key={c.value} value={c.value}>{c.label}</option>
               ))}
             </select>
+            {showDifficulty && (
+              <select value={form.difficulty} onChange={(e) => setForm(f => ({ ...f, difficulty: e.target.value }))} className={inputClass}>
+                {difficultyOptions.map(d => (
+                  <option key={d.value} value={d.value}>Trudność: {d.label}</option>
+                ))}
+              </select>
+            )}
 
             <button
               type="submit"
