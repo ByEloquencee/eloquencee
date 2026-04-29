@@ -154,6 +154,7 @@ const Index = () => {
   const [typingSet, setTypingSet] = useState<FlashcardSet | null>(null);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [editingWord, setEditingWord] = useState<PolishWord | null>(null);
+  const [editingStaticWord, setEditingStaticWord] = useState<PolishWord | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [quizModeOpen, setQuizModeOpen] = useState(false);
   const [suggestWordOpen, setSuggestWordOpen] = useState(false);
