@@ -19,7 +19,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    if (!words || words.length < 4 || !pool || pool.length < 8) {
+    if (!words || words.length < 4) {
       return new Response(JSON.stringify({ error: "Za mało słów do wygenerowania quizu antonimów." }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
