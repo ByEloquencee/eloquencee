@@ -64,30 +64,19 @@ const premiumPacksMeta: Omit<WordPack, "count" | "watermarks">[] = [
   { id: "sport", label: "Sport", icon: Trophy, isPremium: true },
 ];
 
-// Deterministyczny hash z id, żeby pozycje były stałe per paczka
-function hash(str: string, seed = 0): number {
-  let h = seed;
-  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
-  return h;
-}
-
-// Generuje ~15 pozycji znaków wodnych w różnych konfiguracjach (deterministycznie)
-function generateWatermarkPositions(packId: string, count: number) {
-  const positions: { top: string; left: string; rotate: number; size: number; opacity: number }[] = [];
-  for (let i = 0; i < count; i++) {
-    const h1 = hash(packId, i * 7 + 3);
-    const h2 = hash(packId, i * 11 + 5);
-    const h3 = hash(packId, i * 13 + 9);
-    const h4 = hash(packId, i * 17 + 1);
-    positions.push({
-      top: `${(h1 % 90) + 2}%`,
-      left: `${(h2 % 75) + 2}%`,
-      rotate: ((h3 % 41) - 20), // -20°..+20°
-      size: 9 + (h4 % 6),       // 9..14 px
-      opacity: 0.5 + ((h1 % 50) / 100), // 0.5..1.0 mnożnik dodatkowy
-    });
+// Bierze pierwszych ~15 słów i powtarza je, żeby wypełnić linijki tła
+function buildWatermarkPool(words: string[], poolSize = 15): string[] {
+  if (words.length === 0) return [];
+  const unique: string[] = [];
+  const seen = new Set<string>();
+  for (const w of words) {
+    const k = w.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    unique.push(w);
+    if (unique.length >= poolSize) break;
   }
-  return positions;
+  return unique;
 }
 
 export function WordPacksPanel() {
