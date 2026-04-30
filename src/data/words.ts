@@ -1,4 +1,4 @@
-export type WordCategory = "filozofia" | "literatura" | "ogólne" | "psychologia" | "ciekawi_ludzie" | "biznes_finanse" | "religia" | "historia" | "sztuka" | "własne";
+export type WordCategory = "filozofia" | "literatura" | "ogólne" | "psychologia" | "ciekawi_ludzie" | "biznes_finanse" | "religia" | "historia" | "sztuka" | "medycyna" | "własne";
 
 export interface PolishWord {
   id: string;
@@ -21,6 +21,7 @@ export const categories: { value: WordCategory | "all"; label: string }[] = [
   { value: "religia", label: "Religia" },
   { value: "historia", label: "Historia" },
   { value: "sztuka", label: "Sztuka" },
+  { value: "medycyna", label: "Medycyna" },
   { value: "ogólne", label: "Ogólne" },
   { value: "własne", label: "Własne" },
 ];
