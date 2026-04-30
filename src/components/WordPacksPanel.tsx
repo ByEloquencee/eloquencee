@@ -53,6 +53,7 @@ const categoryWatermarks: Record<string, string[]> = {
   historia: ["epoka", "rewolucja", "dynastia", "traktat", "imperium"],
   sztuka: ["barok", "kolaż", "fresk", "akwarela", "rzeźba", "perspektywa"],
   ogólne: ["słowo", "język", "kultura", "myśl", "idea", "świat"],
+  medycyna: ["diagnoza", "terapia", "objaw", "zabieg", "anatomia", "leczenie"],
   własne: ["notatka", "własne", "moje", "kolekcja"],
   showbiznes: ["gala", "celebryta", "premiera", "skandal", "wywiad"],
   muzyka: ["harmonia", "rytm", "melodia", "akord", "tonacja", "fraza"],
