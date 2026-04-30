@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useMemo } from "react";
 import {
   Crown,
   BookOpen,
@@ -18,7 +19,8 @@ import {
   Lightbulb,
   Stethoscope,
 } from "lucide-react";
-import { categories } from "@/data/words";
+import { categories, words as staticWords } from "@/data/words";
+import { useGlobalWords } from "@/hooks/use-global-words";
 
 interface WordPack {
   id: string;
@@ -43,68 +45,90 @@ const categoryIcons: Record<string, typeof BookOpen> = {
   własne: Heart,
 };
 
-const categoryWatermarks: Record<string, string[]> = {
-  filozofia: ["byt", "logos", "etyka", "sens", "dusza", "rozum"],
-  literatura: ["wiersz", "proza", "metafora", "epika", "sonet", "narracja"],
-  psychologia: ["empatia", "afekt", "trauma", "ego", "nawyk", "lęk"],
-  ciekawi_ludzie: ["geniusz", "wizjoner", "ikona", "mentor", "buntownik"],
-  biznes_finanse: ["kapitał", "inwestycja", "ryzyko", "zysk", "rynek", "audyt"],
-  religia: ["sacrum", "rytuał", "modlitwa", "wiara", "łaska", "kult"],
-  historia: ["epoka", "rewolucja", "dynastia", "traktat", "imperium"],
-  sztuka: ["barok", "kolaż", "fresk", "akwarela", "rzeźba", "perspektywa"],
-  ogólne: ["słowo", "język", "kultura", "myśl", "idea", "świat"],
-  medycyna: ["diagnoza", "terapia", "objaw", "zabieg", "anatomia", "leczenie"],
-  własne: ["notatka", "własne", "moje", "kolekcja"],
-  showbiznes: ["gala", "celebryta", "premiera", "skandal", "wywiad"],
-  muzyka: ["harmonia", "rytm", "melodia", "akord", "tonacja", "fraza"],
-  archaizmy: ["azaliż", "snadź", "wszelako", "tedy", "albowiem"],
-  nauka: ["hipoteza", "atom", "teoria", "synteza", "kwant", "dowód"],
-  sport: ["finał", "rekord", "trener", "drużyna", "puchar", "taktyka"],
+// Fallbacki dla paczek premium (jeszcze nie mają słów w bazie)
+const fallbackWatermarks: Record<string, string[]> = {
+  showbiznes: ["gala", "celebryta", "premiera", "skandal", "wywiad", "paparazzi", "rampa", "fame"],
+  muzyka: ["harmonia", "rytm", "melodia", "akord", "tonacja", "fraza", "kontrapunkt", "tempo"],
+  archaizmy: ["azaliż", "snadź", "wszelako", "tedy", "albowiem", "zaiste", "jeno", "atoli"],
+  nauka: ["hipoteza", "atom", "teoria", "synteza", "kwant", "dowód", "entropia", "izotop"],
+  sport: ["finał", "rekord", "trener", "drużyna", "puchar", "taktyka", "transfer", "kontuzja"],
+  medycyna: ["diagnoza", "terapia", "objaw", "zabieg", "anatomia", "leczenie", "remisja", "patogen"],
+  własne: ["notatka", "własne", "moje", "kolekcja", "prywatne", "zbiór"],
 };
 
-const premiumPacksMeta: Omit<WordPack, "count">[] = [
-  { id: "showbiznes", label: "Show-biznes", icon: Film, isPremium: true, watermarks: categoryWatermarks.showbiznes },
-  { id: "muzyka", label: "Muzyka", icon: Music, isPremium: true, watermarks: categoryWatermarks.muzyka },
-  { id: "archaizmy", label: "Archaizmy", icon: Scroll, isPremium: true, watermarks: categoryWatermarks.archaizmy },
-  { id: "nauka", label: "Nauka", icon: FlaskConical, isPremium: true, watermarks: categoryWatermarks.nauka },
-  { id: "sport", label: "Sport", icon: Trophy, isPremium: true, watermarks: categoryWatermarks.sport },
+const premiumPacksMeta: Omit<WordPack, "count" | "watermarks">[] = [
+  { id: "showbiznes", label: "Show-biznes", icon: Film, isPremium: true },
+  { id: "muzyka", label: "Muzyka", icon: Music, isPremium: true },
+  { id: "archaizmy", label: "Archaizmy", icon: Scroll, isPremium: true },
+  { id: "nauka", label: "Nauka", icon: FlaskConical, isPremium: true },
+  { id: "sport", label: "Sport", icon: Trophy, isPremium: true },
 ];
 
-// Deterministyczny "random" na podstawie id, żeby liczba nie zmieniała się przy re-renderach
-function pseudoCount(id: string): number {
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
-  return 18 + (h % 83); // 18–100
+// Deterministyczny hash z id, żeby pozycje były stałe per paczka
+function hash(str: string, seed = 0): number {
+  let h = seed;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
 }
 
-// Pozycje znaków wodnych — stałe, żeby się nie skakały
-const watermarkPositions = [
-  { top: "8%", left: "6%", rotate: -12, size: 11 },
-  { top: "14%", left: "62%", rotate: 8, size: 10 },
-  { top: "32%", left: "4%", rotate: -6, size: 9 },
-  { top: "38%", left: "70%", rotate: 14, size: 12 },
-  { top: "56%", left: "10%", rotate: -10, size: 10 },
-  { top: "60%", left: "58%", rotate: 6, size: 11 },
-];
+// Generuje ~15 pozycji znaków wodnych w różnych konfiguracjach (deterministycznie)
+function generateWatermarkPositions(packId: string, count: number) {
+  const positions: { top: string; left: string; rotate: number; size: number; opacity: number }[] = [];
+  for (let i = 0; i < count; i++) {
+    const h1 = hash(packId, i * 7 + 3);
+    const h2 = hash(packId, i * 11 + 5);
+    const h3 = hash(packId, i * 13 + 9);
+    const h4 = hash(packId, i * 17 + 1);
+    positions.push({
+      top: `${(h1 % 90) + 2}%`,
+      left: `${(h2 % 75) + 2}%`,
+      rotate: ((h3 % 41) - 20), // -20°..+20°
+      size: 9 + (h4 % 6),       // 9..14 px
+      opacity: 0.5 + ((h1 % 50) / 100), // 0.5..1.0 mnożnik dodatkowy
+    });
+  }
+  return positions;
+}
 
 export function WordPacksPanel() {
-  const basePacks: WordPack[] = categories
-    .filter((c) => c.value !== "all")
-    .map((c) => ({
-      id: c.value,
-      label: c.label,
-      icon: categoryIcons[c.value] || BookOpen,
-      isPremium: false,
-      watermarks: categoryWatermarks[c.value] || ["słowo", "język", "myśl"],
-      count: pseudoCount(c.value),
+  const { asPolishWords } = useGlobalWords();
+
+  const packs = useMemo<WordPack[]>(() => {
+    // Połącz słowa statyczne z bazy danych
+    const allWords = [...staticWords, ...asPolishWords];
+    const byCategory = new Map<string, string[]>();
+    for (const w of allWords) {
+      if (!w.category) continue;
+      const arr = byCategory.get(w.category) || [];
+      arr.push(w.word);
+      byCategory.set(w.category, arr);
+    }
+
+    const basePacks: WordPack[] = categories
+      .filter((c) => c.value !== "all")
+      .map((c) => {
+        const wordsInCat = byCategory.get(c.value) || [];
+        const watermarks = wordsInCat.length > 0
+          ? wordsInCat
+          : (fallbackWatermarks[c.value] || ["słowo", "język", "myśl"]);
+        return {
+          id: c.value,
+          label: c.label,
+          icon: categoryIcons[c.value] || BookOpen,
+          isPremium: false,
+          watermarks,
+          count: wordsInCat.length,
+        };
+      });
+
+    const premiumPacks: WordPack[] = premiumPacksMeta.map((p) => ({
+      ...p,
+      watermarks: fallbackWatermarks[p.id] || ["słowo"],
+      count: 0,
     }));
 
-  const premiumPacks: WordPack[] = premiumPacksMeta.map((p) => ({
-    ...p,
-    count: pseudoCount(p.id),
-  }));
-
-  const allPacks = [...basePacks, ...premiumPacks];
+    return [...basePacks, ...premiumPacks];
+  }, [asPolishWords]);
 
   return (
     <div className="w-full max-w-lg space-y-4 pb-4">
@@ -118,8 +142,10 @@ export function WordPacksPanel() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {allPacks.map((pack, i) => {
+        {packs.map((pack, i) => {
           const Icon = pack.icon;
+          const positions = generateWatermarkPositions(pack.id, 15);
+
           return (
             <motion.button
               key={pack.id}
@@ -127,27 +153,34 @@ export function WordPacksPanel() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.02 }}
               whileTap={{ scale: 0.97 }}
-              className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/20 hover:ring-primary/60 transition-all bg-[#1a1a1a]"
-              style={{ containerType: "inline-size" }}
+              className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/15 hover:ring-primary/40 transition-all bg-[#1a1a1a]"
             >
-              {/* Znaki wodne — wiele słów w linijce, wypełniają całą szerokość karty */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-1.5 px-1.5 gap-1">
-                {Array.from({ length: 13 }).map((_, rowIdx) => {
-                  const repeated = Array.from({ length: 6 }, (_, i) => pack.watermarks[(rowIdx + i) % pack.watermarks.length]).join(" · ");
+              {/* Znaki wodne — ~15 słów w różnych konfiguracjach (rotacja, rozmiar, pozycja) */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+                {positions.map((pos, idx) => {
+                  const word = pack.watermarks[idx % pack.watermarks.length];
+                  if (!word) return null;
                   return (
                     <span
-                      key={rowIdx}
-                      className="block text-primary/15 font-bold whitespace-nowrap leading-none w-full text-[11px]"
-                      style={{ fontFamily: "var(--font-display)" }}
+                      key={idx}
+                      className="absolute whitespace-nowrap font-semibold leading-none text-primary"
+                      style={{
+                        top: pos.top,
+                        left: pos.left,
+                        transform: `rotate(${pos.rotate}deg)`,
+                        fontSize: `${pos.size}px`,
+                        fontFamily: "var(--font-display)",
+                        opacity: 0.07 * pos.opacity, // znacznie mniejszy kontrast (~0.035–0.07)
+                      }}
                     >
-                      {repeated}
+                      {word}
                     </span>
                   );
                 })}
               </div>
 
               {/* Duża ikona pomarańczowa */}
-              <div className="absolute inset-0 flex items-center justify-center pb-12">
+              <div className="absolute inset-0 flex items-center justify-center pb-14">
                 <Icon
                   size={88}
                   strokeWidth={1.25}
@@ -163,15 +196,15 @@ export function WordPacksPanel() {
                 </div>
               )}
 
-              {/* Tytuł + licznik */}
+              {/* Tytuł + licznik — większa nazwa kategorii */}
               <div className="absolute bottom-0 left-0 right-0 p-3">
                 <span
-                  className="block text-white text-base font-bold leading-tight drop-shadow-md"
+                  className="block text-white text-xl font-bold leading-tight drop-shadow-md"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {pack.label}
                 </span>
-                <div className="mt-1 flex items-center gap-2">
+                <div className="mt-1.5 flex items-center gap-2">
                   <div className="h-0.5 w-8 bg-primary rounded-full" />
                   <span className="text-[11px] font-semibold text-primary/90">
                     {pack.count} słów
