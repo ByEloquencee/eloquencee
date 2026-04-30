@@ -39,6 +39,7 @@ const categoryIcons: Record<string, typeof BookOpen> = {
   historia: Landmark,
   sztuka: Palette,
   ogólne: Globe,
+  medycyna: Stethoscope,
   własne: Heart,
 };
 
