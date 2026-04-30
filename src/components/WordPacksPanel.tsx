@@ -16,6 +16,7 @@ import {
   Globe,
   Heart,
   Lightbulb,
+  Stethoscope,
 } from "lucide-react";
 import { categories } from "@/data/words";
 
