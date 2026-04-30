@@ -64,30 +64,19 @@ const premiumPacksMeta: Omit<WordPack, "count" | "watermarks">[] = [
   { id: "sport", label: "Sport", icon: Trophy, isPremium: true },
 ];
 
-// Deterministyczny hash z id, żeby pozycje były stałe per paczka
-function hash(str: string, seed = 0): number {
-  let h = seed;
-  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
-  return h;
-}
-
-// Generuje ~15 pozycji znaków wodnych w różnych konfiguracjach (deterministycznie)
-function generateWatermarkPositions(packId: string, count: number) {
-  const positions: { top: string; left: string; rotate: number; size: number; opacity: number }[] = [];
-  for (let i = 0; i < count; i++) {
-    const h1 = hash(packId, i * 7 + 3);
-    const h2 = hash(packId, i * 11 + 5);
-    const h3 = hash(packId, i * 13 + 9);
-    const h4 = hash(packId, i * 17 + 1);
-    positions.push({
-      top: `${(h1 % 90) + 2}%`,
-      left: `${(h2 % 75) + 2}%`,
-      rotate: ((h3 % 41) - 20), // -20°..+20°
-      size: 9 + (h4 % 6),       // 9..14 px
-      opacity: 0.5 + ((h1 % 50) / 100), // 0.5..1.0 mnożnik dodatkowy
-    });
+// Bierze pierwszych ~15 słów i powtarza je, żeby wypełnić linijki tła
+function buildWatermarkPool(words: string[], poolSize = 15): string[] {
+  if (words.length === 0) return [];
+  const unique: string[] = [];
+  const seen = new Set<string>();
+  for (const w of words) {
+    const k = w.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    unique.push(w);
+    if (unique.length >= poolSize) break;
   }
-  return positions;
+  return unique;
 }
 
 export function WordPacksPanel() {
@@ -144,7 +133,8 @@ export function WordPacksPanel() {
       <div className="grid grid-cols-2 gap-3">
         {packs.map((pack, i) => {
           const Icon = pack.icon;
-          const positions = generateWatermarkPositions(pack.id, 15);
+          const pool = buildWatermarkPool(pack.watermarks, 15);
+          const rows = 14;
 
           return (
             <motion.button
@@ -155,28 +145,28 @@ export function WordPacksPanel() {
               whileTap={{ scale: 0.97 }}
               className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/15 hover:ring-primary/40 transition-all bg-[#1a1a1a]"
             >
-              {/* Znaki wodne — ~15 słów w różnych konfiguracjach (rotacja, rozmiar, pozycja) */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
-                {positions.map((pos, idx) => {
-                  const word = pack.watermarks[idx % pack.watermarks.length];
-                  if (!word) return null;
-                  return (
-                    <span
-                      key={idx}
-                      className="absolute whitespace-nowrap font-semibold leading-none text-primary"
-                      style={{
-                        top: pos.top,
-                        left: pos.left,
-                        transform: `rotate(${pos.rotate}deg)`,
-                        fontSize: `${pos.size}px`,
-                        fontFamily: "var(--font-display)",
-                        opacity: 0.07 * pos.opacity, // znacznie mniejszy kontrast (~0.035–0.07)
-                      }}
-                    >
-                      {word}
-                    </span>
-                  );
-                })}
+              {/* Znaki wodne — równe linijki, ~15 słów powtarzanych w kółko */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-2 px-1">
+                {pool.length > 0 &&
+                  Array.from({ length: rows }).map((_, rowIdx) => {
+                    const lineWords: string[] = [];
+                    for (let k = 0; k < 6; k++) {
+                      lineWords.push(pool[(rowIdx * 3 + k) % pool.length]);
+                    }
+                    return (
+                      <div
+                        key={rowIdx}
+                        className="whitespace-nowrap text-primary font-semibold leading-none"
+                        style={{
+                          fontSize: "11px",
+                          fontFamily: "var(--font-display)",
+                          opacity: 0.06,
+                        }}
+                      >
+                        {lineWords.join("  ·  ")}
+                      </div>
+                    );
+                  })}
               </div>
 
               {/* Duża ikona pomarańczowa */}
