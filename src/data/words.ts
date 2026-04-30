@@ -21,6 +21,7 @@ export const categories: { value: WordCategory | "all"; label: string }[] = [
   { value: "religia", label: "Religia" },
   { value: "historia", label: "Historia" },
   { value: "sztuka", label: "Sztuka" },
+  { value: "medycyna", label: "Medycyna" },
   { value: "ogólne", label: "Ogólne" },
   { value: "własne", label: "Własne" },
 ];
