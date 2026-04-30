@@ -1,4 +1,4 @@
-export type WordCategory = "filozofia" | "literatura" | "ogólne" | "psychologia" | "ciekawi_ludzie" | "biznes_finanse" | "religia" | "historia" | "sztuka" | "własne";
+export type WordCategory = "filozofia" | "literatura" | "ogólne" | "psychologia" | "ciekawi_ludzie" | "biznes_finanse" | "religia" | "historia" | "sztuka" | "medycyna" | "własne";
 
 export interface PolishWord {
   id: string;
