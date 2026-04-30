@@ -133,7 +133,8 @@ export function WordPacksPanel() {
       <div className="grid grid-cols-2 gap-3">
         {packs.map((pack, i) => {
           const Icon = pack.icon;
-          const positions = generateWatermarkPositions(pack.id, 15);
+          const pool = buildWatermarkPool(pack.watermarks, 15);
+          const rows = 14;
 
           return (
             <motion.button
@@ -144,28 +145,28 @@ export function WordPacksPanel() {
               whileTap={{ scale: 0.97 }}
               className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/15 hover:ring-primary/40 transition-all bg-[#1a1a1a]"
             >
-              {/* Znaki wodne — ~15 słów w różnych konfiguracjach (rotacja, rozmiar, pozycja) */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
-                {positions.map((pos, idx) => {
-                  const word = pack.watermarks[idx % pack.watermarks.length];
-                  if (!word) return null;
-                  return (
-                    <span
-                      key={idx}
-                      className="absolute whitespace-nowrap font-semibold leading-none text-primary"
-                      style={{
-                        top: pos.top,
-                        left: pos.left,
-                        transform: `rotate(${pos.rotate}deg)`,
-                        fontSize: `${pos.size}px`,
-                        fontFamily: "var(--font-display)",
-                        opacity: 0.07 * pos.opacity, // znacznie mniejszy kontrast (~0.035–0.07)
-                      }}
-                    >
-                      {word}
-                    </span>
-                  );
-                })}
+              {/* Znaki wodne — równe linijki, ~15 słów powtarzanych w kółko */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-2 px-1">
+                {pool.length > 0 &&
+                  Array.from({ length: rows }).map((_, rowIdx) => {
+                    const lineWords: string[] = [];
+                    for (let k = 0; k < 6; k++) {
+                      lineWords.push(pool[(rowIdx * 3 + k) % pool.length]);
+                    }
+                    return (
+                      <div
+                        key={rowIdx}
+                        className="whitespace-nowrap text-primary font-semibold leading-none"
+                        style={{
+                          fontSize: "11px",
+                          fontFamily: "var(--font-display)",
+                          opacity: 0.06,
+                        }}
+                      >
+                        {lineWords.join("  ·  ")}
+                      </div>
+                    );
+                  })}
               </div>
 
               {/* Duża ikona pomarańczowa */}
