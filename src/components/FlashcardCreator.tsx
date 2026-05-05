@@ -45,7 +45,7 @@ export function FlashcardCreator({ onCreateSet, sets, onDeleteSet, onStudySet, o
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col"
           >
-            <div className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between">
+            <div className="w-full max-w-lg mx-auto px-4 pb-4 flex items-center justify-between pt-[max(2rem,env(safe-area-inset-top))]">
               <h2 className="text-xl font-semibold" style={{ fontFamily: "var(--font-display)" }}>
                 Moje fiszki ({sets.length})
               </h2>
