@@ -94,7 +94,7 @@ export function WordPacksPanel() {
     }
 
     const basePacks: WordPack[] = categories
-      .filter((c) => c.value !== "all")
+      .filter((c) => c.value !== "all" && c.value !== "ciekawi_ludzie")
       .map((c) => {
         const wordsInCat = byCategory.get(c.value) || [];
         const watermarks = wordsInCat.length > 0
