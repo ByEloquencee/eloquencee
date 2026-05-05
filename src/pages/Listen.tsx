@@ -260,7 +260,7 @@ export default function Listen() {
   return (
     <div className="h-dvh w-full bg-background text-foreground flex flex-col overflow-hidden">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 pb-3 flex-shrink-0 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <button
           onClick={handleBack}
           className="p-2 -ml-2 rounded-lg hover:bg-secondary transition-colors cursor-pointer"
