@@ -208,7 +208,7 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="w-full max-w-lg mx-auto px-4 pt-8 pb-4 flex items-center justify-between">
+      <header className="w-full max-w-lg mx-auto px-4 pb-4 flex items-center justify-between pt-[max(2rem,env(safe-area-inset-top))]">
         <button
           onClick={onExit}
           className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
