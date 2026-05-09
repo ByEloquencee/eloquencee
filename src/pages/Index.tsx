@@ -851,7 +851,17 @@ const Index = () => {
                         Paczki słów
                       </button>
                     </div>
-                    {moderatorView === "admin" ? <AdminPanel /> : <WordPacksPanel />}
+                    {moderatorView === "admin" ? <AdminPanel /> : (
+                      <WordPacksPanel
+                        onSelectPack={(catId) => {
+                          setViewMode("all");
+                          setActiveFolderId(null);
+                          setSelectedCategories([catId as WordCategory]);
+                          setCurrentIndex(0);
+                          switchPage(1);
+                        }}
+                      />
+                    )}
                   </div>
                 ) : (
                   <div
