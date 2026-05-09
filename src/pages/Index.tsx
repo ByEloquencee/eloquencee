@@ -1046,6 +1046,23 @@ const Index = () => {
         masteredCount={masteredCount}
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
+      <AnimatePresence>
+        {islandPack && (
+          <IslandLevelsPanel
+            title={islandPack.label}
+            totalLevels={15}
+            onClose={() => setIslandPack(null)}
+            onSelectLevel={() => {
+              setViewMode("all");
+              setActiveFolderId(null);
+              setSelectedCategories([islandPack.id as WordCategory]);
+              setCurrentIndex(0);
+              setIslandPack(null);
+              switchPage(1);
+            }}
+          />
+        )}
+      </AnimatePresence>
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <PlusMenuDialog
         open={plusMenuOpen}
