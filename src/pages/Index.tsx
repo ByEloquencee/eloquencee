@@ -649,10 +649,10 @@ const Index = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute left-4 right-4 top-full z-30 mt-3 rounded-2xl border border-border/50 bg-background/40 p-3 shadow-lg backdrop-blur-md"
+                  className="absolute left-4 right-4 top-full z-30 mt-3 rounded-2xl border border-border/40 bg-background/70 px-2 py-1 shadow-lg backdrop-blur-md"
                 >
-                  <div className="grid grid-cols-3 gap-2">
-                    {visibleCategories.map((cat) => {
+                  <div className="flex flex-col">
+                    {visibleCategories.map((cat, idx) => {
                       const isSelected = cat.value === "all"
                         ? selectedCategories.includes("all")
                         : selectedCategories.includes(cat.value);
@@ -661,16 +661,26 @@ const Index = () => {
                         <button
                           key={cat.value}
                           onClick={() => toggleCategory(cat.value)}
-                          className={`flex flex-col items-center justify-center gap-1.5 aspect-square rounded-xl p-2 transition-all cursor-pointer ${
-                            isSelected
-                              ? "bg-primary/90 text-primary-foreground ring-1 ring-primary shadow-md"
-                              : "bg-secondary/40 text-foreground hover:bg-secondary/70 ring-1 ring-border/40"
+                          className={`group flex items-center gap-3 px-3 py-3 text-left transition-colors cursor-pointer ${
+                            idx !== visibleCategories.length - 1 ? "border-b border-border/30" : ""
                           }`}
                         >
-                          <Icon size={22} strokeWidth={1.6} className={isSelected ? "" : "text-primary"} />
-                          <span className="text-[10.5px] font-medium leading-tight text-center line-clamp-2">
+                          <Icon
+                            size={16}
+                            strokeWidth={1.6}
+                            className={isSelected ? "text-primary" : "text-muted-foreground"}
+                          />
+                          <span
+                            className={`flex-1 text-[15px] tracking-wide transition-colors ${
+                              isSelected ? "text-foreground" : "text-muted-foreground"
+                            }`}
+                            style={{ fontFamily: "var(--font-display)" }}
+                          >
                             {cat.label}
                           </span>
+                          {isSelected && (
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                          )}
                         </button>
                       );
                     })}
