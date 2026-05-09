@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Instagram, Mail } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Bar,
   BarChart,
@@ -44,9 +44,45 @@ const HOUR_OPTIONS = Array.from({ length: 16 }, (_, i) => i + 6); // 6:00 - 21:0
 
 export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed, weekData = [], weekFavData = [], weekViewData = [], streak = 0, masteredCount = 0 }: StatsPanelProps) {
   const [notifOpen, setNotifOpen] = useState(false);
+  const [demo, setDemo] = useState<null | {
+    todayCount: number; totalFavorites: number; totalViewed: number;
+    streak: number; masteredCount: number; weekViewData: DayRecord[];
+  }>(null);
 
-  const displayData = weekViewData.length > 0
-    ? weekViewData
+  useEffect(() => {
+    const handler = () => {
+      const days: DayRecord[] = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        return { date: d.toISOString().slice(0, 10), count: Math.floor(Math.random() * 14) + 1 };
+      });
+      setDemo({
+        todayCount: Math.floor(Math.random() * 8) + 3,
+        totalFavorites: Math.floor(Math.random() * 80) + 40,
+        totalViewed: Math.floor(Math.random() * 300) + 150,
+        streak: Math.floor(Math.random() * 20) + 5,
+        masteredCount: Math.floor(Math.random() * 60) + 20,
+        weekViewData: days,
+      });
+    };
+    const reset = () => setDemo(null);
+    window.addEventListener("eloquencee:demo-stats", handler);
+    window.addEventListener("eloquencee:demo-stats-reset", reset);
+    return () => {
+      window.removeEventListener("eloquencee:demo-stats", handler);
+      window.removeEventListener("eloquencee:demo-stats-reset", reset);
+    };
+  }, []);
+
+  const effTodayCount = demo?.todayCount ?? todayCount;
+  const effTotalFavorites = demo?.totalFavorites ?? totalFavorites;
+  const effTotalViewed = demo?.totalViewed ?? totalViewed;
+  const effStreak = demo?.streak ?? streak;
+  const effMasteredCount = demo?.masteredCount ?? masteredCount;
+  const effWeekViewData = demo?.weekViewData ?? weekViewData;
+
+  const displayData = effWeekViewData.length > 0
+    ? effWeekViewData
     : Array.from({ length: 7 }, (_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - (6 - i));
@@ -62,7 +98,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
   const weeklyTotal = displayData.reduce((s, d) => s + d.count, 0);
   const avgDaily = Math.round(weeklyTotal / 7 * 10) / 10;
   const monthProjection = Math.round(avgDaily * 30);
-  const goalPercent = Math.min((todayCount / dailyGoal) * 100, 100);
+  const goalPercent = Math.min((effTodayCount / dailyGoal) * 100, 100);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -91,9 +127,9 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">Seria</span>
               </div>
-              <p className="text-3xl font-bold text-foreground">{streak}</p>
+              <p className="text-3xl font-bold text-foreground">{effStreak}</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                {streak === 1 ? "dzień" : "dni z rzędu"}
+                {effStreak === 1 ? "dzień" : "dni z rzędu"}
               </p>
             </div>
             <div className="rounded-2xl bg-card border border-border p-4">
@@ -104,7 +140,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 <span className="text-xs text-muted-foreground font-medium">Dziś</span>
               </div>
               <p className="text-3xl font-bold">
-                <span className="text-foreground">{todayCount}</span>
+                <span className="text-foreground">{effTodayCount}</span>
                 <span className="text-base text-muted-foreground font-normal">/{dailyGoal}</span>
               </p>
               <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
@@ -199,9 +235,9 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
           {/* Summary stats */}
           <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 mb-3">
             {[
-              { icon: BookOpen, value: masteredCount, label: "Nauczone" },
+              { icon: BookOpen, value: effMasteredCount, label: "Nauczone" },
               { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
-              { icon: Eye, value: totalViewed, label: "Przejrzane" },
+              { icon: Eye, value: effTotalViewed, label: "Przejrzane" },
             ].map(({ icon: Icon, value, label }) => (
               <div key={label} className="rounded-2xl bg-card border border-border p-3 text-center">
                 <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
