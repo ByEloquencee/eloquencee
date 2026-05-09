@@ -159,7 +159,9 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
                   toast.info("Ta paczka będzie wkrótce dostępna");
                 }
               }}
-              className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/15 hover:ring-primary/40 transition-all bg-[#1a1a1a]"
+              className={`relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/15 hover:ring-primary/40 transition-all bg-[#1a1a1a] ${
+                ENABLED_PACKS.has(pack.id) ? "" : "opacity-55 grayscale-[0.4]"
+              }`}
             >
               {/* Znaki wodne — równe linijki, ~15 słów powtarzanych w kółko */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-2 px-1">
