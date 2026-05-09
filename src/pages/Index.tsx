@@ -24,6 +24,7 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
+import { IslandLevelsPanel } from "@/components/IslandLevelsPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
@@ -167,6 +168,7 @@ const Index = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
+  const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
   
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
@@ -854,11 +856,9 @@ const Index = () => {
                     {moderatorView === "admin" ? <AdminPanel /> : (
                       <WordPacksPanel
                         onSelectPack={(catId) => {
-                          setViewMode("all");
-                          setActiveFolderId(null);
-                          setSelectedCategories([catId as WordCategory]);
-                          setCurrentIndex(0);
-                          switchPage(1);
+                          if (catId === "filozofia") {
+                            setIslandPack({ id: catId, label: "Filozofia" });
+                          }
                         }}
                       />
                     )}
@@ -871,11 +871,9 @@ const Index = () => {
                   >
                     <WordPacksPanel
                       onSelectPack={(catId) => {
-                        setViewMode("all");
-                        setActiveFolderId(null);
-                        setSelectedCategories([catId as WordCategory]);
-                        setCurrentIndex(0);
-                        switchPage(1);
+                        if (catId === "filozofia") {
+                          setIslandPack({ id: catId, label: "Filozofia" });
+                        }
                       }}
                     />
                   </div>
@@ -1049,6 +1047,23 @@ const Index = () => {
         masteredCount={masteredCount}
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
+      <AnimatePresence>
+        {islandPack && (
+          <IslandLevelsPanel
+            title={islandPack.label}
+            totalLevels={15}
+            onClose={() => setIslandPack(null)}
+            onSelectLevel={() => {
+              setViewMode("all");
+              setActiveFolderId(null);
+              setSelectedCategories([islandPack.id as WordCategory]);
+              setCurrentIndex(0);
+              setIslandPack(null);
+              switchPage(1);
+            }}
+          />
+        )}
+      </AnimatePresence>
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <PlusMenuDialog
         open={plusMenuOpen}
