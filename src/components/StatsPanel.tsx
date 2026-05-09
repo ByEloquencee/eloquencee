@@ -140,7 +140,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 <span className="text-xs text-muted-foreground font-medium">Dziś</span>
               </div>
               <p className="text-3xl font-bold">
-                <span className="text-foreground">{todayCount}</span>
+                <span className="text-foreground">{effTodayCount}</span>
                 <span className="text-base text-muted-foreground font-normal">/{dailyGoal}</span>
               </p>
               <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
