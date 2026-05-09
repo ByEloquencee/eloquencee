@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Instagram, Mail } from "lucide-react";
 import { useState } from "react";
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
+  Cell,
   CartesianGrid,
-  Line,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
