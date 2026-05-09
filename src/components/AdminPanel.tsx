@@ -357,6 +357,17 @@ export function AdminPanel() {
           <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
             Panel moderatora
           </h2>
+          <button
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("eloquencee:demo-stats"));
+              toast.success("Wstrzyknięto losowe statystyki — otwórz panel statystyk");
+            }}
+            className="ml-auto flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary text-xs font-medium text-secondary-foreground hover:bg-accent transition-colors cursor-pointer"
+            title="Wypełnij panel statystyk losowymi danymi (podgląd)"
+          >
+            <Shuffle size={12} />
+            Random statystyki
+          </button>
         </div>
 
         {/* Tabs */}
