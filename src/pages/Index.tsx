@@ -651,6 +651,12 @@ const Index = () => {
                   transition={{ duration: 0.2 }}
                   className="absolute left-4 right-4 top-full z-30 mt-3 rounded-2xl border border-border/40 bg-background/70 px-2 py-1 shadow-lg backdrop-blur-md"
                 >
+                  <p
+                    className="px-3 pt-3 pb-2 text-[13px] italic text-muted-foreground"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    Wybierz kategorie, z których chcesz się uczyć
+                  </p>
                   <div className="flex flex-col">
                     {visibleCategories.map((cat, idx) => {
                       const isSelected = cat.value === "all"
