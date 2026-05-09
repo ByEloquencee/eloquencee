@@ -150,6 +150,15 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.02 }}
               whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                if (ENABLED_PACKS.has(pack.id)) {
+                  onSelectPack?.(pack.id);
+                } else if (pack.isPremium) {
+                  toast.info("Paczka Premium — wkrótce dostępna");
+                } else {
+                  toast.info("Ta paczka będzie wkrótce dostępna");
+                }
+              }}
               className="relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/15 hover:ring-primary/40 transition-all bg-[#1a1a1a]"
             >
               {/* Znaki wodne — równe linijki, ~15 słów powtarzanych w kółko */}
