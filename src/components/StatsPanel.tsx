@@ -133,14 +133,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
 
             <div className="h-36 -ml-2 mt-2">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
-                  <defs>
-                    <linearGradient id="weeklyChartFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0.25} />
-                      <stop offset="60%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0.08} />
-                      <stop offset="100%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+                <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 4 }} barCategoryGap="20%">
                   <CartesianGrid stroke="hsl(var(--border))" strokeOpacity={0.25} vertical={false} strokeDasharray="3 3" />
                   <XAxis
                     dataKey="day"
@@ -150,7 +143,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                     dy={4}
                   />
                   <YAxis
-                    domain={[-0.5, WEEKLY_CHART_MAX]}
+                    domain={[0, WEEKLY_CHART_MAX]}
                     ticks={[0, 5, 10, 15]}
                     tickLine={false}
                     axisLine={false}
@@ -172,7 +165,7 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                     />
                   )}
                   <Tooltip
-                    cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1 }}
+                    cursor={{ fill: "hsl(var(--border))", fillOpacity: 0.15 }}
                     content={({ active, payload, label }) => {
                       if (active && payload?.length) {
                         return (
@@ -186,25 +179,19 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                       return null;
                     }}
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="none"
-                    fill="url(#weeklyChartFill)"
-                    isAnimationActive
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="hsl(25, 95%, 53%)"
-                    strokeWidth={3}
-                    strokeLinecap="round"
-                    dot={{ r: 4, strokeWidth: 2.5, stroke: "hsl(25, 95%, 53%)", fill: "hsl(var(--card))" }}
-                    activeDot={{ r: 6, strokeWidth: 2.5, stroke: "hsl(25, 95%, 53%)", fill: "hsl(25, 95%, 53%)" }}
-                    isAnimationActive
-                    connectNulls
-                  />
-                </AreaChart>
+                  <Bar dataKey="value" radius={[6, 6, 2, 2]} isAnimationActive>
+                    {chartData.map((entry, i) => {
+                      // Vary orange shades based on value intensity
+                      const intensity = Math.min(entry.value / WEEKLY_CHART_MAX, 1);
+                      const lightness = 65 - intensity * 20; // 65% -> 45%
+                      const saturation = 85 + intensity * 10; // 85 -> 95
+                      const color = entry.value === 0
+                        ? "hsl(25, 30%, 35%)"
+                        : `hsl(${20 + i * 2}, ${saturation}%, ${lightness}%)`;
+                      return <Cell key={i} fill={color} />;
+                    })}
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
