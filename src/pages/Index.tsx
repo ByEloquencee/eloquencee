@@ -167,6 +167,7 @@ const Index = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
+  const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
   
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
