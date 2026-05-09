@@ -235,9 +235,9 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
           {/* Summary stats */}
           <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 mb-3">
             {[
-              { icon: BookOpen, value: masteredCount, label: "Nauczone" },
+              { icon: BookOpen, value: effMasteredCount, label: "Nauczone" },
               { icon: TrendingUp, value: avgDaily, label: "Śr. dziennie" },
-              { icon: Eye, value: totalViewed, label: "Przejrzane" },
+              { icon: Eye, value: effTotalViewed, label: "Przejrzane" },
             ].map(({ icon: Icon, value, label }) => (
               <div key={label} className="rounded-2xl bg-card border border-border p-3 text-center">
                 <div className="inline-flex p-1.5 rounded-lg bg-secondary mb-1.5">
