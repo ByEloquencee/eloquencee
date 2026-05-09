@@ -80,7 +80,13 @@ function buildWatermarkPool(words: string[], poolSize = 15): string[] {
   return unique;
 }
 
-export function WordPacksPanel() {
+interface WordPacksPanelProps {
+  onSelectPack?: (categoryId: string) => void;
+}
+
+const ENABLED_PACKS = new Set(["filozofia"]);
+
+export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
   const { asPolishWords } = useGlobalWords();
 
   const packs = useMemo<WordPack[]>(() => {
