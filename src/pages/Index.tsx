@@ -851,7 +851,17 @@ const Index = () => {
                         Paczki słów
                       </button>
                     </div>
-                    {moderatorView === "admin" ? <AdminPanel /> : <WordPacksPanel />}
+                    {moderatorView === "admin" ? <AdminPanel /> : (
+                      <WordPacksPanel
+                        onSelectPack={(catId) => {
+                          setViewMode("all");
+                          setActiveFolderId(null);
+                          setSelectedCategories([catId as WordCategory]);
+                          setCurrentIndex(0);
+                          switchPage(1);
+                        }}
+                      />
+                    )}
                   </div>
                 ) : (
                   <div
@@ -859,7 +869,15 @@ const Index = () => {
                     className="w-full max-w-lg h-full overflow-y-auto px-1 pt-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
                   >
-                    <WordPacksPanel />
+                    <WordPacksPanel
+                      onSelectPack={(catId) => {
+                        setViewMode("all");
+                        setActiveFolderId(null);
+                        setSelectedCategories([catId as WordCategory]);
+                        setCurrentIndex(0);
+                        switchPage(1);
+                      }}
+                    />
                   </div>
                 )}
               </div>
