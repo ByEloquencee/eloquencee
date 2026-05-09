@@ -127,9 +127,9 @@ export function StatsPanel({ todayCount, dailyGoal, totalFavorites, totalViewed,
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">Seria</span>
               </div>
-              <p className="text-3xl font-bold text-foreground">{streak}</p>
+              <p className="text-3xl font-bold text-foreground">{effStreak}</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                {streak === 1 ? "dzień" : "dni z rzędu"}
+                {effStreak === 1 ? "dzień" : "dni z rzędu"}
               </p>
             </div>
             <div className="rounded-2xl bg-card border border-border p-4">
