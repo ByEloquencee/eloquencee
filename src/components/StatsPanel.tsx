@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Flame, Target, BookOpen, TrendingUp, Eye, Bell, Instagram, Mail } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Bar,
   BarChart,
