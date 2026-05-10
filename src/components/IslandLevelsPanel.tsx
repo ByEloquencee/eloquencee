@@ -170,7 +170,7 @@ export function IslandLevelsPanel({
                   </span>
                 </div>
                 <span
-                  className="mt-1 text-white/90 text-[12px] font-semibold text-center leading-tight px-1"
+                  className="mt-2 text-white/95 text-[14px] font-semibold text-center leading-tight px-1"
                   style={{
                     fontFamily: "var(--font-display)",
                     textShadow: "0 1px 4px rgba(0,0,0,0.9)",
