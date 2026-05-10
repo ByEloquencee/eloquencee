@@ -44,7 +44,7 @@ export function IslandLevelsPanel({
     return Array.from({ length: total }, (_, i) => total - i);
   }, [total]);
 
-  const cellVh = 26; // wysokość komórki w jednostkach dvh
+  const cellVh = 34; // wysokość komórki w jednostkach dvh
   const totalHeight = `calc(${total} * ${cellVh}dvh)`;
 
   // Buduj ścieżkę SVG przez wszystkie środki wysp (od dołu — poziom 1 — do góry)
