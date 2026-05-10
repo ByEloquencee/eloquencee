@@ -159,7 +159,7 @@ export function IslandLevelsPanel({
                     }}
                   />
                   <span
-                    className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold pointer-events-none"
+                    className="absolute inset-0 flex items-center justify-center text-white text-4xl font-bold pointer-events-none"
                     style={{
                       fontFamily: "var(--font-display)",
                       textShadow: "0 2px 6px rgba(0,0,0,0.85)",
