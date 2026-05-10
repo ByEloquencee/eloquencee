@@ -44,7 +44,7 @@ export function IslandLevelsPanel({
     return Array.from({ length: total }, (_, i) => total - i);
   }, [total]);
 
-  const cellVh = 34; // wysokość komórki w jednostkach dvh
+  const cellVh = 26; // wysokość komórki w jednostkach dvh
   const totalHeight = `calc(${total} * ${cellVh}dvh)`;
 
   // Buduj ścieżkę SVG przez wszystkie środki wysp (od dołu — poziom 1 — do góry)
@@ -144,7 +144,7 @@ export function IslandLevelsPanel({
                 style={{
                   top: `calc(${topPct}% + ${cellVh / 2}dvh)`,
                   left: `${xPct}%`,
-                  width: "72%",
+                  width: "44%",
                   transform: "translate(-50%, -50%)",
                 }}
               >
@@ -159,7 +159,7 @@ export function IslandLevelsPanel({
                     }}
                   />
                   <span
-                    className="absolute inset-0 flex items-center justify-center text-white text-4xl font-bold pointer-events-none"
+                    className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold pointer-events-none"
                     style={{
                       fontFamily: "var(--font-display)",
                       textShadow: "0 2px 6px rgba(0,0,0,0.85)",
@@ -170,7 +170,7 @@ export function IslandLevelsPanel({
                   </span>
                 </div>
                 <span
-                  className="mt-2 text-white/95 text-[14px] font-semibold text-center leading-tight px-1"
+                  className="mt-1 text-white/90 text-[12px] font-semibold text-center leading-tight px-1"
                   style={{
                     fontFamily: "var(--font-display)",
                     textShadow: "0 1px 4px rgba(0,0,0,0.9)",
