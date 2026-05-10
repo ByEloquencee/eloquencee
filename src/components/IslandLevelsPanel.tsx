@@ -144,7 +144,7 @@ export function IslandLevelsPanel({
                 style={{
                   top: `calc(${topPct}% + ${cellVh / 2}dvh)`,
                   left: `${xPct}%`,
-                  width: "44%",
+                  width: "72%",
                   transform: "translate(-50%, -50%)",
                 }}
               >
