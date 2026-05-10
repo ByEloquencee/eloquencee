@@ -1051,7 +1051,18 @@ const Index = () => {
         {islandPack && (
           <IslandLevelsPanel
             title={islandPack.label}
-            totalLevels={15}
+            levels={
+              islandPack.id === "filozofia"
+                ? [
+                    "Starożytność",
+                    "Średniowiecze",
+                    "Renesans",
+                    "Nowożytność",
+                    "Filozofia XIX wieku",
+                    "Filozofia XX wieku",
+                  ]
+                : undefined
+            }
             onClose={() => setIslandPack(null)}
             onSelectLevel={() => {
               setViewMode("all");
