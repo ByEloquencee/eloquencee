@@ -9,115 +9,116 @@ interface ForestLevelsPanelProps {
   onSelectLevel: (level: number) => void;
 }
 
-// ─── Minimalistyczne grafiki leśne (SVG) ───
-const FOREST_PALETTE = {
-  trunk: "hsl(var(--foreground) / 0.55)",
-  leaf: "hsl(var(--primary) / 0.55)",
-  leafSoft: "hsl(var(--primary) / 0.35)",
-  ground: "hsl(var(--foreground) / 0.25)",
-};
+// ─── Proste, niesymetryczne grafiki (jednokolorowy outline) ───
+const INK = "hsl(var(--foreground) / 0.5)";
+const INK_SOFT = "hsl(var(--foreground) / 0.32)";
 
-function PineTree({ size = 56, opacity = 1 }: { size?: number; opacity?: number }) {
+function PineTree({ size = 50 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" style={{ opacity }}>
-      <polygon points="32,8 48,32 16,32" fill={FOREST_PALETTE.leaf} />
-      <polygon points="32,20 50,44 14,44" fill={FOREST_PALETTE.leafSoft} />
-      <rect x="29" y="44" width="6" height="10" fill={FOREST_PALETTE.trunk} rx="1" />
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+      <path
+        d="M30 8 L20 28 L26 28 L17 44 L26 44 L19 56 L43 56 L37 44 L46 44 L38 28 L43 28 Z"
+        stroke={INK}
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function Bush({ size = 40, opacity = 1 }: { size?: number; opacity?: number }) {
+function Bush({ size = 36 }: { size?: number }) {
   return (
-    <svg width={size} height={size * 0.7} viewBox="0 0 64 44" style={{ opacity }}>
-      <ellipse cx="20" cy="28" rx="14" ry="12" fill={FOREST_PALETTE.leafSoft} />
-      <ellipse cx="42" cy="26" rx="16" ry="14" fill={FOREST_PALETTE.leaf} />
-      <ellipse cx="32" cy="22" rx="12" ry="10" fill={FOREST_PALETTE.leafSoft} />
+    <svg width={size} height={size * 0.7} viewBox="0 0 64 44" fill="none">
+      <path
+        d="M6 36 Q4 22 16 20 Q20 8 32 12 Q42 6 50 16 Q62 18 58 32 Q56 38 50 38 L10 38 Z"
+        stroke={INK}
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function Mushroom({ size = 28, opacity = 1 }: { size?: number; opacity?: number }) {
+function Mushroom({ size = 24 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" style={{ opacity }}>
-      <path d="M4 16 Q4 6 16 6 Q28 6 28 16 Z" fill={FOREST_PALETTE.leaf} />
-      <circle cx="12" cy="12" r="1.5" fill="hsl(var(--background))" />
-      <circle cx="20" cy="11" r="1" fill="hsl(var(--background))" />
-      <rect x="13" y="16" width="6" height="10" fill={FOREST_PALETTE.trunk} rx="1" />
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+      <path d="M5 16 Q6 7 17 7 Q27 8 28 16 Z" stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M14 16 L13 26 Q16 28 19 26 L18 16" stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function Stick({ size = 36, opacity = 1, rotate = 0 }: { size?: number; opacity?: number; rotate?: number }) {
+function Stick({ size = 40 }: { size?: number }) {
   return (
-    <svg width={size} height={size * 0.4} viewBox="0 0 48 20" style={{ opacity, transform: `rotate(${rotate}deg)` }}>
-      <line x1="4" y1="14" x2="44" y2="6" stroke={FOREST_PALETTE.trunk} strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="20" y1="9" x2="26" y2="2" stroke={FOREST_PALETTE.trunk} strokeWidth="1.5" strokeLinecap="round" />
+    <svg width={size} height={size * 0.45} viewBox="0 0 48 22" fill="none">
+      <path d="M3 16 L44 5" stroke={INK} strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M22 11 L29 4" stroke={INK} strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
 
-function Pebble({ size = 16, opacity = 1 }: { size?: number; opacity?: number }) {
+function Pebble({ size = 18 }: { size?: number }) {
   return (
-    <svg width={size} height={size * 0.6} viewBox="0 0 32 20" style={{ opacity }}>
-      <ellipse cx="16" cy="12" rx="14" ry="6" fill={FOREST_PALETTE.ground} />
+    <svg width={size} height={size * 0.55} viewBox="0 0 32 18" fill="none">
+      <path
+        d="M4 13 Q3 4 14 5 Q26 4 28 11 Q24 16 14 15 Q6 16 4 13 Z"
+        stroke={INK_SOFT}
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-// Deterministyczne dekoracje wokół poziomu (na podstawie numeru)
-function decorationsForLevel(lvl: number, isRight: boolean) {
-  // Prosta hash-funkcja pseudo-random, ale stabilna
+function LeafCluster({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 32 22" fill="none">
+      <path d="M4 18 Q2 8 12 6 Q16 14 8 18" stroke={INK} strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M18 18 Q20 6 28 8 Q26 18 18 18" stroke={INK} strokeWidth="1.4" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+type DecoType = "pine" | "bush" | "mushroom" | "stick" | "pebble" | "leaf";
+
+interface Deco {
+  type: DecoType;
+  left?: string;
+  right?: string;
+  top: string;
+  size: number;
+  rotate: number;
+}
+
+// Niesymetryczne, deterministyczne dekoracje — różna liczba i pozycje per poziom
+function decorationsForLevel(lvl: number): Deco[] {
   const r = (n: number) => {
     const x = Math.sin(lvl * 9301 + n * 49297) * 233280;
     return x - Math.floor(x);
   };
-  // 2-4 elementy wokół, niektóre z lewej, niektóre z prawej
-  const items: { type: "pine" | "bush" | "mushroom" | "stick" | "pebble"; left: string; top: string; size: number; opacity: number; rotate?: number }[] = [];
-  const types: Array<"pine" | "bush" | "mushroom" | "stick" | "pebble"> = ["pine", "bush", "mushroom", "stick", "pebble"];
+  const allTypes: DecoType[] = ["pine", "bush", "mushroom", "stick", "pebble", "leaf"];
+  const items: Deco[] = [];
+  // 2-5 elementów rozrzuconych nieregularnie
+  const count = 2 + Math.floor(r(0) * 4);
 
-  // Po przeciwnej stronie wyspy — większy element
-  items.push({
-    type: r(1) > 0.5 ? "pine" : "bush",
-    left: isRight ? "8%" : "auto",
-    top: "30%",
-    size: 56 + Math.floor(r(2) * 10),
-    opacity: 0.9,
-  } as any);
-  if (!isRight) (items[0] as any).right = "8%";
+  for (let i = 0; i < count; i++) {
+    const type = allTypes[Math.floor(r(i * 2 + 1) * allTypes.length)];
+    const useLeft = r(i * 2 + 2) > 0.5;
+    const horiz = `${5 + Math.floor(r(i * 3 + 4) * 78)}%`;
+    const vert = `${4 + Math.floor(r(i * 3 + 5) * 84)}%`;
+    const baseSize =
+      type === "pine" ? 46 : type === "bush" ? 38 : type === "stick" ? 40 : type === "leaf" ? 22 : type === "mushroom" ? 22 : 18;
+    const size = Math.floor(baseSize * (0.7 + r(i * 3 + 6) * 0.7));
+    const rotate = Math.floor(r(i * 3 + 7) * 50 - 25);
 
-  // Mały dół
-  items.push({
-    type: r(3) > 0.6 ? "mushroom" : "stick",
-    left: isRight ? "30%" : "55%",
-    top: "70%",
-    size: 28 + Math.floor(r(4) * 10),
-    opacity: 0.85,
-    rotate: Math.floor(r(5) * 60 - 30),
-  });
-
-  // Drobny kamyk
-  if (r(6) > 0.4) {
     items.push({
-      type: "pebble",
-      left: isRight ? "65%" : "20%",
-      top: "82%",
-      size: 18 + Math.floor(r(7) * 10),
-      opacity: 0.7,
+      type,
+      ...(useLeft ? { left: horiz } : { right: horiz }),
+      top: vert,
+      size,
+      rotate,
     });
   }
-
-  // Czasem dodatkowe drzewko po drugiej stronie góry
-  if (r(8) > 0.55) {
-    items.push({
-      type: "pine",
-      left: isRight ? "70%" : "20%",
-      top: "10%",
-      size: 36 + Math.floor(r(9) * 10),
-      opacity: 0.65,
-    });
-  }
-
   return items;
 }
 
@@ -131,19 +132,13 @@ function LevelNode({
   onClick: () => void;
 }) {
   const base =
-    "relative h-16 w-16 rounded-full flex items-center justify-center font-bold transition-transform";
-  const ring =
-    state === "available"
-      ? "ring-4 ring-primary/30"
-      : state === "completed"
-      ? "ring-2 ring-primary/40"
-      : "ring-1 ring-foreground/10";
+    "relative h-14 w-14 rounded-full flex items-center justify-center font-bold transition-transform";
   const bg =
     state === "completed"
       ? "bg-primary text-primary-foreground"
       : state === "available"
       ? "bg-card text-foreground border-2 border-primary"
-      : "bg-secondary/40 text-muted-foreground";
+      : "bg-secondary/40 text-muted-foreground border border-foreground/10";
 
   return (
     <motion.button
@@ -151,33 +146,19 @@ function LevelNode({
       onClick={onClick}
       disabled={state === "locked"}
       aria-label={`Poziom ${lvl}`}
-      className={`${base} ${ring} ${bg}`}
+      className={`${base} ${bg}`}
       style={{ fontFamily: "var(--font-display)" }}
     >
       {state === "completed" ? (
-        <Check size={26} strokeWidth={3} />
+        <Check size={24} strokeWidth={3} />
       ) : state === "locked" ? (
-        <Lock size={22} />
+        <Lock size={20} />
       ) : (
-        <span className="text-xl">{lvl}</span>
+        <span className="text-lg">{lvl}</span>
       )}
 
-      {/* delikatny pulse dla aktualnego poziomu */}
-      {state === "available" && (
-        <motion.span
-          aria-hidden
-          className="absolute inset-0 rounded-full border-2 border-primary"
-          animate={{ scale: [1, 1.25], opacity: [0.6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
-        />
-      )}
-
-      {/* Ostatni poziom — gwiazdka nad nim */}
       {lvl === 15 && (
-        <Star
-          size={14}
-          className="absolute -top-2 -right-1 text-primary fill-primary"
-        />
+        <Star size={12} className="absolute -top-1.5 -right-1 text-primary fill-primary" />
       )}
     </motion.button>
   );
@@ -190,7 +171,6 @@ export function ForestLevelsPanel({
   onClose,
   onSelectLevel,
 }: ForestLevelsPanelProps) {
-  // Od najwyższego (15) na górze do 1 na dole
   const levels = Array.from({ length: totalLevels }, (_, i) => totalLevels - i);
   const currentLevel = Math.min(highestCompleted + 1, totalLevels);
 
@@ -201,17 +181,8 @@ export function ForestLevelsPanel({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] bg-background"
     >
-      {/* Tło: subtelny gradient leśny */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 100%, hsl(var(--primary) / 0.08), transparent 60%), radial-gradient(ellipse at 50% 0%, hsl(var(--primary) / 0.05), transparent 50%)",
-        }}
-      />
-
       {/* Nagłówek */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 pt-[max(env(safe-area-inset-top),12px)] pb-3 bg-gradient-to-b from-background via-background/90 to-transparent">
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 pt-[max(env(safe-area-inset-top),12px)] pb-3 bg-background">
         <button
           onClick={onClose}
           aria-label="Wstecz"
@@ -251,7 +222,7 @@ export function ForestLevelsPanel({
             const isLast = idx === levels.length - 1;
             const state: "completed" | "available" | "locked" =
               lvl <= highestCompleted ? "completed" : lvl === currentLevel ? "available" : "locked";
-            const decorations = decorationsForLevel(lvl, isRight);
+            const decorations = decorationsForLevel(lvl);
 
             return (
               <div
@@ -259,7 +230,7 @@ export function ForestLevelsPanel({
                 className="relative w-full"
                 style={{ height: "calc(100dvh / 4.2)", minHeight: 170 }}
               >
-                {/* Dekoracje leśne wokół poziomu */}
+                {/* Dekoracje — rozrzucone, asymetryczne, tylko kontur */}
                 <div className="absolute inset-0 pointer-events-none select-none">
                   {decorations.map((d, i) => {
                     const Comp =
@@ -271,20 +242,22 @@ export function ForestLevelsPanel({
                         ? Mushroom
                         : d.type === "stick"
                         ? Stick
+                        : d.type === "leaf"
+                        ? LeafCluster
                         : Pebble;
                     return (
                       <div
                         key={i}
                         className="absolute"
                         style={{
-                          left: (d as any).left,
-                          right: (d as any).right,
+                          left: d.left,
+                          right: d.right,
                           top: d.top,
-                          opacity: state === "locked" ? d.opacity * 0.45 : d.opacity,
-                          filter: state === "locked" ? "grayscale(0.6)" : undefined,
+                          transform: `rotate(${d.rotate}deg)`,
+                          opacity: state === "locked" ? 0.4 : 0.85,
                         }}
                       >
-                        <Comp size={d.size} opacity={1} {...(d.type === "stick" ? { rotate: (d as any).rotate } : {})} />
+                        <Comp size={d.size} />
                       </div>
                     );
                   })}
@@ -303,10 +276,10 @@ export function ForestLevelsPanel({
                       y1={0}
                       x2={nextIsRight ? 75 : 25}
                       y2={100}
-                      stroke="hsl(var(--primary))"
-                      strokeWidth={0.5}
-                      strokeDasharray="2.5 3"
-                      opacity={lvl <= highestCompleted + 1 ? 0.55 : 0.2}
+                      stroke="hsl(var(--foreground))"
+                      strokeWidth={0.4}
+                      strokeDasharray="2 3"
+                      opacity={lvl <= highestCompleted + 1 ? 0.4 : 0.15}
                     />
                   </svg>
                 )}
@@ -328,7 +301,7 @@ export function ForestLevelsPanel({
           })}
 
           {/* Stopka — linia gruntu / start */}
-          <div className="relative mt-2 flex items-center justify-center gap-3 opacity-70">
+          <div className="relative mt-2 flex items-center justify-center gap-3 opacity-60">
             <div className="h-px flex-1 bg-foreground/15" />
             <span
               className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground"
