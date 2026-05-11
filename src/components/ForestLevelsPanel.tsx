@@ -4,82 +4,138 @@ import { ChevronLeft, Lock, Check, Star } from "lucide-react";
 interface ForestLevelsPanelProps {
   title: string;
   totalLevels?: number;
-  highestCompleted: number; // 0 = nic nie zaliczone, dostępny poziom 1
+  highestCompleted: number;
   onClose: () => void;
   onSelectLevel: (level: number) => void;
 }
 
-// ─── Proste, niesymetryczne grafiki (jednokolorowy outline) ───
-const INK = "hsl(var(--foreground) / 0.5)";
-const INK_SOFT = "hsl(var(--foreground) / 0.32)";
+// ─── Hand-drawn ikonki (kremowy outline) ───
+const INK = "hsl(var(--foreground) / 0.75)";
+const STROKE = 2.2;
 
-function PineTree({ size = 50 }: { size?: number }) {
+// Pine tree — chunky, warstwowa
+function PineTree({ size = 56 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+    <svg width={size} height={size * 1.15} viewBox="0 0 64 74" fill="none">
       <path
-        d="M30 8 L20 28 L26 28 L17 44 L26 44 L19 56 L43 56 L37 44 L46 44 L38 28 L43 28 Z"
+        d="M32 6 C28 14 24 18 20 22 C24 22 26 22 28 21 C24 28 20 32 16 36 C20 36 24 36 27 35 C23 42 18 46 13 50 C19 50 26 50 32 50 C38 50 45 50 51 50 C46 46 41 42 37 35 C40 36 44 36 48 36 C44 32 40 28 36 21 C38 22 40 22 44 22 C40 18 36 14 32 6 Z"
         stroke={INK}
-        strokeWidth="1.6"
+        strokeWidth={STROKE}
         strokeLinejoin="round"
+        strokeLinecap="round"
+        fill="none"
       />
+      <path d="M28 50 L28 60 M36 50 L36 60 M28 60 L36 60" stroke={INK} strokeWidth={STROKE} strokeLinecap="round" strokeLinejoin="round" fill="none"/>
     </svg>
   );
 }
 
-function Bush({ size = 36 }: { size?: number }) {
+// Krzak / bush — chmurkowy z żyłkami
+function Bush({ size = 44 }: { size?: number }) {
   return (
-    <svg width={size} height={size * 0.7} viewBox="0 0 64 44" fill="none">
+    <svg width={size} height={size * 0.78} viewBox="0 0 64 50" fill="none">
       <path
-        d="M6 36 Q4 22 16 20 Q20 8 32 12 Q42 6 50 16 Q62 18 58 32 Q56 38 50 38 L10 38 Z"
+        d="M6 40 C4 28 12 22 18 24 C18 14 30 12 34 18 C40 10 52 14 52 22 C60 22 62 34 56 40 C56 44 50 46 46 44 C40 46 34 44 32 42 C28 46 20 46 14 44 C10 46 6 44 6 40 Z"
         stroke={INK}
-        strokeWidth="1.6"
+        strokeWidth={STROKE}
         strokeLinejoin="round"
+        fill="none"
       />
+      <path d="M22 40 L22 28 M32 42 L32 24 M44 42 L44 28" stroke={INK} strokeWidth={STROKE * 0.7} strokeLinecap="round"/>
     </svg>
   );
 }
 
-function Mushroom({ size = 24 }: { size?: number }) {
+// Pojedynczy grzyb
+function Mushroom({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 1.1} viewBox="0 0 32 36" fill="none">
+      <path d="M4 16 C4 8 12 4 16 4 C22 4 28 9 28 16 C28 18 26 18 24 18 L8 18 C6 18 4 18 4 16 Z" stroke={INK} strokeWidth={STROKE} strokeLinejoin="round" fill="none"/>
+      <path d="M12 18 L12 30 C12 32 14 33 16 33 C18 33 20 32 20 30 L20 18" stroke={INK} strokeWidth={STROKE} strokeLinejoin="round" fill="none"/>
+      <circle cx="14" cy="11" r="1.4" fill={INK}/>
+      <circle cx="20" cy="13" r="1" fill={INK}/>
+    </svg>
+  );
+}
+
+// Para grzybów
+function MushroomPair({ size = 36 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.9} viewBox="0 0 48 44" fill="none">
+      <path d="M2 18 C2 10 9 6 13 6 C19 6 24 11 24 18 C24 20 22 20 20 20 L6 20 C4 20 2 20 2 18 Z" stroke={INK} strokeWidth={STROKE} strokeLinejoin="round" fill="none"/>
+      <path d="M9 20 L9 32 C9 34 11 35 13 35 C15 35 17 34 17 32 L17 20" stroke={INK} strokeWidth={STROKE} strokeLinejoin="round" fill="none"/>
+      <path d="M24 26 C24 20 30 18 33 18 C38 18 42 21 42 26 C42 28 40 28 38 28 L26 28 C25 28 24 28 24 26 Z" stroke={INK} strokeWidth={STROKE} strokeLinejoin="round" fill="none"/>
+      <path d="M30 28 L30 38 C30 40 32 41 33 41 C35 41 36 40 36 38 L36 28" stroke={INK} strokeWidth={STROKE} strokeLinejoin="round" fill="none"/>
+    </svg>
+  );
+}
+
+// Trawa — kępka
+function Grass({ size = 30 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 36 26" fill="none">
+      <path d="M4 24 C5 16 7 10 9 4 M9 4 C10 10 11 16 11 24" stroke={INK} strokeWidth={STROKE} strokeLinecap="round" fill="none"/>
+      <path d="M14 24 C16 14 18 8 20 2 M20 2 C21 10 22 16 22 24" stroke={INK} strokeWidth={STROKE} strokeLinecap="round" fill="none"/>
+      <path d="M25 24 C26 16 28 10 30 6 M30 6 C30 12 31 18 32 24" stroke={INK} strokeWidth={STROKE} strokeLinecap="round" fill="none"/>
+    </svg>
+  );
+}
+
+// Patyk z listkami
+function LeafSprig({ size = 32 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 40 28" fill="none">
+      <path d="M4 24 Q14 16 36 6" stroke={INK} strokeWidth={STROKE} strokeLinecap="round" fill="none"/>
+      <path d="M14 18 Q10 12 16 10 Q20 14 14 18 Z" stroke={INK} strokeWidth={STROKE * 0.85} strokeLinejoin="round" fill="none"/>
+      <path d="M22 12 Q18 6 24 4 Q28 8 22 12 Z" stroke={INK} strokeWidth={STROKE * 0.85} strokeLinejoin="round" fill="none"/>
+    </svg>
+  );
+}
+
+// Kamyki (3 owale)
+function Pebbles({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.55} viewBox="0 0 40 22" fill="none">
+      <ellipse cx="8" cy="14" rx="6" ry="4" stroke={INK} strokeWidth={STROKE * 0.85} fill="none"/>
+      <ellipse cx="22" cy="11" rx="7" ry="4.5" stroke={INK} strokeWidth={STROKE * 0.85} fill="none"/>
+      <ellipse cx="34" cy="15" rx="4" ry="3" stroke={INK} strokeWidth={STROKE * 0.85} fill="none"/>
+    </svg>
+  );
+}
+
+// Kłoda / bal
+function Log({ size = 40 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.5} viewBox="0 0 48 24" fill="none">
+      <rect x="4" y="6" width="40" height="14" rx="4" stroke={INK} strokeWidth={STROKE} fill="none"/>
+      <ellipse cx="8" cy="13" rx="3.5" ry="5" stroke={INK} strokeWidth={STROKE * 0.85} fill="none"/>
+      <circle cx="8" cy="13" r="1.5" stroke={INK} strokeWidth={STROKE * 0.7} fill="none"/>
+    </svg>
+  );
+}
+
+// Pojedynczy patyk
+function Stick({ size = 36 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.4} viewBox="0 0 44 18" fill="none">
+      <path d="M3 14 L40 4" stroke={INK} strokeWidth={STROKE} strokeLinecap="round" fill="none"/>
+      <path d="M18 10 L24 4" stroke={INK} strokeWidth={STROKE * 0.85} strokeLinecap="round" fill="none"/>
+      <circle cx="3" cy="14" r="1.4" fill={INK}/>
+    </svg>
+  );
+}
+
+// Liść dębu
+function OakLeaf({ size = 26 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <path d="M5 16 Q6 7 17 7 Q27 8 28 16 Z" stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M14 16 L13 26 Q16 28 19 26 L18 16" stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M16 4 C12 6 8 8 6 12 C8 14 8 14 6 16 C8 18 8 18 6 20 C10 24 14 26 16 28 C18 26 22 24 26 20 C24 18 24 18 26 16 C24 14 24 14 26 12 C24 8 20 6 16 4 Z" stroke={INK} strokeWidth={STROKE} strokeLinejoin="round" fill="none"/>
+      <path d="M16 6 L16 28" stroke={INK} strokeWidth={STROKE * 0.7} strokeLinecap="round"/>
     </svg>
   );
 }
 
-function Stick({ size = 40 }: { size?: number }) {
-  return (
-    <svg width={size} height={size * 0.45} viewBox="0 0 48 22" fill="none">
-      <path d="M3 16 L44 5" stroke={INK} strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M22 11 L29 4" stroke={INK} strokeWidth="1.4" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function Pebble({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size * 0.55} viewBox="0 0 32 18" fill="none">
-      <path
-        d="M4 13 Q3 4 14 5 Q26 4 28 11 Q24 16 14 15 Q6 16 4 13 Z"
-        stroke={INK_SOFT}
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function LeafCluster({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size * 0.7} viewBox="0 0 32 22" fill="none">
-      <path d="M4 18 Q2 8 12 6 Q16 14 8 18" stroke={INK} strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M18 18 Q20 6 28 8 Q26 18 18 18" stroke={INK} strokeWidth="1.4" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-type DecoType = "pine" | "bush" | "mushroom" | "stick" | "pebble" | "leaf";
+type DecoType = "pine" | "bush" | "mushroom" | "mushroomPair" | "grass" | "leafSprig" | "pebbles" | "log" | "stick" | "oakLeaf";
 
 interface Deco {
   type: DecoType;
@@ -90,40 +146,39 @@ interface Deco {
   rotate: number;
 }
 
-// Niesymetryczne, deterministyczne dekoracje — różna liczba i pozycje per poziom
 function decorationsForLevel(lvl: number): Deco[] {
   const r = (n: number) => {
     const x = Math.sin(lvl * 9301 + n * 49297) * 233280;
     return x - Math.floor(x);
   };
-  // Dużo drzew, mniej innych elementów — gęsty las
+  // Większość to drzewa, reszta wypełnia
   const weighted: DecoType[] = [
-    "pine", "pine", "pine", "pine", "pine", "pine", "pine", "pine",
-    "bush", "bush", "bush",
-    "stick", "mushroom", "leaf", "pebble",
+    "pine","pine","pine","pine","pine","pine","pine","pine","pine","pine","pine","pine",
+    "bush","bush","bush","bush",
+    "mushroom","mushroomPair",
+    "grass","grass",
+    "leafSprig","pebbles","stick","log","oakLeaf",
   ];
   const items: Deco[] = [];
 
-  // Węzeł poziomu jest na top:15% po stronie isRight (lvl%2===0 -> right, else left)
   const nodeRight = lvl % 2 === 0;
-  const nodeHoriz = 15; // % od krawędzi
-  const nodeTop = 15; // %
-  const nodeRadius = 18; // % — strefa wykluczenia wokół węzła
+  const nodeHoriz = 15;
+  const nodeTop = 15;
+  const nodeRadius = 16;
 
-  // 14-20 elementów wypełniających kafelek
-  const count = 14 + Math.floor(r(0) * 7);
+  // BARDZO dużo: 30-40 elementów
+  const count = 30 + Math.floor(r(0) * 11);
 
   let placed = 0;
   let attempt = 0;
-  while (placed < count && attempt < count * 6) {
+  while (placed < count && attempt < count * 8) {
     attempt++;
     const type = weighted[Math.floor(r(attempt * 11 + 1) * weighted.length)];
     const useLeft = r(attempt * 7 + 2) > 0.5;
-    const horizPct = 2 + Math.floor(r(attempt * 13 + 4) * 92);
+    const horizPct = -2 + Math.floor(r(attempt * 13 + 4) * 96);
     const vertPct = 2 + Math.floor(r(attempt * 17 + 5) * 92);
 
-    // Wyklucz strefę węzła (ten sam bok + bliska pozycja pionowa)
-    const sameSideAsNode = useLeft !== nodeRight; // node jest po prawej gdy nodeRight
+    const sameSideAsNode = useLeft !== nodeRight;
     if (sameSideAsNode) {
       const dh = Math.abs(horizPct - nodeHoriz);
       const dv = Math.abs(vertPct - nodeTop);
@@ -131,12 +186,23 @@ function decorationsForLevel(lvl: number): Deco[] {
     }
 
     const baseSize =
-      type === "pine" ? 50 : type === "bush" ? 36 : type === "stick" ? 38 : type === "leaf" ? 20 : type === "mushroom" ? 20 : 16;
-    const size = Math.floor(baseSize * (0.65 + r(attempt * 19 + 6) * 0.8));
+      type === "pine" ? 56 :
+      type === "bush" ? 44 :
+      type === "mushroomPair" ? 36 :
+      type === "mushroom" ? 26 :
+      type === "grass" ? 30 :
+      type === "leafSprig" ? 32 :
+      type === "log" ? 40 :
+      type === "stick" ? 36 :
+      type === "oakLeaf" ? 24 :
+      28;
+    const size = Math.floor(baseSize * (0.7 + r(attempt * 19 + 6) * 0.7));
     const rotate =
       type === "pine"
-        ? Math.floor(r(attempt * 23 + 7) * 14 - 7) // sosny prawie pionowo
-        : Math.floor(r(attempt * 23 + 7) * 50 - 25);
+        ? Math.floor(r(attempt * 23 + 7) * 10 - 5)
+        : type === "grass" || type === "mushroom" || type === "mushroomPair"
+        ? Math.floor(r(attempt * 23 + 7) * 8 - 4)
+        : Math.floor(r(attempt * 23 + 7) * 60 - 30);
 
     items.push({
       type,
@@ -150,6 +216,19 @@ function decorationsForLevel(lvl: number): Deco[] {
   return items;
 }
 
+const DECO_COMPONENTS: Record<DecoType, React.FC<{ size?: number }>> = {
+  pine: PineTree,
+  bush: Bush,
+  mushroom: Mushroom,
+  mushroomPair: MushroomPair,
+  grass: Grass,
+  leafSprig: LeafSprig,
+  pebbles: Pebbles,
+  log: Log,
+  stick: Stick,
+  oakLeaf: OakLeaf,
+};
+
 function LevelNode({
   lvl,
   state,
@@ -160,7 +239,7 @@ function LevelNode({
   onClick: () => void;
 }) {
   const base =
-    "relative h-14 w-14 rounded-full flex items-center justify-center font-bold transition-transform";
+    "relative h-14 w-14 rounded-full flex items-center justify-center font-bold transition-transform z-10";
   const bg =
     state === "completed"
       ? "bg-primary text-primary-foreground"
@@ -209,8 +288,7 @@ export function ForestLevelsPanel({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[60] bg-background"
     >
-      {/* Nagłówek */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-3 pt-[max(env(safe-area-inset-top),12px)] pb-3 bg-background">
+      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-3 pt-[max(env(safe-area-inset-top),12px)] pb-3 bg-background">
         <button
           onClick={onClose}
           aria-label="Wstecz"
@@ -232,7 +310,6 @@ export function ForestLevelsPanel({
         <div className="w-9" />
       </div>
 
-      {/* Mapa poziomów — przewijana */}
       <div
         className="absolute inset-0 overflow-y-auto"
         style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
@@ -256,23 +333,11 @@ export function ForestLevelsPanel({
               <div
                 key={lvl}
                 className="relative w-full"
-                style={{ height: "calc(100dvh / 4.2)", minHeight: 170 }}
+                style={{ height: "calc(100dvh / 4.2)", minHeight: 190 }}
               >
-                {/* Dekoracje — rozrzucone, asymetryczne, tylko kontur */}
-                <div className="absolute inset-0 pointer-events-none select-none">
+                <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
                   {decorations.map((d, i) => {
-                    const Comp =
-                      d.type === "pine"
-                        ? PineTree
-                        : d.type === "bush"
-                        ? Bush
-                        : d.type === "mushroom"
-                        ? Mushroom
-                        : d.type === "stick"
-                        ? Stick
-                        : d.type === "leaf"
-                        ? LeafCluster
-                        : Pebble;
+                    const Comp = DECO_COMPONENTS[d.type];
                     return (
                       <div
                         key={i}
@@ -282,7 +347,7 @@ export function ForestLevelsPanel({
                           right: d.right,
                           top: d.top,
                           transform: `rotate(${d.rotate}deg)`,
-                          opacity: state === "locked" ? 0.4 : 0.85,
+                          opacity: state === "locked" ? 0.45 : 0.92,
                         }}
                       >
                         <Comp size={d.size} />
@@ -291,7 +356,6 @@ export function ForestLevelsPanel({
                   })}
                 </div>
 
-                {/* Linia łącząca z następną wyspą (poniżej) */}
                 {!isLast && (
                   <svg
                     className="absolute left-0 right-0 pointer-events-none"
@@ -312,7 +376,6 @@ export function ForestLevelsPanel({
                   </svg>
                 )}
 
-                {/* Węzeł poziomu */}
                 <div
                   className={`absolute top-[15%] ${
                     isRight ? "right-[15%]" : "left-[15%]"
@@ -328,7 +391,6 @@ export function ForestLevelsPanel({
             );
           })}
 
-          {/* Stopka — linia gruntu / start */}
           <div className="relative mt-2 flex items-center justify-center gap-3 opacity-60">
             <div className="h-px flex-1 bg-foreground/15" />
             <span
