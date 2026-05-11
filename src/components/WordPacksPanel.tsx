@@ -133,7 +133,10 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
       count: 0,
     }));
 
-    return [...basePacks, ...premiumPacks];
+    // "Flagi" wstawiamy jako drugą paczkę, żeby pokazała się w prawej kolumnie obok Filozofii
+    const withFlags = [...basePacks];
+    withFlags.splice(1, 0, FLAGS_PACK);
+    return [...withFlags, ...premiumPacks];
   }, [asPolishWords]);
 
   return (
