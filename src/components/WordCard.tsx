@@ -276,12 +276,12 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                   transition={{ duration: 0.35, ease: "easeOut" }}
                   className="mt-4 space-y-4"
                 >
-                  <div className="p-4 rounded-xl bg-secondary/50">
+                  <div className="p-4">
                     <p className="text-base leading-relaxed text-foreground">
                       {word.definition}
                     </p>
                   </div>
-                  <div className="p-4 rounded-xl border border-border">
+                  <div className="p-4">
                     <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground mb-2">
                       Przykład
                     </p>
