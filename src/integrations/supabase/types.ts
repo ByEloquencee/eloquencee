@@ -249,6 +249,33 @@ export type Database = {
         }
         Relationships: []
       }
+      pack_progress: {
+        Row: {
+          created_at: string
+          highest_completed_level: number
+          id: string
+          pack_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          highest_completed_level?: number
+          id?: string
+          pack_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          highest_completed_level?: number
+          id?: string
+          pack_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
