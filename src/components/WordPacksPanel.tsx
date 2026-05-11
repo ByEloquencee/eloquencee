@@ -19,6 +19,7 @@ import {
   Heart,
   Lightbulb,
   Stethoscope,
+  Flag,
 } from "lucide-react";
 import { categories, words as staticWords } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
@@ -84,7 +85,16 @@ interface WordPacksPanelProps {
   onSelectPack?: (categoryId: string) => void;
 }
 
-const ENABLED_PACKS = new Set(["filozofia"]);
+const ENABLED_PACKS = new Set(["filozofia", "flagi"]);
+
+const FLAGS_PACK: WordPack = {
+  id: "flagi",
+  label: "Flagi",
+  icon: Flag,
+  isPremium: false,
+  watermarks: ["Polska", "Niemcy", "Francja", "Włochy", "Hiszpania", "Japonia", "Brazylia", "Kanada", "Egipt", "Indie", "Chiny", "Meksyk"],
+  count: 130,
+};
 
 export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
   const { asPolishWords } = useGlobalWords();
