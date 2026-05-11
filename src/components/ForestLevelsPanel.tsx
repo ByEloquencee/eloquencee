@@ -284,7 +284,7 @@ export function ForestLevelsPanel({
                           filter: state === "locked" ? "grayscale(0.6)" : undefined,
                         }}
                       >
-                        <Comp size={d.size} opacity={1} rotate={(d as any).rotate} />
+                        <Comp size={d.size} opacity={1} {...(d.type === "stick" ? { rotate: (d as any).rotate } : {})} />
                       </div>
                     );
                   })}
