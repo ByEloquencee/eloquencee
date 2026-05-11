@@ -96,28 +96,56 @@ function decorationsForLevel(lvl: number): Deco[] {
     const x = Math.sin(lvl * 9301 + n * 49297) * 233280;
     return x - Math.floor(x);
   };
-  const allTypes: DecoType[] = ["pine", "bush", "mushroom", "stick", "pebble", "leaf"];
+  // Dużo drzew, mniej innych elementów — gęsty las
+  const weighted: DecoType[] = [
+    "pine", "pine", "pine", "pine", "pine", "pine", "pine", "pine",
+    "bush", "bush", "bush",
+    "stick", "mushroom", "leaf", "pebble",
+  ];
   const items: Deco[] = [];
-  // 2-5 elementów rozrzuconych nieregularnie
-  const count = 2 + Math.floor(r(0) * 4);
 
-  for (let i = 0; i < count; i++) {
-    const type = allTypes[Math.floor(r(i * 2 + 1) * allTypes.length)];
-    const useLeft = r(i * 2 + 2) > 0.5;
-    const horiz = `${5 + Math.floor(r(i * 3 + 4) * 78)}%`;
-    const vert = `${4 + Math.floor(r(i * 3 + 5) * 84)}%`;
+  // Węzeł poziomu jest na top:15% po stronie isRight (lvl%2===0 -> right, else left)
+  const nodeRight = lvl % 2 === 0;
+  const nodeHoriz = 15; // % od krawędzi
+  const nodeTop = 15; // %
+  const nodeRadius = 18; // % — strefa wykluczenia wokół węzła
+
+  // 14-20 elementów wypełniających kafelek
+  const count = 14 + Math.floor(r(0) * 7);
+
+  let placed = 0;
+  let attempt = 0;
+  while (placed < count && attempt < count * 6) {
+    attempt++;
+    const type = weighted[Math.floor(r(attempt * 11 + 1) * weighted.length)];
+    const useLeft = r(attempt * 7 + 2) > 0.5;
+    const horizPct = 2 + Math.floor(r(attempt * 13 + 4) * 92);
+    const vertPct = 2 + Math.floor(r(attempt * 17 + 5) * 92);
+
+    // Wyklucz strefę węzła (ten sam bok + bliska pozycja pionowa)
+    const sameSideAsNode = useLeft !== nodeRight; // node jest po prawej gdy nodeRight
+    if (sameSideAsNode) {
+      const dh = Math.abs(horizPct - nodeHoriz);
+      const dv = Math.abs(vertPct - nodeTop);
+      if (dh < nodeRadius && dv < nodeRadius) continue;
+    }
+
     const baseSize =
-      type === "pine" ? 46 : type === "bush" ? 38 : type === "stick" ? 40 : type === "leaf" ? 22 : type === "mushroom" ? 22 : 18;
-    const size = Math.floor(baseSize * (0.7 + r(i * 3 + 6) * 0.7));
-    const rotate = Math.floor(r(i * 3 + 7) * 50 - 25);
+      type === "pine" ? 50 : type === "bush" ? 36 : type === "stick" ? 38 : type === "leaf" ? 20 : type === "mushroom" ? 20 : 16;
+    const size = Math.floor(baseSize * (0.65 + r(attempt * 19 + 6) * 0.8));
+    const rotate =
+      type === "pine"
+        ? Math.floor(r(attempt * 23 + 7) * 14 - 7) // sosny prawie pionowo
+        : Math.floor(r(attempt * 23 + 7) * 50 - 25);
 
     items.push({
       type,
-      ...(useLeft ? { left: horiz } : { right: horiz }),
-      top: vert,
+      ...(useLeft ? { left: `${horizPct}%` } : { right: `${horizPct}%` }),
+      top: `${vertPct}%`,
       size,
       rotate,
     });
+    placed++;
   }
   return items;
 }
