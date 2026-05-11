@@ -24,7 +24,9 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
-import { IslandLevelsPanel } from "@/components/IslandLevelsPanel";
+import { ForestLevelsPanel } from "@/components/ForestLevelsPanel";
+import { PackLevelQuiz } from "@/components/PackLevelQuiz";
+import { usePackProgress } from "@/hooks/use-pack-progress";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
@@ -170,6 +172,8 @@ const Index = () => {
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
   const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
+  const [activeLevel, setActiveLevel] = useState<number | null>(null);
+  const philosophyProgress = usePackProgress("filozofia");
   const [flagsOpen, setFlagsOpen] = useState(false);
   
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
@@ -1054,19 +1058,24 @@ const Index = () => {
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AnimatePresence>
-        {islandPack && (
-          <IslandLevelsPanel
+        {islandPack && activeLevel === null && (
+          <ForestLevelsPanel
             title={islandPack.label}
             totalLevels={15}
+            highestCompleted={philosophyProgress.highestCompleted}
             onClose={() => setIslandPack(null)}
-            onSelectLevel={() => {
-              setViewMode("all");
-              setActiveFolderId(null);
-              setSelectedCategories([islandPack.id as WordCategory]);
-              setCurrentIndex(0);
-              setIslandPack(null);
-              switchPage(1);
-            }}
+            onSelectLevel={(lvl) => setActiveLevel(lvl)}
+          />
+        )}
+        {islandPack && activeLevel !== null && (
+          <PackLevelQuiz
+            key={`lvl-${activeLevel}`}
+            level={activeLevel}
+            packLabel={islandPack.label}
+            pool={allWords.filter((w) => w.category === (islandPack.id as WordCategory))}
+            allWords={allWords}
+            onExit={() => setActiveLevel(null)}
+            onPassed={() => philosophyProgress.completeLevel(activeLevel)}
           />
         )}
         {flagsOpen && (
