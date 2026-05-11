@@ -25,6 +25,7 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
 import { IslandLevelsPanel } from "@/components/IslandLevelsPanel";
+import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
@@ -169,6 +170,7 @@ const Index = () => {
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
   const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
+  const [flagsOpen, setFlagsOpen] = useState(false);
   
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
@@ -858,6 +860,8 @@ const Index = () => {
                         onSelectPack={(catId) => {
                           if (catId === "filozofia") {
                             setIslandPack({ id: catId, label: "Filozofia" });
+                          } else if (catId === "flagi") {
+                            setFlagsOpen(true);
                           }
                         }}
                       />
@@ -873,6 +877,8 @@ const Index = () => {
                       onSelectPack={(catId) => {
                         if (catId === "filozofia") {
                           setIslandPack({ id: catId, label: "Filozofia" });
+                        } else if (catId === "flagi") {
+                          setFlagsOpen(true);
                         }
                       }}
                     />
@@ -1062,6 +1068,9 @@ const Index = () => {
               switchPage(1);
             }}
           />
+        )}
+        {flagsOpen && (
+          <FlagsLearningPanel onClose={() => setFlagsOpen(false)} />
         )}
       </AnimatePresence>
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
