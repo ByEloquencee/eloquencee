@@ -211,9 +211,13 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-secondary/40 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/30"
                 />
               </div>
-              {filteredAvailable.length === 0 ? (
+              {packBaseIds.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center py-8">
-                  Brak dostępnych słów.
+                  Baza paczki jest pusta. Najpierw dodaj słowa w „Bazie paczki”.
+                </p>
+              ) : filteredAvailable.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  Brak dostępnych słów w bazie paczki.
                 </p>
               ) : (
                 <ul className="space-y-2">
