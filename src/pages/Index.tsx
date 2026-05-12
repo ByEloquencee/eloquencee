@@ -963,6 +963,7 @@ const Index = () => {
                       else decrementProgress();
                     }}
                     onShare={() => setShareOpen(true)}
+                    onReveal={incrementProgress}
                     onModeratorHide={isModerator && !currentWord.id.startsWith("custom-") ? async () => {
                       try {
                         await hideWord(currentWord.id, user?.id);
