@@ -249,6 +249,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pack_level_words: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          level: number
+          pack_id: string
+          position: number
+          word_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          level: number
+          pack_id: string
+          position?: number
+          word_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          level?: number
+          pack_id?: string
+          position?: number
+          word_id?: string
+        }
+        Relationships: []
+      }
       pack_progress: {
         Row: {
           created_at: string
