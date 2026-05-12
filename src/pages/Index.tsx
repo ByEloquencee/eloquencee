@@ -26,6 +26,7 @@ import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
 import { LevelsPanel } from "@/components/LevelsPanel";
 import { LevelWordsEditor } from "@/components/LevelWordsEditor";
+import { PackBaseEditor } from "@/components/PackBaseEditor";
 import { PackLevelQuiz } from "@/components/PackLevelQuiz";
 import { usePackProgress } from "@/hooks/use-pack-progress";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
@@ -175,6 +176,7 @@ const Index = () => {
   const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
   const [editingLevel, setEditingLevel] = useState<number | null>(null);
+  const [editingBase, setEditingBase] = useState(false);
   const philosophyProgress = usePackProgress("filozofia");
   const [flagsOpen, setFlagsOpen] = useState(false);
   
@@ -1045,7 +1047,7 @@ const Index = () => {
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AnimatePresence>
-        {islandPack && activeLevel === null && editingLevel === null && (
+        {islandPack && activeLevel === null && editingLevel === null && !editingBase && (
           <LevelsPanel
             title={islandPack.label}
             packId={islandPack.id}
@@ -1054,6 +1056,15 @@ const Index = () => {
             onClose={() => setIslandPack(null)}
             onSelectLevel={(lvl) => setActiveLevel(lvl)}
             onEditLevel={(lvl) => setEditingLevel(lvl)}
+            onEditBase={() => setEditingBase(true)}
+          />
+        )}
+        {islandPack && editingBase && (
+          <PackBaseEditor
+            packId={islandPack.id}
+            packLabel={islandPack.label}
+            pool={allWords}
+            onClose={() => setEditingBase(false)}
           />
         )}
         {islandPack && editingLevel !== null && (
@@ -1061,7 +1072,7 @@ const Index = () => {
             packId={islandPack.id}
             packLabel={islandPack.label}
             level={editingLevel}
-            pool={allWords.filter((w) => w.category === (islandPack.id as WordCategory))}
+            pool={allWords}
             onClose={() => setEditingLevel(null)}
           />
         )}

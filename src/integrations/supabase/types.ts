@@ -306,6 +306,33 @@ export type Database = {
         }
         Relationships: []
       }
+      pack_words: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          pack_id: string
+          position: number
+          word_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          pack_id: string
+          position?: number
+          word_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          pack_id?: string
+          position?: number
+          word_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
