@@ -9,7 +9,7 @@ interface LevelWordsEditorProps {
   packId: string;
   packLabel: string;
   level: number;
-  pool: PolishWord[]; // wszystkie słowa paczki (do wyboru)
+  pool: PolishWord[]; // wszystkie słowa potrzebne do rozwiązywania id -> word
   onClose: () => void;
 }
 
@@ -21,6 +21,7 @@ interface Row {
 
 export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: LevelWordsEditorProps) {
   const [rows, setRows] = useState<Row[]>([]);
+  const [packBaseIds, setPackBaseIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState("");
@@ -33,17 +34,23 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("pack_level_words")
-      .select("id, word_id, position")
-      .eq("pack_id", packId)
-      .eq("level", level)
-      .order("position", { ascending: true });
-    if (error) {
-      toast.error("Nie udało się wczytać słów poziomu");
-    } else {
-      setRows(data ?? []);
-    }
+    const [{ data: lvlData, error: lvlErr }, { data: baseData, error: baseErr }] = await Promise.all([
+      supabase
+        .from("pack_level_words")
+        .select("id, word_id, position")
+        .eq("pack_id", packId)
+        .eq("level", level)
+        .order("position", { ascending: true }),
+      supabase
+        .from("pack_words")
+        .select("word_id, position")
+        .eq("pack_id", packId)
+        .order("position", { ascending: true }),
+    ]);
+    if (lvlErr) toast.error("Nie udało się wczytać słów poziomu");
+    else setRows(lvlData ?? []);
+    if (baseErr) toast.error("Nie udało się wczytać bazy paczki");
+    else setPackBaseIds((baseData ?? []).map((r) => r.word_id));
     setLoading(false);
   };
 
@@ -56,16 +63,20 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
 
   const filteredAvailable = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return pool
-      .filter((w) => !usedIds.has(w.id))
+    // Pula = baza paczki minus już dodane do tego poziomu
+    const baseWords = packBaseIds
+      .filter((id) => !usedIds.has(id))
+      .map((id) => wordById.get(id))
+      .filter(Boolean) as PolishWord[];
+    return baseWords
       .filter(
         (w) =>
           !q ||
           w.word.toLowerCase().includes(q) ||
           w.definition.toLowerCase().includes(q),
       )
-      .slice(0, 60);
-  }, [pool, usedIds, query]);
+      .slice(0, 80);
+  }, [packBaseIds, wordById, usedIds, query]);
 
   const handleAdd = async (wordId: string) => {
     const nextPos = rows.length;
