@@ -1,13 +1,15 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Heart, Trophy, RotateCcw } from "lucide-react";
 import type { PolishWord } from "@/data/words";
+import { supabase } from "@/integrations/supabase/client";
 
 const QUESTIONS_PER_LEVEL = 15;
 const STARTING_LIVES = 3;
 
 interface PackLevelQuizProps {
   level: number;
+  packId: string;
   packLabel: string;
   pool: PolishWord[]; // słowa z paczki
   allWords: PolishWord[]; // do dystraktorów (fallback)
