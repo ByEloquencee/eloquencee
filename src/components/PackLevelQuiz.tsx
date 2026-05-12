@@ -57,19 +57,31 @@ export function PackLevelQuiz({ level, packId, packLabel, pool, allWords, onExit
     let cancelled = false;
     (async () => {
       setPoolReady(false);
-      const { data } = await supabase
-        .from("pack_level_words")
-        .select("word_id, position")
-        .eq("pack_id", packId)
-        .eq("level", level)
-        .order("position", { ascending: true });
+      const [{ data: lvlData }, { data: baseData }] = await Promise.all([
+        supabase
+          .from("pack_level_words")
+          .select("word_id, position")
+          .eq("pack_id", packId)
+          .eq("level", level)
+          .order("position", { ascending: true }),
+        supabase
+          .from("pack_words")
+          .select("word_id, position")
+          .eq("pack_id", packId)
+          .order("position", { ascending: true }),
+      ]);
       if (cancelled) return;
-      if (data && data.length > 0) {
-        const byId = new Map(pool.map((w) => [w.id, w]));
-        const fromAll = new Map(allWords.map((w) => [w.id, w]));
-        const picks = data
-          .map((r) => byId.get(r.word_id) ?? fromAll.get(r.word_id))
-          .filter(Boolean) as PolishWord[];
+      const byId = new Map(pool.map((w) => [w.id, w]));
+      const fromAll = new Map(allWords.map((w) => [w.id, w]));
+      const resolve = (ids: string[]) =>
+        ids.map((id) => byId.get(id) ?? fromAll.get(id)).filter(Boolean) as PolishWord[];
+
+      if (lvlData && lvlData.length > 0) {
+        const picks = resolve(lvlData.map((r) => r.word_id));
+        setLevelPool(picks.length > 0 ? picks : null);
+      } else if (baseData && baseData.length > 0) {
+        // Fallback: użyj bazy paczki
+        const picks = resolve(baseData.map((r) => r.word_id));
         setLevelPool(picks.length > 0 ? picks : null);
       } else {
         setLevelPool(null);
