@@ -24,7 +24,8 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
-import { ForestLevelsPanel } from "@/components/ForestLevelsPanel";
+import { LevelsPanel } from "@/components/LevelsPanel";
+import { LevelWordsEditor } from "@/components/LevelWordsEditor";
 import { PackLevelQuiz } from "@/components/PackLevelQuiz";
 import { usePackProgress } from "@/hooks/use-pack-progress";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
