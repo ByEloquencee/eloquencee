@@ -8,6 +8,16 @@ import { WordExtraInfo } from "@/components/WordExtraInfo";
 import type { Folder } from "@/hooks/use-folders";
 import type { DifficultyLevel } from "@/hooks/use-profile";
 
+import { useState, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence, type MotionValue } from "framer-motion";
+import { Heart, RotateCcw, Pencil, Trash2, UserRound, ChevronLeft, Lightbulb, Volume2, Share2, ChevronUp, Bookmark, EyeOff } from "lucide-react";
+import type { PolishWord } from "@/data/words";
+import { getFolderIcon } from "@/components/CreateFolderDialog";
+
+import { WordExtraInfo } from "@/components/WordExtraInfo";
+import type { Folder } from "@/hooks/use-folders";
+import type { DifficultyLevel } from "@/hooks/use-profile";
+
 interface WordCardProps {
   word: PolishWord;
   isFavorite: boolean;
@@ -29,6 +39,7 @@ interface WordCardProps {
   onExternalDragEnd?: (offsetY: number) => void;
   onModeratorHide?: () => void;
   onModeratorEdit?: () => void;
+  onReveal?: () => void;
 }
 
 export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd, onModeratorHide, onModeratorEdit }: WordCardProps) {
