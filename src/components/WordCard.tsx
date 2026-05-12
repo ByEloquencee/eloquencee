@@ -66,7 +66,10 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
     window.speechSynthesis.speak(utterance);
   }, [word.word, word.category, speaking]);
 
-  const handleReveal = () => setRevealed(true);
+  const handleReveal = () => {
+    if (!revealed) onReveal?.();
+    setRevealed(true);
+  };
 
   const handleNext = useCallback(() => {
     setRevealed(false);
