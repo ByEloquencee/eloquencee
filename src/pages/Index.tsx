@@ -176,6 +176,7 @@ const Index = () => {
   const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
   const [editingLevel, setEditingLevel] = useState<number | null>(null);
+  const [editingBase, setEditingBase] = useState(false);
   const philosophyProgress = usePackProgress("filozofia");
   const [flagsOpen, setFlagsOpen] = useState(false);
   
