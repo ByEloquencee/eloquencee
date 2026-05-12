@@ -1047,7 +1047,7 @@ const Index = () => {
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AnimatePresence>
-        {islandPack && activeLevel === null && editingLevel === null && (
+        {islandPack && activeLevel === null && editingLevel === null && !editingBase && (
           <LevelsPanel
             title={islandPack.label}
             packId={islandPack.id}
@@ -1056,6 +1056,15 @@ const Index = () => {
             onClose={() => setIslandPack(null)}
             onSelectLevel={(lvl) => setActiveLevel(lvl)}
             onEditLevel={(lvl) => setEditingLevel(lvl)}
+            onEditBase={() => setEditingBase(true)}
+          />
+        )}
+        {islandPack && editingBase && (
+          <PackBaseEditor
+            packId={islandPack.id}
+            packLabel={islandPack.label}
+            pool={allWords}
+            onClose={() => setEditingBase(false)}
           />
         )}
         {islandPack && editingLevel !== null && (
@@ -1063,7 +1072,7 @@ const Index = () => {
             packId={islandPack.id}
             packLabel={islandPack.label}
             level={editingLevel}
-            pool={allWords.filter((w) => w.category === (islandPack.id as WordCategory))}
+            pool={allWords}
             onClose={() => setEditingLevel(null)}
           />
         )}
