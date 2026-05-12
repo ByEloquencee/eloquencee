@@ -1045,19 +1045,31 @@ const Index = () => {
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AnimatePresence>
-        {islandPack && activeLevel === null && (
-          <ForestLevelsPanel
+        {islandPack && activeLevel === null && editingLevel === null && (
+          <LevelsPanel
             title={islandPack.label}
-            totalLevels={15}
+            packId={islandPack.id}
+            totalLevels={5}
             highestCompleted={philosophyProgress.highestCompleted}
             onClose={() => setIslandPack(null)}
             onSelectLevel={(lvl) => setActiveLevel(lvl)}
+            onEditLevel={(lvl) => setEditingLevel(lvl)}
+          />
+        )}
+        {islandPack && editingLevel !== null && (
+          <LevelWordsEditor
+            packId={islandPack.id}
+            packLabel={islandPack.label}
+            level={editingLevel}
+            pool={allWords.filter((w) => w.category === (islandPack.id as WordCategory))}
+            onClose={() => setEditingLevel(null)}
           />
         )}
         {islandPack && activeLevel !== null && (
           <PackLevelQuiz
             key={`lvl-${activeLevel}`}
             level={activeLevel}
+            packId={islandPack.id}
             packLabel={islandPack.label}
             pool={allWords.filter((w) => w.category === (islandPack.id as WordCategory))}
             allWords={allWords}
