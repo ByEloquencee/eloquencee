@@ -24,7 +24,8 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
-import { ForestLevelsPanel } from "@/components/ForestLevelsPanel";
+import { LevelsPanel } from "@/components/LevelsPanel";
+import { LevelWordsEditor } from "@/components/LevelWordsEditor";
 import { PackLevelQuiz } from "@/components/PackLevelQuiz";
 import { usePackProgress } from "@/hooks/use-pack-progress";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
@@ -173,6 +174,7 @@ const Index = () => {
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
   const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
+  const [editingLevel, setEditingLevel] = useState<number | null>(null);
   const philosophyProgress = usePackProgress("filozofia");
   const [flagsOpen, setFlagsOpen] = useState(false);
   
@@ -1043,19 +1045,31 @@ const Index = () => {
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AnimatePresence>
-        {islandPack && activeLevel === null && (
-          <ForestLevelsPanel
+        {islandPack && activeLevel === null && editingLevel === null && (
+          <LevelsPanel
             title={islandPack.label}
-            totalLevels={15}
+            packId={islandPack.id}
+            totalLevels={5}
             highestCompleted={philosophyProgress.highestCompleted}
             onClose={() => setIslandPack(null)}
             onSelectLevel={(lvl) => setActiveLevel(lvl)}
+            onEditLevel={(lvl) => setEditingLevel(lvl)}
+          />
+        )}
+        {islandPack && editingLevel !== null && (
+          <LevelWordsEditor
+            packId={islandPack.id}
+            packLabel={islandPack.label}
+            level={editingLevel}
+            pool={allWords.filter((w) => w.category === (islandPack.id as WordCategory))}
+            onClose={() => setEditingLevel(null)}
           />
         )}
         {islandPack && activeLevel !== null && (
           <PackLevelQuiz
             key={`lvl-${activeLevel}`}
             level={activeLevel}
+            packId={islandPack.id}
             packLabel={islandPack.label}
             pool={allWords.filter((w) => w.category === (islandPack.id as WordCategory))}
             allWords={allWords}

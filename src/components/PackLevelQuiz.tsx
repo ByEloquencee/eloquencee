@@ -1,13 +1,15 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Heart, Trophy, RotateCcw } from "lucide-react";
 import type { PolishWord } from "@/data/words";
+import { supabase } from "@/integrations/supabase/client";
 
 const QUESTIONS_PER_LEVEL = 15;
 const STARTING_LIVES = 3;
 
 interface PackLevelQuizProps {
   level: number;
+  packId: string;
   packLabel: string;
   pool: PolishWord[]; // słowa z paczki
   allWords: PolishWord[]; // do dystraktorów (fallback)
@@ -47,8 +49,43 @@ function buildQuestions(pool: PolishWord[], allWords: PolishWord[], count: numbe
   });
 }
 
-export function PackLevelQuiz({ level, packLabel, pool, allWords, onExit, onPassed }: PackLevelQuizProps) {
-  const questions = useMemo(() => buildQuestions(pool, allWords, QUESTIONS_PER_LEVEL), [pool, allWords, level]);
+export function PackLevelQuiz({ level, packId, packLabel, pool, allWords, onExit, onPassed }: PackLevelQuizProps) {
+  const [levelPool, setLevelPool] = useState<PolishWord[] | null>(null);
+  const [poolReady, setPoolReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setPoolReady(false);
+      const { data } = await supabase
+        .from("pack_level_words")
+        .select("word_id, position")
+        .eq("pack_id", packId)
+        .eq("level", level)
+        .order("position", { ascending: true });
+      if (cancelled) return;
+      if (data && data.length > 0) {
+        const byId = new Map(pool.map((w) => [w.id, w]));
+        const fromAll = new Map(allWords.map((w) => [w.id, w]));
+        const picks = data
+          .map((r) => byId.get(r.word_id) ?? fromAll.get(r.word_id))
+          .filter(Boolean) as PolishWord[];
+        setLevelPool(picks.length > 0 ? picks : null);
+      } else {
+        setLevelPool(null);
+      }
+      setPoolReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [packId, level, pool, allWords]);
+
+  const effectivePool = levelPool ?? pool;
+  const questions = useMemo(
+    () => buildQuestions(effectivePool, allWords, QUESTIONS_PER_LEVEL),
+    [effectivePool, allWords, level],
+  );
   const [idx, setIdx] = useState(0);
   const [lives, setLives] = useState(STARTING_LIVES);
   const [correct, setCorrect] = useState(0);
