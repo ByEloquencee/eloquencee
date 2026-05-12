@@ -926,19 +926,9 @@ const Index = () => {
                     key={currentWord.id}
                     word={currentWord}
                     isFavorite={isFavorite(currentWord.id)}
-                    onToggleFavorite={() => {
-                      const wasFav = isFavorite(currentWord.id);
-                      toggleFavorite(currentWord.id);
-                      if (!wasFav) incrementProgress();
-                      else decrementProgress();
-                    }}
+                    onToggleFavorite={() => toggleFavorite(currentWord.id)}
                     isSaved={isWordSaved(currentWord.id)}
-                    onToggleSaved={() => {
-                      const wasSaved = isWordSaved(currentWord.id);
-                      toggleSaved(currentWord.id);
-                      if (!wasSaved) incrementProgress();
-                      else decrementProgress();
-                    }}
+                    onToggleSaved={() => toggleSaved(currentWord.id)}
                     onNext={handleNext}
                     onPrev={handlePrev}
                     canGoBack={history.length > 0}
@@ -955,13 +945,7 @@ const Index = () => {
                     }}
                     onAskAI={() => setAiChatOpen(true)}
                     folders={folders}
-                    onToggleFolder={(folderId) => {
-                      const folder = folders.find(f => f.id === folderId);
-                      const isAlreadyInFolder = folder?.wordIds.includes(currentWord.id);
-                      toggleWordInFolder(folderId, currentWord.id);
-                      if (!isAlreadyInFolder) incrementProgress();
-                      else decrementProgress();
-                    }}
+                    onToggleFolder={(folderId) => toggleWordInFolder(folderId, currentWord.id)}
                     onShare={() => setShareOpen(true)}
                     onReveal={incrementProgress}
                     onModeratorHide={isModerator && !currentWord.id.startsWith("custom-") ? async () => {
