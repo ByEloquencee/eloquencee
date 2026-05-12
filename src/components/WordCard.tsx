@@ -29,9 +29,10 @@ interface WordCardProps {
   onExternalDragEnd?: (offsetY: number) => void;
   onModeratorHide?: () => void;
   onModeratorEdit?: () => void;
+  onReveal?: () => void;
 }
 
-export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd, onModeratorHide, onModeratorEdit }: WordCardProps) {
+export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd, onModeratorHide, onModeratorEdit, onReveal }: WordCardProps) {
   const [revealed, setRevealed] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmHide, setConfirmHide] = useState(false);
@@ -65,7 +66,10 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
     window.speechSynthesis.speak(utterance);
   }, [word.word, word.category, speaking]);
 
-  const handleReveal = () => setRevealed(true);
+  const handleReveal = () => {
+    if (!revealed) onReveal?.();
+    setRevealed(true);
+  };
 
   const handleNext = useCallback(() => {
     setRevealed(false);
