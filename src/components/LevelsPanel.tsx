@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ChevronLeft, Lock, Check, Pencil } from "lucide-react";
+import { ChevronLeft, Lock, Check, Pencil, Database } from "lucide-react";
 import { useModerator } from "@/hooks/use-moderator";
 
 interface LevelsPanelProps {
@@ -10,6 +10,7 @@ interface LevelsPanelProps {
   onClose: () => void;
   onSelectLevel: (level: number) => void;
   onEditLevel?: (level: number) => void;
+  onEditBase?: () => void;
 }
 
 type LevelState = "completed" | "available" | "locked";
@@ -21,6 +22,7 @@ export function LevelsPanel({
   onClose,
   onSelectLevel,
   onEditLevel,
+  onEditBase,
 }: LevelsPanelProps) {
   const { isModerator } = useModerator();
   const currentLevel = Math.min(highestCompleted + 1, totalLevels);
@@ -53,7 +55,17 @@ export function LevelsPanel({
             Poziom {currentLevel} / {totalLevels}
           </span>
         </div>
-        <div className="w-9" />
+        {isModerator && onEditBase ? (
+          <button
+            onClick={onEditBase}
+            aria-label="Baza paczki"
+            className="h-9 w-9 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+          >
+            <Database size={18} />
+          </button>
+        ) : (
+          <div className="w-9" />
+        )}
       </div>
 
       {/* Pionowa linia czasu */}
