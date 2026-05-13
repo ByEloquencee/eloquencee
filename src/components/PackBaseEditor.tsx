@@ -118,6 +118,13 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
           </h2>
         </div>
         <button
+          onClick={() => setImportOpen(true)}
+          className="h-9 px-3 flex items-center gap-1.5 rounded-full border border-foreground/15 text-foreground text-xs font-medium hover:bg-secondary/40 transition-colors"
+        >
+          <Upload size={14} />
+          Import
+        </button>
+        <button
           onClick={() => setAdding((v) => !v)}
           className="h-9 px-3 flex items-center gap-1.5 rounded-full bg-foreground text-background text-xs font-medium hover:opacity-90 transition-opacity"
         >
