@@ -29,6 +29,7 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
   const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [swapTarget, setSwapTarget] = useState<{ wordId: string; label: string; level: number | null } | null>(null);
+  const [infoWord, setInfoWord] = useState<PolishWord | null>(null);
 
   const wordById = useMemo(() => {
     const m = new Map<string, PolishWord>();
