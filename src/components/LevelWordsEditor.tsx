@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, Plus, X, Search, Upload } from "lucide-react";
+import { ChevronLeft, Plus, X, Search, Upload, Info } from "lucide-react";
 import { toast } from "sonner";
 import type { PolishWord } from "@/data/words";
 import { supabase } from "@/integrations/supabase/client";
 import { PackImportDialog } from "./PackImportDialog";
+import { WordInfoDialog } from "./WordInfoDialog";
 
 interface LevelWordsEditorProps {
   packId: string;
@@ -27,6 +28,7 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
   const [adding, setAdding] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [infoWord, setInfoWord] = useState<PolishWord | null>(null);
 
   const wordById = useMemo(() => {
     const m = new Map<string, PolishWord>();
@@ -191,6 +193,14 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
                           )}
                         </div>
                         <button
+                          onClick={() => w && setInfoWord(w)}
+                          disabled={!w}
+                          aria-label="Pokaż informacje"
+                          className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-full disabled:opacity-30"
+                        >
+                          <Info size={16} />
+                        </button>
+                        <button
                           onClick={() => handleRemove(r.id)}
                           aria-label="Usuń"
                           className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors rounded-full"
@@ -264,6 +274,7 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
         packId={packId}
         level={level}
       />
+      <WordInfoDialog word={infoWord} onClose={() => setInfoWord(null)} />
     </motion.div>
   );
 }

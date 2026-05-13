@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload, CheckSquare, Square, Shuffle } from "lucide-react";
+import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload, CheckSquare, Square, Shuffle, Info } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { useGlobalWords, type GlobalWord } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ImportWordsDialog } from "@/components/ImportWordsDialog";
+import { WordInfoDialog, type WordInfoData } from "@/components/WordInfoDialog";
 
 const editableCategories = categories.filter(c => c.value !== "all" && c.value !== "własne");
 const difficultyOptions = [
@@ -31,6 +32,7 @@ export function AdminPanel() {
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiHint, setAiHint] = useState("");
   const [importOpen, setImportOpen] = useState(false);
+  const [infoWord, setInfoWord] = useState<WordInfoData | null>(null);
 
   // Bulk selection
   const [selectedStatic, setSelectedStatic] = useState<Set<string>>(new Set());
@@ -553,6 +555,13 @@ export function AdminPanel() {
                 {!selectMode && (
                   <div className="flex flex-col gap-1 flex-shrink-0">
                     <button
+                      onClick={() => setInfoWord({ word: w.word, partOfSpeech: w.part_of_speech, definition: w.definition, example: w.example, etymology: w.etymology })}
+                      className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                      title="Pokaż informacje"
+                    >
+                      <Info size={14} />
+                    </button>
+                    <button
                       onClick={() => openEditGlobal(w)}
                       className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
                       title="Edytuj"
@@ -623,6 +632,13 @@ export function AdminPanel() {
                   </div>
                   {!selectMode && (
                     <div className="flex flex-col gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => setInfoWord({ word: displayWord, partOfSpeech: displayPos, definition: displayDef, example: override?.example ?? w.example, etymology: override?.etymology ?? w.etymology })}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                        title="Pokaż informacje"
+                      >
+                        <Info size={14} />
+                      </button>
                       <button
                         onClick={() => openEditStatic(w)}
                         className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
@@ -851,6 +867,7 @@ export function AdminPanel() {
       </AnimatePresence>
 
       <ImportWordsDialog open={importOpen} onClose={() => setImportOpen(false)} />
+      <WordInfoDialog word={infoWord} onClose={() => setInfoWord(null)} />
     </div>
   );
 }

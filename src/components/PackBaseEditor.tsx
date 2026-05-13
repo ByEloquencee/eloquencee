@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, Plus, X, Search, Upload } from "lucide-react";
+import { ChevronLeft, Plus, X, Search, Upload, Info } from "lucide-react";
 import { toast } from "sonner";
 import type { PolishWord } from "@/data/words";
 import { supabase } from "@/integrations/supabase/client";
 import { PackImportDialog } from "./PackImportDialog";
 import { SwapLevelDialog } from "./SwapLevelDialog";
+import { WordInfoDialog } from "./WordInfoDialog";
 
 interface PackBaseEditorProps {
   packId: string;
@@ -28,6 +29,7 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
   const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [swapTarget, setSwapTarget] = useState<{ wordId: string; label: string; level: number | null } | null>(null);
+  const [infoWord, setInfoWord] = useState<PolishWord | null>(null);
 
   const wordById = useMemo(() => {
     const m = new Map<string, PolishWord>();
@@ -198,6 +200,14 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
                             )}
                           </div>
                           <button
+                            onClick={() => w && setInfoWord(w)}
+                            disabled={!w}
+                            aria-label="Pokaż informacje"
+                            className="h-7 w-7 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors disabled:opacity-30"
+                          >
+                            <Info size={14} />
+                          </button>
+                          <button
                             onClick={() =>
                               setSwapTarget({
                                 wordId: r.word_id,
@@ -292,6 +302,7 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
         currentLevel={swapTarget?.level ?? null}
         wordById={wordById}
       />
+      <WordInfoDialog word={infoWord} onClose={() => setInfoWord(null)} />
     </motion.div>
   );
 }
