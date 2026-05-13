@@ -28,6 +28,7 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
   const [adding, setAdding] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [infoWord, setInfoWord] = useState<PolishWord | null>(null);
 
   const wordById = useMemo(() => {
     const m = new Map<string, PolishWord>();
