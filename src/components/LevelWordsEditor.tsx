@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, Plus, X, Search } from "lucide-react";
+import { ChevronLeft, Plus, X, Search, Upload } from "lucide-react";
 import { toast } from "sonner";
 import type { PolishWord } from "@/data/words";
 import { supabase } from "@/integrations/supabase/client";
+import { PackImportDialog } from "./PackImportDialog";
 
 interface LevelWordsEditorProps {
   packId: string;
@@ -24,6 +25,7 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
   const [packBaseIds, setPackBaseIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
 
   const wordById = useMemo(() => {
@@ -130,6 +132,13 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
             Edycja poziomu {level}
           </h2>
         </div>
+        <button
+          onClick={() => setImportOpen(true)}
+          className="h-9 px-3 flex items-center gap-1.5 rounded-full border border-foreground/15 text-foreground text-xs font-medium hover:bg-secondary/40 transition-colors"
+        >
+          <Upload size={14} />
+          Import
+        </button>
         <button
           onClick={() => setAdding((v) => !v)}
           className="h-9 px-3 flex items-center gap-1.5 rounded-full bg-foreground text-background text-xs font-medium hover:opacity-90 transition-opacity"
@@ -248,6 +257,13 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
           )}
         </div>
       </div>
+      <PackImportDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={load}
+        packId={packId}
+        level={level}
+      />
     </motion.div>
   );
 }
