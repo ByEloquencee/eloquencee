@@ -82,6 +82,10 @@ export function PackImportDialog({
       .eq("pack_id", packId);
     let basePos = baseCount ?? 0;
 
+    const LEVEL_SIZE = 15;
+    const TOTAL_LEVELS = 5;
+
+    // For fixed-level import: count current items in that level
     let lvlPos = 0;
     if (level !== undefined) {
       const { count: lvlCount } = await supabase
@@ -91,6 +95,26 @@ export function PackImportDialog({
         .eq("level", level);
       lvlPos = lvlCount ?? 0;
     }
+
+    // For base import (no level): pre-compute per-level counts to distribute
+    const levelCounts: Record<number, number> = {};
+    if (level === undefined) {
+      const { data: allLvl } = await supabase
+        .from("pack_level_words")
+        .select("level")
+        .eq("pack_id", packId);
+      for (let l = 1; l <= TOTAL_LEVELS; l++) levelCounts[l] = 0;
+      (allLvl ?? []).forEach((r: any) => {
+        levelCounts[r.level] = (levelCounts[r.level] ?? 0) + 1;
+      });
+    }
+
+    const pickAutoLevel = (): number | null => {
+      for (let l = 1; l <= TOTAL_LEVELS; l++) {
+        if ((levelCounts[l] ?? 0) < LEVEL_SIZE) return l;
+      }
+      return null;
+    };
 
     for (let i = 0; i < parsed.length; i++) {
       const w = parsed[i];
