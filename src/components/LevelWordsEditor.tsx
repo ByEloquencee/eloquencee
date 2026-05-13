@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, Plus, X, Search, Upload } from "lucide-react";
+import { ChevronLeft, Plus, X, Search, Upload, Info } from "lucide-react";
 import { toast } from "sonner";
 import type { PolishWord } from "@/data/words";
 import { supabase } from "@/integrations/supabase/client";
 import { PackImportDialog } from "./PackImportDialog";
+import { WordInfoDialog } from "./WordInfoDialog";
 
 interface LevelWordsEditorProps {
   packId: string;
