@@ -24,6 +24,7 @@ interface Row {
 export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEditorProps) {
   const [rows, setRows] = useState<Row[]>([]);
   const [levelMap, setLevelMap] = useState<Map<string, number>>(new Map());
+  const [extraWords, setExtraWords] = useState<Map<string, PolishWord>>(new Map());
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
@@ -34,8 +35,11 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
   const wordById = useMemo(() => {
     const m = new Map<string, PolishWord>();
     pool.forEach((w) => m.set(w.id, w));
+    extraWords.forEach((w, id) => {
+      if (!m.has(id)) m.set(id, w);
+    });
     return m;
-  }, [pool]);
+  }, [pool, extraWords]);
 
   const load = async () => {
     setLoading(true);
@@ -54,6 +58,33 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
       toast.error("Nie udało się wczytać bazy paczki");
     } else {
       setRows(data ?? []);
+
+      // Fetch any global_words referenced by pack but missing from pool
+      const missingIds = (data ?? [])
+        .map((r: any) => r.word_id as string)
+        .filter((wid) => wid.startsWith("global-") && !pool.some((p) => p.id === wid))
+        .map((wid) => wid.replace(/^global-/, ""));
+      if (missingIds.length > 0) {
+        const { data: gw } = await supabase
+          .from("global_words")
+          .select("*")
+          .in("id", missingIds);
+        const m = new Map<string, PolishWord>();
+        (gw ?? []).forEach((w: any) => {
+          m.set(`global-${w.id}`, {
+            id: `global-${w.id}`,
+            word: w.word,
+            partOfSpeech: w.part_of_speech,
+            definition: w.definition,
+            example: w.example,
+            etymology: w.etymology || undefined,
+            category: w.category,
+          });
+        });
+        setExtraWords(m);
+      } else {
+        setExtraWords(new Map());
+      }
     }
     const m = new Map<string, number>();
     (lvlData ?? []).forEach((r: any) => m.set(r.word_id, r.level));
