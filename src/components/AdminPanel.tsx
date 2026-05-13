@@ -867,6 +867,7 @@ export function AdminPanel() {
       </AnimatePresence>
 
       <ImportWordsDialog open={importOpen} onClose={() => setImportOpen(false)} />
+      <WordInfoDialog word={infoWord} onClose={() => setInfoWord(null)} />
     </div>
   );
 }
