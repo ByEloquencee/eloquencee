@@ -32,6 +32,7 @@ export function AdminPanel() {
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiHint, setAiHint] = useState("");
   const [importOpen, setImportOpen] = useState(false);
+  const [infoWord, setInfoWord] = useState<WordInfoData | null>(null);
 
   // Bulk selection
   const [selectedStatic, setSelectedStatic] = useState<Set<string>>(new Set());
