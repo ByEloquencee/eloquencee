@@ -25,6 +25,7 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
   const [packBaseIds, setPackBaseIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
 
   const wordById = useMemo(() => {
