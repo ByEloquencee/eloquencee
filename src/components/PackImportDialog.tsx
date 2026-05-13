@@ -17,6 +17,7 @@ interface PackImportDialogProps {
 
 interface ParsedWord {
   word: string;
+  partOfSpeech: string;
   definition: string;
   example: string;
 }
@@ -41,8 +42,13 @@ export function PackImportDialog({
       const parts = line.includes("|")
         ? line.split("|").map((s) => s.trim())
         : line.split(" - ").map((s) => s.trim());
-      if (parts.length >= 2) {
-        out.push({ word: parts[0], definition: parts[1], example: parts[2] || "" });
+      if (parts.length >= 3) {
+        out.push({
+          word: parts[0],
+          partOfSpeech: parts[1],
+          definition: parts[2],
+          example: parts[3] || "",
+        });
       }
     }
     return out;
@@ -90,7 +96,7 @@ export function PackImportDialog({
             word: w.word,
             definition: w.definition,
             example: w.example,
-            part_of_speech: "",
+            part_of_speech: w.partOfSpeech,
             category: packCategory || packId,
             difficulty: estimateDifficulty(w.word),
             etymology: null,
@@ -181,7 +187,7 @@ export function PackImportDialog({
                 <p className="text-xs text-muted-foreground">
                   Format:{" "}
                   <span className="font-mono text-primary">
-                    słowo | definicja | przykład
+                    słowo | część mowy | definicja PWN | przykład użycia
                   </span>
                   <br />
                   Każde słowo w nowej linii. Przykład jest opcjonalny.
@@ -192,7 +198,7 @@ export function PackImportDialog({
               </div>
               <textarea
                 placeholder={
-                  "ontologia | dział filozofii o bycie | Ontologia bada naturę istnienia.\nepistemologia | teoria poznania | Epistemologia analizuje źródła wiedzy."
+                  "Ontologia | rzeczownik | Dział filozofii badający naturę bytu i istnienia. | Ontologia bada, czym jest byt.\nEpistemologia | rzeczownik | Teoria poznania zajmująca się źródłami wiedzy. | Epistemologia analizuje granice poznania."
                 }
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
