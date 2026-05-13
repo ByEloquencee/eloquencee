@@ -94,13 +94,24 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
     load();
   };
 
-  const handleRemove = async (id: string) => {
+  const handleRemove = async (id: string, wordId: string) => {
     const { error } = await supabase.from("pack_words").delete().eq("id", id);
     if (error) {
       toast.error("Nie udało się usunąć");
       return;
     }
+    // Also remove from level assignments
+    await supabase
+      .from("pack_level_words")
+      .delete()
+      .eq("pack_id", packId)
+      .eq("word_id", wordId);
     setRows((rs) => rs.filter((r) => r.id !== id));
+    setLevelMap((m) => {
+      const n = new Map(m);
+      n.delete(wordId);
+      return n;
+    });
   };
 
   return (
