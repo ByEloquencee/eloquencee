@@ -171,43 +171,61 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
                     Dodaj słowa, aby móc przypisywać je do poziomów.
                   </p>
                 </div>
-              ) : (
-                <ul className="space-y-2">
-                  {rows.map((r, i) => {
-                    const w = wordById.get(r.word_id);
-                    return (
-                      <li
-                        key={r.id}
-                        className="flex items-start gap-3 px-3 py-2.5 rounded-xl border border-foreground/10"
-                      >
-                        <span className="text-xs text-muted-foreground tabular-nums pt-0.5 w-6 text-right">
-                          {i + 1}.
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className="text-sm text-foreground truncate"
-                            style={{ fontFamily: "var(--font-display)" }}
-                          >
-                            {w?.word ?? r.word_id}
-                          </p>
-                          {w && (
-                            <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                              {w.definition}
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => handleRemove(r.id)}
-                          aria-label="Usuń"
-                          className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors rounded-full"
+                ) : (
+                  <ul className="space-y-2">
+                    {rows.map((r, i) => {
+                      const w = wordById.get(r.word_id);
+                      const lvl = levelMap.get(r.word_id);
+                      return (
+                        <li
+                          key={r.id}
+                          className="flex items-start gap-2 px-3 py-2.5 rounded-xl border border-foreground/10"
                         >
-                          <X size={16} />
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+                          <span className="text-xs text-muted-foreground tabular-nums pt-0.5 w-6 text-right">
+                            {i + 1}.
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className="text-sm text-foreground truncate"
+                              style={{ fontFamily: "var(--font-display)" }}
+                            >
+                              {w?.word ?? r.word_id}
+                            </p>
+                            {w && (
+                              <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                                {w.definition}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() =>
+                              setSwapTarget({
+                                wordId: r.word_id,
+                                label: w?.word ?? r.word_id,
+                                level: lvl ?? null,
+                              })
+                            }
+                            aria-label="Zmień poziom"
+                            className={`h-7 min-w-7 px-2 rounded-full text-[11px] font-medium transition-colors ${
+                              lvl
+                                ? "bg-foreground text-background hover:opacity-80"
+                                : "border border-foreground/15 text-muted-foreground hover:bg-secondary/40"
+                            }`}
+                          >
+                            {lvl ? `L${lvl}` : "—"}
+                          </button>
+                          <button
+                            onClick={() => handleRemove(r.id, r.word_id)}
+                            aria-label="Usuń"
+                            className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors rounded-full"
+                          >
+                            <X size={16} />
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
             </>
           )}
 
