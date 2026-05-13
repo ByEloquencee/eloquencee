@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import type { PolishWord } from "@/data/words";
 import { supabase } from "@/integrations/supabase/client";
 import { PackImportDialog } from "./PackImportDialog";
+import { SwapLevelDialog } from "./SwapLevelDialog";
 
 interface PackBaseEditorProps {
   packId: string;
