@@ -1,20 +1,13 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Minus, Loader2, RefreshCw } from "lucide-react";
+import { X, Plus, Minus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { categories } from "@/data/words";
+import { useAdminSuggestions } from "@/hooks/use-admin-suggestions";
 
 type Mode = "global" | "pack";
-
-interface Suggestion {
-  word: string;
-  part_of_speech: string;
-  definition: string;
-  example: string;
-  etymology: string;
-}
 
 interface Props {
   open: boolean;
@@ -29,45 +22,26 @@ const packOptions = categories.filter(
 export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
   const { user } = useAuth();
   const [category, setCategory] = useState<string>("ogólne");
-  const [loading, setLoading] = useState(false);
-  const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
   const [saving, setSaving] = useState(false);
+  const { current, queueSize, targetSize, consume, isReady } = useAdminSuggestions();
 
-  const fetchNext = useCallback(async () => {
-    setLoading(true);
-    setSuggestion(null);
-    try {
-      const { data, error } = await supabase.functions.invoke("generate-word", {
-        body: { category, difficulty: "advanced" },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      setSuggestion(data as Suggestion);
-    } catch (e: any) {
-      toast.error(e.message || "Błąd generowania");
-    } finally {
-      setLoading(false);
-    }
-  }, [category]);
-
-  useEffect(() => {
-    if (open) fetchNext();
-    else setSuggestion(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, category]);
+  const handleSkip = () => {
+    if (saving) return;
+    consume();
+  };
 
   const handleAccept = async () => {
-    if (!suggestion || !user) return;
+    if (!current || !user) return;
     setSaving(true);
     try {
       const { data: inserted, error: insErr } = await (supabase
         .from("global_words" as any)
         .insert({
-          word: suggestion.word,
-          part_of_speech: suggestion.part_of_speech,
-          definition: suggestion.definition,
-          example: suggestion.example,
-          etymology: suggestion.etymology || null,
+          word: current.word,
+          part_of_speech: current.part_of_speech,
+          definition: current.definition,
+          example: current.example,
+          etymology: current.etymology || null,
           category,
           difficulty: "advanced",
           created_by: user.id,
@@ -92,7 +66,7 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
       } else {
         toast.success("Dodano do bazy globalnej");
       }
-      fetchNext();
+      consume();
     } catch (e: any) {
       toast.error(e.message || "Nie udało się dodać");
     } finally {
@@ -119,9 +93,9 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
           className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
         >
           <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-            <div>
+            <div className="min-w-0">
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                Tylko admin
+                Tylko admin · {queueSize}/{targetSize} gotowych
               </p>
               <h2 className="text-base font-semibold" style={{ fontFamily: "var(--font-display)" }}>
                 {mode === "pack" ? "Słowo do paczki" : "Słowo globalne"}
@@ -153,55 +127,49 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
           </div>
 
           <div className="px-5 py-4 min-h-[200px] flex flex-col">
-            {loading ? (
+            {!isReady ? (
               <div className="flex-1 flex flex-col items-center justify-center gap-2 text-muted-foreground">
                 <Loader2 size={22} className="animate-spin" />
-                <p className="text-xs">Generowanie propozycji…</p>
+                <p className="text-xs">Przygotowywanie propozycji…</p>
+                <p className="text-[10px] text-muted-foreground/70">
+                  Działają w tle podczas korzystania z aplikacji
+                </p>
               </div>
-            ) : suggestion ? (
+            ) : current ? (
               <div className="flex-1 space-y-2">
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-2 flex-wrap">
                   <h3
                     className="text-xl font-semibold"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
-                    {suggestion.word}
+                    {current.word}
                   </h3>
                   <span className="text-[11px] text-muted-foreground italic">
-                    {suggestion.part_of_speech}
+                    {current.part_of_speech}
                   </span>
                 </div>
                 <p className="text-sm text-foreground leading-relaxed">
-                  {suggestion.definition}
+                  {current.definition}
                 </p>
-                {suggestion.example && (
+                {current.example && (
                   <p className="text-xs text-muted-foreground italic border-l-2 border-border pl-2">
-                    {suggestion.example}
+                    {current.example}
                   </p>
                 )}
-                {suggestion.etymology && (
+                {current.etymology && (
                   <p className="text-[11px] text-muted-foreground/80">
-                    Etym.: {suggestion.etymology}
+                    Etym.: {current.etymology}
                   </p>
                 )}
               </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <button
-                  onClick={fetchNext}
-                  className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
-                >
-                  <RefreshCw size={14} /> Spróbuj ponownie
-                </button>
-              </div>
-            )}
+            ) : null}
           </div>
 
           <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-border">
             <button
-              onClick={fetchNext}
-              disabled={loading || saving}
-              aria-label="Odrzuć i pokaż następne"
+              onClick={handleSkip}
+              disabled={saving || !current}
+              aria-label="Odrzuć"
               className="h-12 w-12 rounded-full border border-border flex items-center justify-center hover:bg-secondary transition-colors disabled:opacity-40"
             >
               <Minus size={20} />
@@ -213,7 +181,7 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
             </p>
             <button
               onClick={handleAccept}
-              disabled={loading || saving || !suggestion}
+              disabled={saving || !current}
               aria-label="Akceptuj i dodaj"
               className="h-12 w-12 rounded-full bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-40"
             >
