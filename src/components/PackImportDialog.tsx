@@ -43,11 +43,16 @@ export function PackImportDialog({
         ? line.split("|").map((s) => s.trim())
         : line.split(" - ").map((s) => s.trim());
       if (parts.length >= 3) {
+        const exampleRaw = parts[3] || "";
+        const examples = exampleRaw
+          .split("/")
+          .map((s) => s.trim())
+          .filter(Boolean);
         out.push({
           word: parts[0],
           partOfSpeech: parts[1],
           definition: parts[2],
-          example: parts[3] || "",
+          example: examples.join("\n"),
         });
       }
     }
@@ -187,10 +192,10 @@ export function PackImportDialog({
                 <p className="text-xs text-muted-foreground">
                   Format:{" "}
                   <span className="font-mono text-primary">
-                    słowo | część mowy | definicja PWN | przykład użycia
+                    słowo | część mowy | definicja PWN | przykład 1 / przykład 2
                   </span>
                   <br />
-                  Każde słowo w nowej linii. Przykład jest opcjonalny.
+                  Każde słowo w nowej linii. Przykłady są opcjonalne — drugi po „/”.
                   {level !== undefined
                     ? " Słowa zostaną dodane do bazy paczki i przypisane do tego poziomu."
                     : " Słowa zostaną dodane do globalnej bazy i bazy paczki."}
