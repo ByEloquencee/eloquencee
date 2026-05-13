@@ -633,6 +633,13 @@ export function AdminPanel() {
                   {!selectMode && (
                     <div className="flex flex-col gap-1 flex-shrink-0">
                       <button
+                        onClick={() => setInfoWord({ word: displayWord, partOfSpeech: displayPos, definition: displayDef, example: override?.example ?? w.example, etymology: override?.etymology ?? w.etymology })}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
+                        title="Pokaż informacje"
+                      >
+                        <Info size={14} />
+                      </button>
+                      <button
                         onClick={() => openEditStatic(w)}
                         className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer"
                         title="Edytuj"
