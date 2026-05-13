@@ -235,6 +235,12 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
           )}
         </div>
       </div>
+      <PackImportDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={load}
+        packId={packId}
+      />
     </motion.div>
   );
 }
