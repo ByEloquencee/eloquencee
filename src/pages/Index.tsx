@@ -32,6 +32,7 @@ import { usePackProgress } from "@/hooks/use-pack-progress";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
+import { AdminWordSuggestionDialog } from "@/components/AdminWordSuggestionDialog";
 import { CreateFolderDialog } from "@/components/CreateFolderDialog";
 import { FolderDropdown } from "@/components/FolderDropdown";
 import { SpiderWeb } from "@/components/SpiderWeb";
@@ -154,6 +155,7 @@ const Index = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
+  const [adminSuggestMode, setAdminSuggestMode] = useState<"global" | "pack" | null>(null);
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [createSetOpen, setCreateSetOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
@@ -1104,6 +1106,14 @@ const Index = () => {
           }
           setCreateFolderOpen(true);
         }}
+        isModerator={isModerator}
+        onAdminAddGlobal={() => setAdminSuggestMode("global")}
+        onAdminAddPack={() => setAdminSuggestMode("pack")}
+      />
+      <AdminWordSuggestionDialog
+        open={adminSuggestMode !== null}
+        mode={adminSuggestMode ?? "global"}
+        onClose={() => setAdminSuggestMode(null)}
       />
       <FlashcardSetCreator
         open={createSetOpen}
