@@ -193,6 +193,14 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
                           )}
                         </div>
                         <button
+                          onClick={() => w && setInfoWord(w)}
+                          disabled={!w}
+                          aria-label="Pokaż informacje"
+                          className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-full disabled:opacity-30"
+                        >
+                          <Info size={16} />
+                        </button>
+                        <button
                           onClick={() => handleRemove(r.id)}
                           aria-label="Usuń"
                           className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors rounded-full"
