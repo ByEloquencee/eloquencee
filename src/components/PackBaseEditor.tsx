@@ -302,6 +302,7 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
         currentLevel={swapTarget?.level ?? null}
         wordById={wordById}
       />
+      <WordInfoDialog word={infoWord} onClose={() => setInfoWord(null)} />
     </motion.div>
   );
 }
