@@ -99,6 +99,8 @@ export function PlusMenuDialog({ open, onClose, onAddWord, onCreateFolder, isMod
               </>
             )}
           </div>
+        </motion.div>
+      </motion.div>
     </AnimatePresence>
   );
 }
