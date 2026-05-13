@@ -200,6 +200,14 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
                             )}
                           </div>
                           <button
+                            onClick={() => w && setInfoWord(w)}
+                            disabled={!w}
+                            aria-label="Pokaż informacje"
+                            className="h-7 w-7 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors disabled:opacity-30"
+                          >
+                            <Info size={14} />
+                          </button>
+                          <button
                             onClick={() =>
                               setSwapTarget({
                                 wordId: r.word_id,
