@@ -274,6 +274,7 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
         packId={packId}
         level={level}
       />
+      <WordInfoDialog word={infoWord} onClose={() => setInfoWord(null)} />
     </motion.div>
   );
 }
