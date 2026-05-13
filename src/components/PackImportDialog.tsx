@@ -154,6 +154,21 @@ export function PackImportDialog({
             created_by: user.id,
           });
           if (plErr) throw plErr;
+        } else {
+          // Auto-distribute to levels of 15
+          const autoLvl = pickAutoLevel();
+          if (autoLvl !== null) {
+            const pos = levelCounts[autoLvl] ?? 0;
+            const { error: plErr } = await supabase.from("pack_level_words").insert({
+              pack_id: packId,
+              level: autoLvl,
+              word_id: wordId,
+              position: pos,
+              created_by: user.id,
+            });
+            if (plErr) throw plErr;
+            levelCounts[autoLvl] = pos + 1;
+          }
         }
 
         success++;
