@@ -22,10 +22,12 @@ interface Row {
 
 export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEditorProps) {
   const [rows, setRows] = useState<Row[]>([]);
+  const [levelMap, setLevelMap] = useState<Map<string, number>>(new Map());
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [swapTarget, setSwapTarget] = useState<{ wordId: string; label: string; level: number | null } | null>(null);
 
   const wordById = useMemo(() => {
     const m = new Map<string, PolishWord>();
@@ -35,16 +37,25 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("pack_words")
-      .select("id, word_id, position")
-      .eq("pack_id", packId)
-      .order("position", { ascending: true });
+    const [{ data, error }, { data: lvlData }] = await Promise.all([
+      supabase
+        .from("pack_words")
+        .select("id, word_id, position")
+        .eq("pack_id", packId)
+        .order("position", { ascending: true }),
+      supabase
+        .from("pack_level_words")
+        .select("word_id, level")
+        .eq("pack_id", packId),
+    ]);
     if (error) {
       toast.error("Nie udało się wczytać bazy paczki");
     } else {
       setRows(data ?? []);
     }
+    const m = new Map<string, number>();
+    (lvlData ?? []).forEach((r: any) => m.set(r.word_id, r.level));
+    setLevelMap(m);
     setLoading(false);
   };
 
