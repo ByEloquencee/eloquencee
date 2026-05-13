@@ -257,6 +257,13 @@ export function LevelWordsEditor({ packId, packLabel, level, pool, onClose }: Le
           )}
         </div>
       </div>
+      <PackImportDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={load}
+        packId={packId}
+        level={level}
+      />
     </motion.div>
   );
 }
