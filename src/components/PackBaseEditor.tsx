@@ -282,6 +282,16 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
         onImported={load}
         packId={packId}
       />
+      <SwapLevelDialog
+        open={swapTarget !== null}
+        onClose={() => setSwapTarget(null)}
+        onDone={load}
+        packId={packId}
+        wordId={swapTarget?.wordId ?? ""}
+        wordLabel={swapTarget?.label ?? ""}
+        currentLevel={swapTarget?.level ?? null}
+        wordById={wordById}
+      />
     </motion.div>
   );
 }
