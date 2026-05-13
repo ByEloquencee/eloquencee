@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import type { PolishWord } from "@/data/words";
 import { supabase } from "@/integrations/supabase/client";
 import { PackImportDialog } from "./PackImportDialog";
+import { SwapLevelDialog } from "./SwapLevelDialog";
 
 interface PackBaseEditorProps {
   packId: string;
@@ -21,10 +22,12 @@ interface Row {
 
 export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEditorProps) {
   const [rows, setRows] = useState<Row[]>([]);
+  const [levelMap, setLevelMap] = useState<Map<string, number>>(new Map());
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [swapTarget, setSwapTarget] = useState<{ wordId: string; label: string; level: number | null } | null>(null);
 
   const wordById = useMemo(() => {
     const m = new Map<string, PolishWord>();
@@ -34,16 +37,25 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("pack_words")
-      .select("id, word_id, position")
-      .eq("pack_id", packId)
-      .order("position", { ascending: true });
+    const [{ data, error }, { data: lvlData }] = await Promise.all([
+      supabase
+        .from("pack_words")
+        .select("id, word_id, position")
+        .eq("pack_id", packId)
+        .order("position", { ascending: true }),
+      supabase
+        .from("pack_level_words")
+        .select("word_id, level")
+        .eq("pack_id", packId),
+    ]);
     if (error) {
       toast.error("Nie udało się wczytać bazy paczki");
     } else {
       setRows(data ?? []);
     }
+    const m = new Map<string, number>();
+    (lvlData ?? []).forEach((r: any) => m.set(r.word_id, r.level));
+    setLevelMap(m);
     setLoading(false);
   };
 
@@ -82,13 +94,24 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
     load();
   };
 
-  const handleRemove = async (id: string) => {
+  const handleRemove = async (id: string, wordId: string) => {
     const { error } = await supabase.from("pack_words").delete().eq("id", id);
     if (error) {
       toast.error("Nie udało się usunąć");
       return;
     }
+    // Also remove from level assignments
+    await supabase
+      .from("pack_level_words")
+      .delete()
+      .eq("pack_id", packId)
+      .eq("word_id", wordId);
     setRows((rs) => rs.filter((r) => r.id !== id));
+    setLevelMap((m) => {
+      const n = new Map(m);
+      n.delete(wordId);
+      return n;
+    });
   };
 
   return (
@@ -148,43 +171,61 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
                     Dodaj słowa, aby móc przypisywać je do poziomów.
                   </p>
                 </div>
-              ) : (
-                <ul className="space-y-2">
-                  {rows.map((r, i) => {
-                    const w = wordById.get(r.word_id);
-                    return (
-                      <li
-                        key={r.id}
-                        className="flex items-start gap-3 px-3 py-2.5 rounded-xl border border-foreground/10"
-                      >
-                        <span className="text-xs text-muted-foreground tabular-nums pt-0.5 w-6 text-right">
-                          {i + 1}.
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className="text-sm text-foreground truncate"
-                            style={{ fontFamily: "var(--font-display)" }}
-                          >
-                            {w?.word ?? r.word_id}
-                          </p>
-                          {w && (
-                            <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                              {w.definition}
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => handleRemove(r.id)}
-                          aria-label="Usuń"
-                          className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors rounded-full"
+                ) : (
+                  <ul className="space-y-2">
+                    {rows.map((r, i) => {
+                      const w = wordById.get(r.word_id);
+                      const lvl = levelMap.get(r.word_id);
+                      return (
+                        <li
+                          key={r.id}
+                          className="flex items-start gap-2 px-3 py-2.5 rounded-xl border border-foreground/10"
                         >
-                          <X size={16} />
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+                          <span className="text-xs text-muted-foreground tabular-nums pt-0.5 w-6 text-right">
+                            {i + 1}.
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className="text-sm text-foreground truncate"
+                              style={{ fontFamily: "var(--font-display)" }}
+                            >
+                              {w?.word ?? r.word_id}
+                            </p>
+                            {w && (
+                              <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                                {w.definition}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() =>
+                              setSwapTarget({
+                                wordId: r.word_id,
+                                label: w?.word ?? r.word_id,
+                                level: lvl ?? null,
+                              })
+                            }
+                            aria-label="Zmień poziom"
+                            className={`h-7 min-w-7 px-2 rounded-full text-[11px] font-medium transition-colors ${
+                              lvl
+                                ? "bg-foreground text-background hover:opacity-80"
+                                : "border border-foreground/15 text-muted-foreground hover:bg-secondary/40"
+                            }`}
+                          >
+                            {lvl ? `L${lvl}` : "—"}
+                          </button>
+                          <button
+                            onClick={() => handleRemove(r.id, r.word_id)}
+                            aria-label="Usuń"
+                            className="h-8 w-8 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors rounded-full"
+                          >
+                            <X size={16} />
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
             </>
           )}
 
@@ -240,6 +281,16 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
         onClose={() => setImportOpen(false)}
         onImported={load}
         packId={packId}
+      />
+      <SwapLevelDialog
+        open={swapTarget !== null}
+        onClose={() => setSwapTarget(null)}
+        onDone={load}
+        packId={packId}
+        wordId={swapTarget?.wordId ?? ""}
+        wordLabel={swapTarget?.label ?? ""}
+        currentLevel={swapTarget?.level ?? null}
+        wordById={wordById}
       />
     </motion.div>
   );
