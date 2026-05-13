@@ -23,6 +23,7 @@ export function PackBaseEditor({ packId, packLabel, pool, onClose }: PackBaseEdi
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [query, setQuery] = useState("");
 
   const wordById = useMemo(() => {
