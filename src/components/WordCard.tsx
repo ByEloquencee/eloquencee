@@ -222,15 +222,7 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                   </motion.div>
                 )}
               </AnimatePresence>
-              {word.isSponsored && (
-                <p
-                  className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary"
-                  title={word.sponsorName ? `Sponsor: ${word.sponsorName}` : "Reklama"}
-                >
-                  Reklama{word.sponsorName ? ` · ${word.sponsorName}` : ""}
-                </p>
-              )}
-              <div className={`flex items-center justify-center gap-1.5 ${word.isSponsored ? "mt-1" : ""}`}>
+              <div className="flex items-center justify-center gap-1.5">
                 {word.category === "ciekawi_ludzie" && (
                   <UserRound size={14} className="text-primary" />
                 )}
@@ -261,11 +253,15 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
               <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
                 {word.word}
               </h1>
-              {word.etymology && (
+              {word.isSponsored ? (
+                <p className="mt-2 text-sm font-semibold italic text-primary">
+                  Słowo sponsorowane
+                </p>
+              ) : word.etymology ? (
                 <p className="mt-2 text-sm text-muted-foreground italic">
                   {word.etymology}
                 </p>
-              )}
+              ) : null}
             </div>
 
             {/* Definition area */}
