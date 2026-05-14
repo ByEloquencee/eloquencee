@@ -253,11 +253,15 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
               <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
                 {word.word}
               </h1>
-              {word.etymology && (
+              {word.isSponsored ? (
+                <p className="mt-2 text-sm font-semibold italic text-primary">
+                  Słowo sponsorowane
+                </p>
+              ) : word.etymology ? (
                 <p className="mt-2 text-sm text-muted-foreground italic">
                   {word.etymology}
                 </p>
-              )}
+              ) : null}
             </div>
 
             {/* Definition area */}
