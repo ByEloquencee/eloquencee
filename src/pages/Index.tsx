@@ -45,6 +45,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { useDailyProgress } from "@/hooks/use-daily-progress";
 import { useModerator } from "@/hooks/use-moderator";
 import { useGlobalWords } from "@/hooks/use-global-words";
+import { useSponsoredWords } from "@/hooks/use-sponsored-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
 import { useLearningHistory } from "@/hooks/use-learning-history";
 import { useWeeklyFavorites } from "@/hooks/use-weekly-favorites";
@@ -118,6 +119,7 @@ const Index = () => {
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
+  const { asPolishWords: sponsoredPolishWords } = useSponsoredWords();
   const { hiddenIds, overrides, hideWord, saveOverride } = useStaticWordManagement();
   const { isPremium, loading: subLoading } = useSubscription();
   const [premiumOpen, setPremiumOpen] = useState(false);
@@ -316,8 +318,8 @@ const Index = () => {
       w => !builtInNames.has(w.word.toLowerCase().trim())
     );
 
-    return [...filteredBuiltIn, ...uniqueGlobal, ...customWords];
-  }, [customWords, globalPolishWords, hiddenIds, overrides]);
+    return [...filteredBuiltIn, ...uniqueGlobal, ...customWords, ...sponsoredPolishWords];
+  }, [customWords, globalPolishWords, hiddenIds, overrides, sponsoredPolishWords]);
 
   const favoriteWords = useMemo(
     () => allWords.filter((w) => favorites.includes(w.id)),

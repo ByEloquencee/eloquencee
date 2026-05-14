@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload, CheckSquare, Square, Shuffle, Info } from "lucide-react";
+import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload, CheckSquare, Square, Shuffle, Info, Megaphone } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { useGlobalWords, type GlobalWord } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
+import { useSponsoredWords, type SponsoredWord } from "@/hooks/use-sponsored-words";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -23,7 +24,11 @@ export function AdminPanel() {
   const { user } = useAuth();
   const { globalWords, addWord, deleteWord, loading, refetch: refetchGlobal } = useGlobalWords();
   const { hiddenIds, overrides, hideWord, unhideWord, saveOverride, deleteOverride } = useStaticWordManagement();
-  const [tab, setTab] = useState<"static" | "global" | "suggestions">("global");
+  const { sponsoredWords, updateSponsored, loading: sponsoredLoading } = useSponsoredWords();
+  const [tab, setTab] = useState<"static" | "global" | "suggestions" | "ads">("global");
+  const [editingSponsored, setEditingSponsored] = useState<SponsoredWord | null>(null);
+  const [sponsoredForm, setSponsoredForm] = useState({ sponsor_name: "", word: "", part_of_speech: "", definition: "", example: "", etymology: "", link: "", active: true });
+  const [sponsoredSubmitting, setSponsoredSubmitting] = useState(false);
   const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -53,13 +58,51 @@ export function AdminPanel() {
     setSuggestionsLoaded(true);
   };
 
-  const handleTabChange = (newTab: "static" | "global" | "suggestions") => {
+  const handleTabChange = (newTab: "static" | "global" | "suggestions" | "ads") => {
     setTab(newTab);
     setSelectMode(false);
     setSelectedStatic(new Set());
     setSelectedGlobal(new Set());
     if (newTab === "suggestions" && !suggestionsLoaded) {
       loadSuggestions();
+    }
+  };
+
+  const openEditSponsored = (s: SponsoredWord) => {
+    setSponsoredForm({
+      sponsor_name: s.sponsor_name,
+      word: s.word,
+      part_of_speech: s.part_of_speech,
+      definition: s.definition,
+      example: s.example,
+      etymology: s.etymology || "",
+      link: s.link || "",
+      active: s.active,
+    });
+    setEditingSponsored(s);
+  };
+
+  const handleSponsoredSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSponsored || !sponsoredForm.word.trim() || !sponsoredForm.definition.trim()) return;
+    setSponsoredSubmitting(true);
+    try {
+      await updateSponsored(editingSponsored.id, {
+        sponsor_name: sponsoredForm.sponsor_name.trim(),
+        word: sponsoredForm.word.trim(),
+        part_of_speech: sponsoredForm.part_of_speech.trim(),
+        definition: sponsoredForm.definition.trim(),
+        example: sponsoredForm.example.trim(),
+        etymology: sponsoredForm.etymology.trim() || null,
+        link: sponsoredForm.link.trim() || null,
+        active: sponsoredForm.active,
+      });
+      toast.success("Reklama zaktualizowana!");
+      setEditingSponsored(null);
+    } catch (err: any) {
+      toast.error(err.message || "Nie udało się zapisać");
+    } finally {
+      setSponsoredSubmitting(false);
     }
   };
 
@@ -401,10 +444,21 @@ export function AdminPanel() {
               Propozycje
             </span>
           </button>
+          <button
+            onClick={() => handleTabChange("ads")}
+            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+              tab === "ads" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+            }`}
+          >
+            <span className="flex items-center justify-center gap-1">
+              <Megaphone size={12} />
+              Reklamy
+            </span>
+          </button>
         </div>
 
         {/* Search + Actions */}
-        {tab !== "suggestions" && (
+        {tab !== "suggestions" && tab !== "ads" && (
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -453,7 +507,7 @@ export function AdminPanel() {
         )}
 
         {/* Bulk action bar */}
-        {selectMode && tab !== "suggestions" && (
+        {selectMode && tab !== "suggestions" && tab !== "ads" && (
           <div className="flex items-center gap-2">
             <button
               onClick={tab === "static" ? selectAllStatic : selectAllGlobal}
@@ -482,7 +536,45 @@ export function AdminPanel() {
 
       {/* Word list */}
       <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {tab === "suggestions" ? (
+        {tab === "ads" ? (
+          sponsoredLoading ? (
+            <p className="text-sm text-muted-foreground text-center py-8">Ładowanie...</p>
+          ) : sponsoredWords.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">Brak reklam.</p>
+          ) : (
+            sponsoredWords.map((s) => (
+              <div key={s.id} className="flex items-start gap-2 p-3 rounded-xl bg-card border border-border">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-md bg-primary text-primary-foreground">
+                      Reklama
+                    </span>
+                    <span className="text-sm font-semibold truncate">{s.word}</span>
+                    {s.sponsor_name && (
+                      <span className="text-[10px] text-muted-foreground">· {s.sponsor_name}</span>
+                    )}
+                    {!s.active && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground">
+                        nieaktywna
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{s.definition}</p>
+                  {s.link && (
+                    <p className="text-[10px] text-primary mt-0.5 truncate">{s.link}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => openEditSponsored(s)}
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer flex-shrink-0"
+                  title="Edytuj reklamę"
+                >
+                  <Pencil size={14} />
+                </button>
+              </div>
+            ))
+          )
+        ) : tab === "suggestions" ? (
           suggestionsLoading ? (
             <p className="text-sm text-muted-foreground text-center py-8">Ładowanie...</p>
           ) : suggestions.length === 0 ? (
@@ -868,6 +960,57 @@ export function AdminPanel() {
 
       <ImportWordsDialog open={importOpen} onClose={() => setImportOpen(false)} />
       <WordInfoDialog word={infoWord} onClose={() => setInfoWord(null)} />
+
+      {/* Edit sponsored word modal */}
+      <AnimatePresence>
+        {editingSponsored && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm p-4"
+            onClick={() => setEditingSponsored(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between p-5 border-b border-border">
+                <h2 className="text-lg font-semibold flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
+                  <Megaphone size={16} className="text-primary" />
+                  Edytuj reklamę
+                </h2>
+                <button onClick={() => setEditingSponsored(null)} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
+                  <X size={18} />
+                </button>
+              </div>
+              <form onSubmit={handleSponsoredSubmit} className="p-5 space-y-3">
+                <input type="text" placeholder="Nazwa sponsora" value={sponsoredForm.sponsor_name} onChange={(e) => setSponsoredForm(f => ({ ...f, sponsor_name: e.target.value }))} maxLength={100} className={inputClass} />
+                <input type="text" placeholder="Słowo *" value={sponsoredForm.word} onChange={(e) => setSponsoredForm(f => ({ ...f, word: e.target.value }))} required maxLength={100} className={inputClass} />
+                <input type="text" placeholder="Część mowy / podtytuł" value={sponsoredForm.part_of_speech} onChange={(e) => setSponsoredForm(f => ({ ...f, part_of_speech: e.target.value }))} maxLength={50} className={inputClass} />
+                <textarea placeholder="Definicja / treść reklamy *" value={sponsoredForm.definition} onChange={(e) => setSponsoredForm(f => ({ ...f, definition: e.target.value }))} required maxLength={500} rows={4} className={`${inputClass} resize-none`} />
+                <input type="text" placeholder="Przykład użycia" value={sponsoredForm.example} onChange={(e) => setSponsoredForm(f => ({ ...f, example: e.target.value }))} maxLength={300} className={inputClass} />
+                <input type="text" placeholder="Etymologia (opcjonalnie)" value={sponsoredForm.etymology} onChange={(e) => setSponsoredForm(f => ({ ...f, etymology: e.target.value }))} maxLength={200} className={inputClass} />
+                <input type="url" placeholder="Link (np. https://...)" value={sponsoredForm.link} onChange={(e) => setSponsoredForm(f => ({ ...f, link: e.target.value }))} maxLength={500} className={inputClass} />
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={sponsoredForm.active} onChange={(e) => setSponsoredForm(f => ({ ...f, active: e.target.checked }))} />
+                  Aktywna (pokazuj w aplikacji)
+                </label>
+                <button
+                  type="submit"
+                  disabled={sponsoredSubmitting || !sponsoredForm.word.trim() || !sponsoredForm.definition.trim()}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
+                >
+                  {sponsoredSubmitting ? "Zapisywanie..." : "Zapisz"}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

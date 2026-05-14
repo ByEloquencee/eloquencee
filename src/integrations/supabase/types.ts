@@ -378,6 +378,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sponsored_words: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          definition: string
+          etymology: string | null
+          example: string
+          id: string
+          link: string | null
+          part_of_speech: string
+          sponsor_name: string
+          updated_at: string
+          word: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          definition: string
+          etymology?: string | null
+          example?: string
+          id?: string
+          link?: string | null
+          part_of_speech?: string
+          sponsor_name?: string
+          updated_at?: string
+          word: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          definition?: string
+          etymology?: string | null
+          example?: string
+          id?: string
+          link?: string | null
+          part_of_speech?: string
+          sponsor_name?: string
+          updated_at?: string
+          word?: string
+        }
+        Relationships: []
+      }
       static_word_overrides: {
         Row: {
           category: string | null

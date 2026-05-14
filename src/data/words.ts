@@ -9,6 +9,9 @@ export interface PolishWord {
   etymology?: string;
   category: WordCategory;
   difficulty?: "beginner" | "intermediate" | "advanced";
+  isSponsored?: boolean;
+  sponsorName?: string;
+  sponsorLink?: string;
 }
 
 export const categories: { value: WordCategory | "all"; label: string }[] = [
