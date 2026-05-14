@@ -24,7 +24,11 @@ export function AdminPanel() {
   const { user } = useAuth();
   const { globalWords, addWord, deleteWord, loading, refetch: refetchGlobal } = useGlobalWords();
   const { hiddenIds, overrides, hideWord, unhideWord, saveOverride, deleteOverride } = useStaticWordManagement();
-  const [tab, setTab] = useState<"static" | "global" | "suggestions">("global");
+  const { sponsoredWords, updateSponsored, loading: sponsoredLoading } = useSponsoredWords();
+  const [tab, setTab] = useState<"static" | "global" | "suggestions" | "ads">("global");
+  const [editingSponsored, setEditingSponsored] = useState<SponsoredWord | null>(null);
+  const [sponsoredForm, setSponsoredForm] = useState({ sponsor_name: "", word: "", part_of_speech: "", definition: "", example: "", etymology: "", link: "", active: true });
+  const [sponsoredSubmitting, setSponsoredSubmitting] = useState(false);
   const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
