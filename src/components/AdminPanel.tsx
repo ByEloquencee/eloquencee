@@ -536,7 +536,45 @@ export function AdminPanel() {
 
       {/* Word list */}
       <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {tab === "suggestions" ? (
+        {tab === "ads" ? (
+          sponsoredLoading ? (
+            <p className="text-sm text-muted-foreground text-center py-8">Ładowanie...</p>
+          ) : sponsoredWords.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">Brak reklam.</p>
+          ) : (
+            sponsoredWords.map((s) => (
+              <div key={s.id} className="flex items-start gap-2 p-3 rounded-xl bg-card border border-border">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-md bg-primary text-primary-foreground">
+                      Reklama
+                    </span>
+                    <span className="text-sm font-semibold truncate">{s.word}</span>
+                    {s.sponsor_name && (
+                      <span className="text-[10px] text-muted-foreground">· {s.sponsor_name}</span>
+                    )}
+                    {!s.active && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground">
+                        nieaktywna
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{s.definition}</p>
+                  {s.link && (
+                    <p className="text-[10px] text-primary mt-0.5 truncate">{s.link}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => openEditSponsored(s)}
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary transition-colors cursor-pointer flex-shrink-0"
+                  title="Edytuj reklamę"
+                >
+                  <Pencil size={14} />
+                </button>
+              </div>
+            ))
+          )
+        ) : tab === "suggestions" ? (
           suggestionsLoading ? (
             <p className="text-sm text-muted-foreground text-center py-8">Ładowanie...</p>
           ) : suggestions.length === 0 ? (
