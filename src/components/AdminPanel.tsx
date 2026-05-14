@@ -507,7 +507,7 @@ export function AdminPanel() {
         )}
 
         {/* Bulk action bar */}
-        {selectMode && tab !== "suggestions" && (
+        {selectMode && tab !== "suggestions" && tab !== "ads" && (
           <div className="flex items-center gap-2">
             <button
               onClick={tab === "static" ? selectAllStatic : selectAllGlobal}
