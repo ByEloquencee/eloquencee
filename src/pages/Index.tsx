@@ -119,6 +119,7 @@ const Index = () => {
   const { sets: flashcardSets, createSet, deleteSet, refetch: refetchSets } = useFlashcardSets();
   const { isModerator } = useModerator();
   const { asPolishWords: globalPolishWords } = useGlobalWords();
+  const { asPolishWords: sponsoredPolishWords } = useSponsoredWords();
   const { hiddenIds, overrides, hideWord, saveOverride } = useStaticWordManagement();
   const { isPremium, loading: subLoading } = useSubscription();
   const [premiumOpen, setPremiumOpen] = useState(false);
