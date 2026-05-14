@@ -444,10 +444,21 @@ export function AdminPanel() {
               Propozycje
             </span>
           </button>
+          <button
+            onClick={() => handleTabChange("ads")}
+            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+              tab === "ads" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+            }`}
+          >
+            <span className="flex items-center justify-center gap-1">
+              <Megaphone size={12} />
+              Reklamy
+            </span>
+          </button>
         </div>
 
         {/* Search + Actions */}
-        {tab !== "suggestions" && (
+        {tab !== "suggestions" && tab !== "ads" && (
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
