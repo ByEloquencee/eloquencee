@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useAnimationControls, useMotionValue, animate } from "framer-motion";
-import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Bug, Bookmark, Brain, BookOpen, Lightbulb, Users, Briefcase, Church, Landmark, Palette, Globe, Heart as HeartIcon, Sparkles } from "lucide-react";
+import { Heart, Shuffle, Plus, User, ChevronDown, GraduationCap, Bug, Bookmark, Brain, BookOpen, Lightbulb, Users, Briefcase, Church, Landmark, Palette, Globe, Heart as HeartIcon, Sparkles, Megaphone } from "lucide-react";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { WordCard } from "@/components/WordCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -654,6 +654,34 @@ const Index = () => {
                 >
                   <Bug size={14} />
                   🕷️
+                </button>
+              )}
+              {isModerator && (
+                <button
+                  onClick={() => {
+                    if (sponsoredPolishWords.length === 0) {
+                      toast.error("Brak aktywnych reklam");
+                      return;
+                    }
+                    const sponsored = sponsoredPolishWords[0];
+                    // Reset filters so the sponsored word is guaranteed to be visible
+                    setViewMode("all");
+                    setActiveFolderId(null);
+                    setSelectedCategories(["all"]);
+                    // Jump to the sponsored word in the upcoming filteredWords
+                    setTimeout(() => {
+                      const idx = allWords.findIndex((w) => w.id === sponsored.id);
+                      if (idx >= 0) {
+                        setHistory((prev) => [...prev, currentIndex]);
+                        setCurrentIndex(idx);
+                        if (navigator.vibrate) navigator.vibrate(8);
+                      }
+                    }, 0);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer bg-primary text-primary-foreground hover:opacity-90"
+                  title="Przywołaj słowo sponsorowane (admin)"
+                >
+                  <Megaphone size={14} />
                 </button>
               )}
               <DailyProgress current={todayCount} goal={profile?.daily_goal ?? 5} />
