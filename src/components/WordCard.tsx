@@ -253,6 +253,16 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
               <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
                 {word.word}
               </h1>
+              {word.isSponsored && (
+                <div className="mt-2 flex items-center justify-center">
+                  <span
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest shadow-sm"
+                    title={word.sponsorName ? `Sponsor: ${word.sponsorName}` : "Reklama"}
+                  >
+                    Reklama{word.sponsorName ? ` · ${word.sponsorName}` : ""}
+                  </span>
+                </div>
+              )}
               {word.etymology && (
                 <p className="mt-2 text-sm text-muted-foreground italic">
                   {word.etymology}
