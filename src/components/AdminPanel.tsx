@@ -58,13 +58,51 @@ export function AdminPanel() {
     setSuggestionsLoaded(true);
   };
 
-  const handleTabChange = (newTab: "static" | "global" | "suggestions") => {
+  const handleTabChange = (newTab: "static" | "global" | "suggestions" | "ads") => {
     setTab(newTab);
     setSelectMode(false);
     setSelectedStatic(new Set());
     setSelectedGlobal(new Set());
     if (newTab === "suggestions" && !suggestionsLoaded) {
       loadSuggestions();
+    }
+  };
+
+  const openEditSponsored = (s: SponsoredWord) => {
+    setSponsoredForm({
+      sponsor_name: s.sponsor_name,
+      word: s.word,
+      part_of_speech: s.part_of_speech,
+      definition: s.definition,
+      example: s.example,
+      etymology: s.etymology || "",
+      link: s.link || "",
+      active: s.active,
+    });
+    setEditingSponsored(s);
+  };
+
+  const handleSponsoredSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSponsored || !sponsoredForm.word.trim() || !sponsoredForm.definition.trim()) return;
+    setSponsoredSubmitting(true);
+    try {
+      await updateSponsored(editingSponsored.id, {
+        sponsor_name: sponsoredForm.sponsor_name.trim(),
+        word: sponsoredForm.word.trim(),
+        part_of_speech: sponsoredForm.part_of_speech.trim(),
+        definition: sponsoredForm.definition.trim(),
+        example: sponsoredForm.example.trim(),
+        etymology: sponsoredForm.etymology.trim() || null,
+        link: sponsoredForm.link.trim() || null,
+        active: sponsoredForm.active,
+      });
+      toast.success("Reklama zaktualizowana!");
+      setEditingSponsored(null);
+    } catch (err: any) {
+      toast.error(err.message || "Nie udało się zapisać");
+    } finally {
+      setSponsoredSubmitting(false);
     }
   };
 
