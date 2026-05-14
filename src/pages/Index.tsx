@@ -318,8 +318,8 @@ const Index = () => {
       w => !builtInNames.has(w.word.toLowerCase().trim())
     );
 
-    return [...filteredBuiltIn, ...uniqueGlobal, ...customWords];
-  }, [customWords, globalPolishWords, hiddenIds, overrides]);
+    return [...filteredBuiltIn, ...uniqueGlobal, ...customWords, ...sponsoredPolishWords];
+  }, [customWords, globalPolishWords, hiddenIds, overrides, sponsoredPolishWords]);
 
   const favoriteWords = useMemo(
     () => allWords.filter((w) => favorites.includes(w.id)),
