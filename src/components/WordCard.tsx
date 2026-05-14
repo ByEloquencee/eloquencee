@@ -33,7 +33,7 @@ interface WordCardProps {
 }
 
 export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggleSaved, onNext, onPrev, canGoBack, isCustom, onEdit, onDelete, onAskAI, onShare, folders = [], onToggleFolder, difficultyLevel = "advanced", externalDragY, onExternalDragEnd, onModeratorHide, onModeratorEdit, onReveal }: WordCardProps) {
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(!!word.isSponsored);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmHide, setConfirmHide] = useState(false);
   const [speaking, setSpeaking] = useState(false);
