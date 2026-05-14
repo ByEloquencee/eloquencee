@@ -960,6 +960,57 @@ export function AdminPanel() {
 
       <ImportWordsDialog open={importOpen} onClose={() => setImportOpen(false)} />
       <WordInfoDialog word={infoWord} onClose={() => setInfoWord(null)} />
+
+      {/* Edit sponsored word modal */}
+      <AnimatePresence>
+        {editingSponsored && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm p-4"
+            onClick={() => setEditingSponsored(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-lg overflow-hidden max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between p-5 border-b border-border">
+                <h2 className="text-lg font-semibold flex items-center gap-2" style={{ fontFamily: "var(--font-display)" }}>
+                  <Megaphone size={16} className="text-primary" />
+                  Edytuj reklamę
+                </h2>
+                <button onClick={() => setEditingSponsored(null)} className="p-1 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
+                  <X size={18} />
+                </button>
+              </div>
+              <form onSubmit={handleSponsoredSubmit} className="p-5 space-y-3">
+                <input type="text" placeholder="Nazwa sponsora" value={sponsoredForm.sponsor_name} onChange={(e) => setSponsoredForm(f => ({ ...f, sponsor_name: e.target.value }))} maxLength={100} className={inputClass} />
+                <input type="text" placeholder="Słowo *" value={sponsoredForm.word} onChange={(e) => setSponsoredForm(f => ({ ...f, word: e.target.value }))} required maxLength={100} className={inputClass} />
+                <input type="text" placeholder="Część mowy / podtytuł" value={sponsoredForm.part_of_speech} onChange={(e) => setSponsoredForm(f => ({ ...f, part_of_speech: e.target.value }))} maxLength={50} className={inputClass} />
+                <textarea placeholder="Definicja / treść reklamy *" value={sponsoredForm.definition} onChange={(e) => setSponsoredForm(f => ({ ...f, definition: e.target.value }))} required maxLength={500} rows={4} className={`${inputClass} resize-none`} />
+                <input type="text" placeholder="Przykład użycia" value={sponsoredForm.example} onChange={(e) => setSponsoredForm(f => ({ ...f, example: e.target.value }))} maxLength={300} className={inputClass} />
+                <input type="text" placeholder="Etymologia (opcjonalnie)" value={sponsoredForm.etymology} onChange={(e) => setSponsoredForm(f => ({ ...f, etymology: e.target.value }))} maxLength={200} className={inputClass} />
+                <input type="url" placeholder="Link (np. https://...)" value={sponsoredForm.link} onChange={(e) => setSponsoredForm(f => ({ ...f, link: e.target.value }))} maxLength={500} className={inputClass} />
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={sponsoredForm.active} onChange={(e) => setSponsoredForm(f => ({ ...f, active: e.target.checked }))} />
+                  Aktywna (pokazuj w aplikacji)
+                </label>
+                <button
+                  type="submit"
+                  disabled={sponsoredSubmitting || !sponsoredForm.word.trim() || !sponsoredForm.definition.trim()}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
+                >
+                  {sponsoredSubmitting ? "Zapisywanie..." : "Zapisz"}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
