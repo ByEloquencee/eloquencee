@@ -303,7 +303,19 @@ export function WordCard({ word, isFavorite, onToggleFavorite, isSaved, onToggle
                       „{word.example}"
                     </p>
                   </div>
-                  <WordExtraInfo word={word} difficultyLevel={difficultyLevel} />
+                  {word.isSponsored && word.sponsorLink && (
+                    <a
+                      href={word.sponsorLink}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
+                      className="block w-full text-center py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
+                    >
+                      Dowiedz się więcej →
+                    </a>
+                  )}
+                  {!word.isSponsored && (
+                    <WordExtraInfo word={word} difficultyLevel={difficultyLevel} />
+                  )}
                 </motion.div>
               )}
             </div>
