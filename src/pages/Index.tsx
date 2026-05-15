@@ -1083,13 +1083,11 @@ const Index = () => {
           setCreateFolderOpen(true);
         }}
         isModerator={isModerator}
-        onAdminAddGlobal={() => setAdminSuggestMode("global")}
-        onAdminAddPack={() => setAdminSuggestMode("pack")}
+        onAdminAddGlobal={() => setAdminSuggestOpen(true)}
       />
       <AdminWordSuggestionDialog
-        open={adminSuggestMode !== null}
-        mode={adminSuggestMode ?? "global"}
-        onClose={() => setAdminSuggestMode(null)}
+        open={adminSuggestOpen}
+        onClose={() => setAdminSuggestOpen(false)}
       />
       <FlashcardSetCreator
         open={createSetOpen}
