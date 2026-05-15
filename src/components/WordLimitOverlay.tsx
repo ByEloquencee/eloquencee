@@ -71,7 +71,7 @@ export function WordLimitOverlay({ show, onUpgrade }: WordLimitOverlayProps) {
             className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-lg"
           >
             <Zap size={16} />
-            Wskocz na Premium — 5,99 zł/mies.
+            Wskocz na Premium — 8,99 zł/mies.
           </motion.button>
 
           <p className="text-[10px] text-muted-foreground">
