@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, FileText, FolderPlus, Mic, Sparkles, Package } from "lucide-react";
+import { X, FileText, FolderPlus, Mic, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface PlusMenuDialogProps {
@@ -9,10 +9,9 @@ interface PlusMenuDialogProps {
   onCreateFolder: () => void;
   isModerator?: boolean;
   onAdminAddGlobal?: () => void;
-  onAdminAddPack?: () => void;
 }
 
-export function PlusMenuDialog({ open, onClose, onAddWord, onCreateFolder, isModerator, onAdminAddGlobal, onAdminAddPack }: PlusMenuDialogProps) {
+export function PlusMenuDialog({ open, onClose, onAddWord, onCreateFolder, isModerator, onAdminAddGlobal }: PlusMenuDialogProps) {
   const navigate = useNavigate();
   if (!open) return null;
 
