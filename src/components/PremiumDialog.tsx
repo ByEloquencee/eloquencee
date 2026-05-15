@@ -133,7 +133,7 @@ export function PremiumDialog({ open, onClose }: PremiumDialogProps) {
                 {tab === "premium" ? (
                   <div className="space-y-3">
                     <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-center">
-                      <p className="text-2xl font-bold text-foreground">5,99 zł<span className="text-sm font-normal text-muted-foreground">/mies.</span></p>
+                      <p className="text-2xl font-bold text-foreground">8,99 zł<span className="text-sm font-normal text-muted-foreground">/mies.</span></p>
                       <p className="text-xs text-muted-foreground mt-1">Możesz anulować w każdej chwili</p>
                     </div>
                   </div>
@@ -175,7 +175,7 @@ export function PremiumDialog({ open, onClose }: PremiumDialogProps) {
                   disabled={loading}
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
                 >
-                  {loading ? "Ładowanie..." : tab === "premium" ? "Subskrybuj — 5,99 zł/mies." : `Wesprzyj — ${customAmount ? customAmount.replace(".", ",") : supportAmount.toString().replace(".", ",")} zł`}
+                  {loading ? "Ładowanie..." : tab === "premium" ? "Subskrybuj — 8,99 zł/mies." : `Wesprzyj — ${customAmount ? customAmount.replace(".", ",") : supportAmount.toString().replace(".", ",")} zł`}
                 </button>
 
                 <p className="text-[10px] text-muted-foreground text-center">
