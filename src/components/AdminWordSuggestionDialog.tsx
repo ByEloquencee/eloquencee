@@ -7,11 +7,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { categories } from "@/data/words";
 import { useAdminSuggestions } from "@/hooks/use-admin-suggestions";
 
-type Mode = "global" | "pack";
-
 interface Props {
   open: boolean;
-  mode: Mode;
   onClose: () => void;
 }
 
@@ -19,7 +16,7 @@ const packOptions = categories.filter(
   (c) => c.value !== "all" && c.value !== "własne" && c.value !== "ciekawi_ludzie",
 );
 
-export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
+export function AdminWordSuggestionDialog({ open, onClose }: Props) {
   const { user } = useAuth();
   const [category, setCategory] = useState<string>("ogólne");
   const [saving, setSaving] = useState(false);
@@ -34,7 +31,7 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
     if (!current || !user) return;
     setSaving(true);
     try {
-      const { data: inserted, error: insErr } = await (supabase
+      const { error: insErr } = await (supabase
         .from("global_words" as any)
         .insert({
           word: current.word,
@@ -45,27 +42,9 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
           category,
           difficulty: "advanced",
           created_by: user.id,
-        })
-        .select("id")
-        .single() as any);
-      if (insErr) throw insErr;
-
-      if (mode === "pack") {
-        const { count } = await (supabase
-          .from("pack_words" as any)
-          .select("id", { count: "exact", head: true })
-          .eq("pack_id", category) as any);
-        const { error: pwErr } = await (supabase.from("pack_words" as any).insert({
-          pack_id: category,
-          word_id: `global-${inserted.id}`,
-          position: count ?? 0,
-          created_by: user.id,
         }) as any);
-        if (pwErr) throw pwErr;
-        toast.success(`Dodano do paczki "${category}"`);
-      } else {
-        toast.success("Dodano do bazy globalnej");
-      }
+      if (insErr) throw insErr;
+      toast.success("Dodano do bazy globalnej");
       consume();
     } catch (e: any) {
       toast.error(e.message || "Nie udało się dodać");
@@ -98,7 +77,7 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
                 Tylko admin · {queueSize}/{targetSize} gotowych
               </p>
               <h2 className="text-base font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-                {mode === "pack" ? "Słowo do paczki" : "Słowo globalne"}
+                Słowo globalne
               </h2>
             </div>
             <button
@@ -111,7 +90,7 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
 
           <div className="px-5 pt-4">
             <label className="block text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">
-              {mode === "pack" ? "Paczka" : "Kategoria"}
+              Kategoria
             </label>
             <select
               value={category}
@@ -175,9 +154,7 @@ export function AdminWordSuggestionDialog({ open, mode, onClose }: Props) {
               <Minus size={20} />
             </button>
             <p className="text-[11px] text-muted-foreground text-center flex-1">
-              {mode === "pack"
-                ? "Dodaje do globalnych i do paczki"
-                : "Dodaje do bazy globalnej"}
+              Dodaje do bazy globalnej
             </p>
             <button
               onClick={handleAccept}

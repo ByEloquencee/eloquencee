@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, FileText, FolderPlus, Mic, Sparkles, Package } from "lucide-react";
+import { X, FileText, FolderPlus, Mic, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface PlusMenuDialogProps {
@@ -9,10 +9,9 @@ interface PlusMenuDialogProps {
   onCreateFolder: () => void;
   isModerator?: boolean;
   onAdminAddGlobal?: () => void;
-  onAdminAddPack?: () => void;
 }
 
-export function PlusMenuDialog({ open, onClose, onAddWord, onCreateFolder, isModerator, onAdminAddGlobal, onAdminAddPack }: PlusMenuDialogProps) {
+export function PlusMenuDialog({ open, onClose, onAddWord, onCreateFolder, isModerator, onAdminAddGlobal }: PlusMenuDialogProps) {
   const navigate = useNavigate();
   if (!open) return null;
 
@@ -84,16 +83,6 @@ export function PlusMenuDialog({ open, onClose, onAddWord, onCreateFolder, isMod
                   <div>
                     <p className="text-sm font-medium">Sugestia: globalne słowo</p>
                     <p className="text-xs text-muted-foreground">AI proponuje słowo do bazy globalnej</p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => { onClose(); onAdminAddPack?.(); }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-secondary transition-colors cursor-pointer text-left"
-                >
-                  <Package size={20} className="text-primary flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium">Sugestia: słowo do paczki</p>
-                    <p className="text-xs text-muted-foreground">AI proponuje słowo do wybranej paczki</p>
                   </div>
                 </button>
               </>

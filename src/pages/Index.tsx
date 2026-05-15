@@ -24,11 +24,6 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
-import { LevelsPanel } from "@/components/LevelsPanel";
-import { LevelWordsEditor } from "@/components/LevelWordsEditor";
-import { PackBaseEditor } from "@/components/PackBaseEditor";
-import { PackLevelQuiz } from "@/components/PackLevelQuiz";
-import { usePackProgress } from "@/hooks/use-pack-progress";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
@@ -157,7 +152,7 @@ const Index = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
-  const [adminSuggestMode, setAdminSuggestMode] = useState<"global" | "pack" | null>(null);
+  const [adminSuggestOpen, setAdminSuggestOpen] = useState(false);
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [createSetOpen, setCreateSetOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
@@ -177,13 +172,9 @@ const Index = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
-  const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
-  const [activeLevel, setActiveLevel] = useState<number | null>(null);
-  const [editingLevel, setEditingLevel] = useState<number | null>(null);
-  const [editingBase, setEditingBase] = useState(false);
-  const philosophyProgress = usePackProgress("filozofia");
   const [flagsOpen, setFlagsOpen] = useState(false);
   
+
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [antonymQuizActive, setAntonymQuizActive] = useState(false);
@@ -898,9 +889,7 @@ const Index = () => {
                     {moderatorView === "admin" ? <AdminPanel /> : (
                       <WordPacksPanel
                         onSelectPack={(catId) => {
-                          if (catId === "filozofia") {
-                            setIslandPack({ id: catId, label: "Filozofia" });
-                          } else if (catId === "flagi") {
+                          if (catId === "flagi") {
                             setFlagsOpen(true);
                           }
                         }}
@@ -915,9 +904,7 @@ const Index = () => {
                   >
                     <WordPacksPanel
                       onSelectPack={(catId) => {
-                        if (catId === "filozofia") {
-                          setIslandPack({ id: catId, label: "Filozofia" });
-                        } else if (catId === "flagi") {
+                        if (catId === "flagi") {
                           setFlagsOpen(true);
                         }
                       }}
@@ -1079,47 +1066,6 @@ const Index = () => {
       />
       <PremiumDialog open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AnimatePresence>
-        {islandPack && activeLevel === null && editingLevel === null && !editingBase && (
-          <LevelsPanel
-            title={islandPack.label}
-            packId={islandPack.id}
-            totalLevels={5}
-            highestCompleted={philosophyProgress.highestCompleted}
-            onClose={() => setIslandPack(null)}
-            onSelectLevel={(lvl) => setActiveLevel(lvl)}
-            onEditLevel={(lvl) => setEditingLevel(lvl)}
-            onEditBase={() => setEditingBase(true)}
-          />
-        )}
-        {islandPack && editingBase && (
-          <PackBaseEditor
-            packId={islandPack.id}
-            packLabel={islandPack.label}
-            pool={allWords}
-            onClose={() => setEditingBase(false)}
-          />
-        )}
-        {islandPack && editingLevel !== null && (
-          <LevelWordsEditor
-            packId={islandPack.id}
-            packLabel={islandPack.label}
-            level={editingLevel}
-            pool={allWords}
-            onClose={() => setEditingLevel(null)}
-          />
-        )}
-        {islandPack && activeLevel !== null && (
-          <PackLevelQuiz
-            key={`lvl-${activeLevel}`}
-            level={activeLevel}
-            packId={islandPack.id}
-            packLabel={islandPack.label}
-            pool={allWords.filter((w) => w.category === (islandPack.id as WordCategory))}
-            allWords={allWords}
-            onExit={() => setActiveLevel(null)}
-            onPassed={() => philosophyProgress.completeLevel(activeLevel)}
-          />
-        )}
         {flagsOpen && (
           <FlagsLearningPanel onClose={() => setFlagsOpen(false)} />
         )}
@@ -1137,13 +1083,11 @@ const Index = () => {
           setCreateFolderOpen(true);
         }}
         isModerator={isModerator}
-        onAdminAddGlobal={() => setAdminSuggestMode("global")}
-        onAdminAddPack={() => setAdminSuggestMode("pack")}
+        onAdminAddGlobal={() => setAdminSuggestOpen(true)}
       />
       <AdminWordSuggestionDialog
-        open={adminSuggestMode !== null}
-        mode={adminSuggestMode ?? "global"}
-        onClose={() => setAdminSuggestMode(null)}
+        open={adminSuggestOpen}
+        onClose={() => setAdminSuggestOpen(false)}
       />
       <FlashcardSetCreator
         open={createSetOpen}

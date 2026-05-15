@@ -85,7 +85,7 @@ interface WordPacksPanelProps {
   onSelectPack?: (categoryId: string) => void;
 }
 
-const ENABLED_PACKS = new Set(["filozofia", "flagi"]);
+const ENABLED_PACKS = new Set(["flagi"]);
 
 const FLAGS_PACK: WordPack = {
   id: "flagi",
