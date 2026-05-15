@@ -172,8 +172,7 @@ const Index = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
-  const [islandPack, setIslandPack] = useState<{ id: string; label: string } | null>(null);
-  const [activeLevel, setActiveLevel] = useState<number | null>(null);
+  const [flagsOpen, setFlagsOpen] = useState(false);
   const [editingLevel, setEditingLevel] = useState<number | null>(null);
   const [editingBase, setEditingBase] = useState(false);
   const philosophyProgress = usePackProgress("filozofia");
