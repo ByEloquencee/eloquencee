@@ -152,7 +152,7 @@ const Index = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [addWordOpen, setAddWordOpen] = useState(false);
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
-  const [adminSuggestMode, setAdminSuggestMode] = useState<"global" | "pack" | null>(null);
+  const [adminSuggestOpen, setAdminSuggestOpen] = useState(false);
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [createSetOpen, setCreateSetOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
