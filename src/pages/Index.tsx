@@ -24,11 +24,6 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
-import { LevelsPanel } from "@/components/LevelsPanel";
-import { LevelWordsEditor } from "@/components/LevelWordsEditor";
-import { PackBaseEditor } from "@/components/PackBaseEditor";
-import { PackLevelQuiz } from "@/components/PackLevelQuiz";
-import { usePackProgress } from "@/hooks/use-pack-progress";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
