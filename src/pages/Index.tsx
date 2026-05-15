@@ -889,9 +889,7 @@ const Index = () => {
                     {moderatorView === "admin" ? <AdminPanel /> : (
                       <WordPacksPanel
                         onSelectPack={(catId) => {
-                          if (catId === "filozofia") {
-                            setIslandPack({ id: catId, label: "Filozofia" });
-                          } else if (catId === "flagi") {
+                          if (catId === "flagi") {
                             setFlagsOpen(true);
                           }
                         }}
@@ -906,9 +904,7 @@ const Index = () => {
                   >
                     <WordPacksPanel
                       onSelectPack={(catId) => {
-                        if (catId === "filozofia") {
-                          setIslandPack({ id: catId, label: "Filozofia" });
-                        } else if (catId === "flagi") {
+                        if (catId === "flagi") {
                           setFlagsOpen(true);
                         }
                       }}
