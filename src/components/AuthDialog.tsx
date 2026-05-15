@@ -280,7 +280,7 @@ export function AuthDialog({
                     onClick={onOpenPremium}
                   >
                     <Crown size={16} />
-                    Przejdź na Premium — 5,99 zł/mies.
+                    Przejdź na Premium — 8,99 zł/mies.
                   </button>
                 )}
                 <button
