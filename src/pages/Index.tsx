@@ -173,11 +173,8 @@ const Index = () => {
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
   const [flagsOpen, setFlagsOpen] = useState(false);
-  const [editingLevel, setEditingLevel] = useState<number | null>(null);
-  const [editingBase, setEditingBase] = useState(false);
-  const philosophyProgress = usePackProgress("filozofia");
-  const [flagsOpen, setFlagsOpen] = useState(false);
   
+
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
   const [synonymQuizWords, setSynonymQuizWords] = useState<PolishWord[]>([]);
   const [antonymQuizActive, setAntonymQuizActive] = useState(false);
