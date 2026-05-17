@@ -182,7 +182,7 @@ export function WordPacksPanel({ onSelectPack, onOpenPremium }: WordPacksPanelPr
       toast.info("Ta paczka jest jeszcze pusta — wkrótce dodamy słowa!");
       return;
     }
-    onSelectPack?.(pack.id);
+    onSelectPack?.(pack.id, pack.label);
   };
 
   return (
