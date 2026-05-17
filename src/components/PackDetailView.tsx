@@ -1,8 +1,9 @@
 import { useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, BookOpen, Play, Sparkles } from "lucide-react";
+import { ChevronLeft, BookOpen, Play, Sparkles, BrainCircuit } from "lucide-react";
 import { FlashcardStudyView } from "@/components/FlashcardStudyView";
 import { WordCard } from "@/components/WordCard";
+import { QuizView } from "@/components/QuizView";
 import { usePackWords } from "@/hooks/use-pack-words";
 import { usePackProgress } from "@/hooks/use-pack-progress";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -22,7 +23,7 @@ export function PackDetailView({ packId, packLabel, onClose }: PackDetailViewPro
   const { isFavorite, toggleFavorite } = useFavorites();
   const { folders, toggleWordInFolder, isWordSaved, toggleSaved } = useFolders();
   const { profile } = useProfile();
-  const [studyMode, setStudyMode] = useState<"session" | "browse" | null>(null);
+  const [studyMode, setStudyMode] = useState<"session" | "browse" | "quiz" | null>(null);
 
   // Browse mode state (like main panel)
   const [browseIdx, setBrowseIdx] = useState(0);
@@ -82,6 +83,20 @@ export function PackDetailView({ packId, packLabel, onClose }: PackDetailViewPro
     );
   }
 
+  // Quiz view
+  if (studyMode === "quiz" && words.length >= 4) {
+    const quizWords = [...words].sort(() => Math.random() - 0.5).slice(0, Math.min(8, words.length));
+    return (
+      <div className="fixed inset-0 z-50 bg-background">
+        <QuizView
+          words={quizWords}
+          allWords={words}
+          onExit={() => setStudyMode(null)}
+        />
+      </div>
+    );
+  }
+
   // Browse view — WordCard like main panel
   if (studyMode === "browse" && total > 0) {
     const current = words[browseIdx % total];
@@ -95,11 +110,7 @@ export function PackDetailView({ packId, packLabel, onClose }: PackDetailViewPro
           >
             <ChevronLeft size={28} strokeWidth={2} />
           </button>
-          <div className="flex-1 min-w-0 text-center pr-7">
-            <p className="text-xs text-muted-foreground">
-              {(browseIdx % total) + 1} / {total}
-            </p>
-          </div>
+          <div className="flex-1" />
         </header>
         <div className="flex-1 min-h-0 flex items-center justify-center px-4 pb-4">
           {current && (
@@ -234,6 +245,26 @@ export function PackDetailView({ packId, packLabel, onClose }: PackDetailViewPro
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {total} słów do odkrycia
+                </p>
+              </div>
+            </motion.button>
+
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setStudyMode("quiz")}
+              disabled={total < 4}
+              className="group relative w-full overflow-hidden rounded-3xl bg-secondary text-secondary-foreground p-6 flex items-center gap-4 hover:bg-secondary/80 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-foreground/5 blur-2xl" />
+              <div className="relative w-14 h-14 rounded-2xl bg-foreground/5 flex items-center justify-center flex-shrink-0">
+                <BrainCircuit size={22} />
+              </div>
+              <div className="relative text-left flex-1">
+                <p className="font-semibold text-lg" style={{ fontFamily: "var(--font-display)" }}>
+                  Quiz z paczki
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {total < 4 ? "Wymaga min. 4 słów" : "8 losowych pytań z tej paczki"}
                 </p>
               </div>
             </motion.button>
