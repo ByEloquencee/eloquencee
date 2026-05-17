@@ -25,6 +25,7 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
+import { PackDetailView } from "@/components/PackDetailView";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { AdminWordSuggestionDialog } from "@/components/AdminWordSuggestionDialog";
