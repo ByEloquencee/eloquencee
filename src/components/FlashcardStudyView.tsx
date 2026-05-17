@@ -12,7 +12,7 @@ interface FlashcardStudyViewProps {
 
 type SwipeDirection = "left" | "right" | null;
 
-export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
+export function FlashcardStudyView({ set, onExit, onCardReveal }: FlashcardStudyViewProps) {
   const [cards, setCards] = useState<PolishWord[]>(set.cards);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
