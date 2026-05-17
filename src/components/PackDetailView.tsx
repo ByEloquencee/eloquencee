@@ -23,7 +23,7 @@ export function PackDetailView({ packId, packLabel, onClose }: PackDetailViewPro
   const { isFavorite, toggleFavorite } = useFavorites();
   const { folders, toggleWordInFolder, isWordSaved, toggleSaved } = useFolders();
   const { profile } = useProfile();
-  const [studyMode, setStudyMode] = useState<"session" | "browse" | null>(null);
+  const [studyMode, setStudyMode] = useState<"session" | "browse" | "quiz" | null>(null);
 
   // Browse mode state (like main panel)
   const [browseIdx, setBrowseIdx] = useState(0);
