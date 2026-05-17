@@ -7,6 +7,7 @@ import type { PolishWord } from "@/data/words";
 interface FlashcardStudyViewProps {
   set: FlashcardSet;
   onExit: () => void;
+  onCardReveal?: (wordId: string) => void;
 }
 
 type SwipeDirection = "left" | "right" | null;
