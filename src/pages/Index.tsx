@@ -908,9 +908,12 @@ const Index = () => {
                     style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
                   >
                     <WordPacksPanel
-                      onSelectPack={(catId) => {
-                        if (catId === "flagi") {
+                      onOpenPremium={() => setPremiumOpen(true)}
+                      onSelectPack={(packId, label) => {
+                        if (packId === "flagi") {
                           setFlagsOpen(true);
+                        } else {
+                          setActivePack({ id: packId, label });
                         }
                       }}
                     />
