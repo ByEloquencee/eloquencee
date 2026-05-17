@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   Crown,
@@ -23,6 +23,10 @@ import {
 } from "lucide-react";
 import { categories, words as staticWords } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
+import { useSubscription } from "@/hooks/use-subscription";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { PREMIUM_PACK_IDS } from "@/hooks/use-pack-words";
 
 interface WordPack {
   id: string;
@@ -47,14 +51,12 @@ const categoryIcons: Record<string, typeof BookOpen> = {
   własne: Heart,
 };
 
-// Fallbacki dla paczek premium (jeszcze nie mają słów w bazie)
 const fallbackWatermarks: Record<string, string[]> = {
   showbiznes: ["gala", "celebryta", "premiera", "skandal", "wywiad", "paparazzi", "rampa", "fame"],
   muzyka: ["harmonia", "rytm", "melodia", "akord", "tonacja", "fraza", "kontrapunkt", "tempo"],
   archaizmy: ["azaliż", "snadź", "wszelako", "tedy", "albowiem", "zaiste", "jeno", "atoli"],
   nauka: ["hipoteza", "atom", "teoria", "synteza", "kwant", "dowód", "entropia", "izotop"],
   sport: ["finał", "rekord", "trener", "drużyna", "puchar", "taktyka", "transfer", "kontuzja"],
-  medycyna: ["diagnoza", "terapia", "objaw", "zabieg", "anatomia", "leczenie", "remisja", "patogen"],
   własne: ["notatka", "własne", "moje", "kolekcja", "prywatne", "zbiór"],
 };
 
@@ -66,7 +68,6 @@ const premiumPacksMeta: Omit<WordPack, "count" | "watermarks">[] = [
   { id: "sport", label: "Sport", icon: Trophy, isPremium: true },
 ];
 
-// Bierze pierwszych ~15 słów i powtarza je, żeby wypełnić linijki tła
 function buildWatermarkPool(words: string[], poolSize = 15): string[] {
   if (words.length === 0) return [];
   const unique: string[] = [];
@@ -82,10 +83,9 @@ function buildWatermarkPool(words: string[], poolSize = 15): string[] {
 }
 
 interface WordPacksPanelProps {
-  onSelectPack?: (categoryId: string) => void;
+  onSelectPack?: (packId: string, label: string) => void;
+  onOpenPremium?: () => void;
 }
-
-const ENABLED_PACKS = new Set(["flagi"]);
 
 const FLAGS_PACK: WordPack = {
   id: "flagi",
@@ -96,11 +96,46 @@ const FLAGS_PACK: WordPack = {
   count: 130,
 };
 
-export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
+export function WordPacksPanel({ onSelectPack, onOpenPremium }: WordPacksPanelProps = {}) {
   const { asPolishWords } = useGlobalWords();
+  const { isPremium } = useSubscription();
+  const { user } = useAuth();
+  const [progressByPack, setProgressByPack] = useState<Record<string, number>>({});
+  const [premiumCounts, setPremiumCounts] = useState<Record<string, number>>({});
+
+  // Pobierz progres dla wszystkich paczek
+  useEffect(() => {
+    if (!user) { setProgressByPack({}); return; }
+    let cancel = false;
+    (async () => {
+      const { data } = await supabase
+        .from("pack_progress")
+        .select("pack_id")
+        .eq("user_id", user.id);
+      if (cancel) return;
+      const counts: Record<string, number> = {};
+      (data || []).forEach((r) => { counts[r.pack_id] = (counts[r.pack_id] || 0) + 1; });
+      setProgressByPack(counts);
+    })();
+    return () => { cancel = true; };
+  }, [user]);
+
+  // Pobierz liczbę słów w paczkach premium
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      const { data } = await supabase
+        .from("pack_premium_words")
+        .select("pack_id");
+      if (cancel) return;
+      const counts: Record<string, number> = {};
+      (data || []).forEach((r) => { counts[r.pack_id] = (counts[r.pack_id] || 0) + 1; });
+      setPremiumCounts(counts);
+    })();
+    return () => { cancel = true; };
+  }, []);
 
   const packs = useMemo<WordPack[]>(() => {
-    // Połącz słowa statyczne z bazy danych
     const allWords = [...staticWords, ...asPolishWords];
     const byCategory = new Map<string, string[]>();
     for (const w of allWords) {
@@ -111,7 +146,7 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
     }
 
     const basePacks: WordPack[] = categories
-      .filter((c) => c.value !== "all" && c.value !== "ciekawi_ludzie")
+      .filter((c) => c.value !== "all" && c.value !== "ciekawi_ludzie" && c.value !== "własne")
       .map((c) => {
         const wordsInCat = byCategory.get(c.value) || [];
         const watermarks = wordsInCat.length > 0
@@ -130,14 +165,25 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
     const premiumPacks: WordPack[] = premiumPacksMeta.map((p) => ({
       ...p,
       watermarks: fallbackWatermarks[p.id] || ["słowo"],
-      count: 0,
+      count: premiumCounts[p.id] || 0,
     }));
 
-    // "Flagi" wstawiamy jako drugą paczkę, żeby pokazała się w prawej kolumnie obok Filozofii
     const withFlags = [...basePacks];
     withFlags.splice(1, 0, FLAGS_PACK);
     return [...withFlags, ...premiumPacks];
-  }, [asPolishWords]);
+  }, [asPolishWords, premiumCounts]);
+
+  const handleClick = (pack: WordPack) => {
+    if (pack.isPremium && !isPremium) {
+      onOpenPremium?.();
+      return;
+    }
+    if (pack.count === 0 && pack.id !== "flagi") {
+      toast.info("Ta paczka jest jeszcze pusta — wkrótce dodamy słowa!");
+      return;
+    }
+    onSelectPack?.(pack.id, pack.label);
+  };
 
   return (
     <div className="w-full max-w-lg space-y-4 pb-4">
@@ -155,6 +201,9 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
           const Icon = pack.icon;
           const pool = buildWatermarkPool(pack.watermarks, 15);
           const rows = 14;
+          const masteredCount = progressByPack[pack.id] || 0;
+          const pct = pack.count > 0 ? Math.min(100, Math.round((masteredCount / pack.count) * 100)) : 0;
+          const locked = pack.isPremium && !isPremium;
 
           return (
             <motion.button
@@ -163,20 +212,12 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.02 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => {
-                if (ENABLED_PACKS.has(pack.id)) {
-                  onSelectPack?.(pack.id);
-                } else if (pack.isPremium) {
-                  toast.info("Paczka Premium — wkrótce dostępna");
-                } else {
-                  toast.info("Ta paczka będzie wkrótce dostępna");
-                }
-              }}
+              onClick={() => handleClick(pack)}
               className={`relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer group text-left ring-1 ring-primary/15 hover:ring-primary/40 transition-all bg-[#1a1a1a] ${
-                ENABLED_PACKS.has(pack.id) ? "" : "opacity-55 grayscale-[0.4]"
+                locked ? "opacity-70" : ""
               }`}
             >
-              {/* Znaki wodne — równe linijki, ~15 słów powtarzanych w kółko */}
+              {/* Watermark */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-between py-2 px-1">
                 {pool.length > 0 &&
                   Array.from({ length: rows }).map((_, rowIdx) => {
@@ -200,8 +241,7 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
                   })}
               </div>
 
-              {/* Duża ikona pomarańczowa */}
-              <div className="absolute inset-0 flex items-center justify-center pb-14">
+              <div className="absolute inset-0 flex items-center justify-center pb-16">
                 <Icon
                   size={88}
                   strokeWidth={1.25}
@@ -209,7 +249,6 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
                 />
               </div>
 
-              {/* Premium badge */}
               {pack.isPremium && (
                 <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-primary text-primary-foreground shadow-lg">
                   <Crown size={11} />
@@ -217,20 +256,33 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
                 </div>
               )}
 
-              {/* Tytuł + licznik — większa nazwa kategorii */}
-              <div className="absolute bottom-0 left-0 right-0 p-3">
+              <div className="absolute bottom-0 left-0 right-0 p-3 space-y-1.5">
                 <span
                   className="block text-white text-xl font-bold leading-tight drop-shadow-md"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {pack.label}
                 </span>
-                <div className="mt-1.5 flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <div className="h-0.5 w-8 bg-primary rounded-full" />
                   <span className="text-[11px] font-semibold text-primary/90">
                     {pack.count} słów
                   </span>
                 </div>
+                {/* Pasek progresu */}
+                {pack.count > 0 && (
+                  <div className="space-y-0.5">
+                    <div className="h-1 rounded-full bg-white/15 overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="text-[9px] text-white/60 font-medium">
+                      {masteredCount}/{pack.count} opanowanych
+                    </span>
+                  </div>
+                )}
               </div>
             </motion.button>
           );
@@ -239,3 +291,6 @@ export function WordPacksPanel({ onSelectPack }: WordPacksPanelProps = {}) {
     </div>
   );
 }
+
+// Re-export pomocniczy
+export { PREMIUM_PACK_IDS };

@@ -25,6 +25,7 @@ import { AntonymQuizView } from "@/components/AntonymQuizView";
 import { AdminPanel } from "@/components/AdminPanel";
 import { WordPacksPanel } from "@/components/WordPacksPanel";
 import { FlagsLearningPanel } from "@/components/FlagsLearningPanel";
+import { PackDetailView } from "@/components/PackDetailView";
 import { SuggestWordDialog } from "@/components/SuggestWordDialog";
 import { PlusMenuDialog } from "@/components/PlusMenuDialog";
 import { AdminWordSuggestionDialog } from "@/components/AdminWordSuggestionDialog";
@@ -173,6 +174,7 @@ const Index = () => {
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
   const [flagsOpen, setFlagsOpen] = useState(false);
+  const [activePack, setActivePack] = useState<{ id: string; label: string } | null>(null);
   
 
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
@@ -888,9 +890,12 @@ const Index = () => {
                     </div>
                     {moderatorView === "admin" ? <AdminPanel /> : (
                       <WordPacksPanel
-                        onSelectPack={(catId) => {
-                          if (catId === "flagi") {
+                        onOpenPremium={() => setPremiumOpen(true)}
+                        onSelectPack={(packId, label) => {
+                          if (packId === "flagi") {
                             setFlagsOpen(true);
+                          } else {
+                            setActivePack({ id: packId, label });
                           }
                         }}
                       />
@@ -903,9 +908,12 @@ const Index = () => {
                     style={{ touchAction: "pan-y", overscrollBehavior: "contain" }}
                   >
                     <WordPacksPanel
-                      onSelectPack={(catId) => {
-                        if (catId === "flagi") {
+                      onOpenPremium={() => setPremiumOpen(true)}
+                      onSelectPack={(packId, label) => {
+                        if (packId === "flagi") {
                           setFlagsOpen(true);
+                        } else {
+                          setActivePack({ id: packId, label });
                         }
                       }}
                     />
@@ -1068,6 +1076,14 @@ const Index = () => {
       <AnimatePresence>
         {flagsOpen && (
           <FlagsLearningPanel onClose={() => setFlagsOpen(false)} />
+        )}
+        {activePack && (
+          <PackDetailView
+            key={activePack.id}
+            packId={activePack.id}
+            packLabel={activePack.label}
+            onClose={() => setActivePack(null)}
+          />
         )}
       </AnimatePresence>
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />

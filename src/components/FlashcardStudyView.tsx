@@ -7,11 +7,12 @@ import type { PolishWord } from "@/data/words";
 interface FlashcardStudyViewProps {
   set: FlashcardSet;
   onExit: () => void;
+  onCardReveal?: (wordId: string) => void;
 }
 
 type SwipeDirection = "left" | "right" | null;
 
-export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
+export function FlashcardStudyView({ set, onExit, onCardReveal }: FlashcardStudyViewProps) {
   const [cards, setCards] = useState<PolishWord[]>(set.cards);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -297,7 +298,14 @@ export function FlashcardStudyView({ set, onExit }: FlashcardStudyViewProps) {
             style={{ x: dragX, rotate: dragRotate, y: dragY, boxShadow: dragShadow }}
           >
             <motion.button
-              onClick={() => !isTransitioning && setFlipped((f) => !f)}
+              onClick={() => {
+                if (isTransitioning) return;
+                setFlipped((f) => {
+                  const next = !f;
+                  if (next && card) onCardReveal?.(card.id);
+                  return next;
+                });
+              }}
               className="h-full w-full rounded-2xl bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
               style={{ border: dragBorder }}
               whileTap={{ scale: 0.98 }}
