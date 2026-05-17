@@ -174,6 +174,7 @@ const Index = () => {
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [moderatorView, setModeratorView] = useState<"admin" | "packs">("admin");
   const [flagsOpen, setFlagsOpen] = useState(false);
+  const [activePack, setActivePack] = useState<{ id: string; label: string } | null>(null);
   
 
   const [synonymQuizActive, setSynonymQuizActive] = useState(false);
