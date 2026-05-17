@@ -83,7 +83,7 @@ function buildWatermarkPool(words: string[], poolSize = 15): string[] {
 }
 
 interface WordPacksPanelProps {
-  onSelectPack?: (packId: string) => void;
+  onSelectPack?: (packId: string, label: string) => void;
   onOpenPremium?: () => void;
 }
 
