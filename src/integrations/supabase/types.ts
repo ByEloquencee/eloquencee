@@ -249,6 +249,96 @@ export type Database = {
         }
         Relationships: []
       }
+      pack_premium_words: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          definition: string
+          difficulty: string
+          etymology: string | null
+          example: string
+          id: string
+          pack_id: string
+          part_of_speech: string
+          word: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          definition: string
+          difficulty?: string
+          etymology?: string | null
+          example?: string
+          id?: string
+          pack_id: string
+          part_of_speech?: string
+          word: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          definition?: string
+          difficulty?: string
+          etymology?: string | null
+          example?: string
+          id?: string
+          pack_id?: string
+          part_of_speech?: string
+          word?: string
+        }
+        Relationships: []
+      }
+      pack_progress: {
+        Row: {
+          id: string
+          pack_id: string
+          revealed_at: string
+          user_id: string
+          word_id: string
+        }
+        Insert: {
+          id?: string
+          pack_id: string
+          revealed_at?: string
+          user_id: string
+          word_id: string
+        }
+        Update: {
+          id?: string
+          pack_id?: string
+          revealed_at?: string
+          user_id?: string
+          word_id?: string
+        }
+        Relationships: []
+      }
+      pack_word_overrides: {
+        Row: {
+          action: string
+          created_at: string
+          created_by: string | null
+          id: string
+          pack_id: string
+          word_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          pack_id: string
+          word_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          pack_id?: string
+          word_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
