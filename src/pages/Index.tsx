@@ -1077,6 +1077,14 @@ const Index = () => {
         {flagsOpen && (
           <FlagsLearningPanel onClose={() => setFlagsOpen(false)} />
         )}
+        {activePack && (
+          <PackDetailView
+            key={activePack.id}
+            packId={activePack.id}
+            packLabel={activePack.label}
+            onClose={() => setActivePack(null)}
+          />
+        )}
       </AnimatePresence>
       <AddWordDialog open={addWordOpen} onClose={() => setAddWordOpen(false)} onAdded={refetchCustom} />
       <PlusMenuDialog
