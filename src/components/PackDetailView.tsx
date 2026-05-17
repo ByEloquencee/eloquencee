@@ -248,6 +248,26 @@ export function PackDetailView({ packId, packLabel, onClose }: PackDetailViewPro
                 </p>
               </div>
             </motion.button>
+
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setStudyMode("quiz")}
+              disabled={total < 4}
+              className="group relative w-full overflow-hidden rounded-3xl bg-secondary text-secondary-foreground p-6 flex items-center gap-4 hover:bg-secondary/80 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-foreground/5 blur-2xl" />
+              <div className="relative w-14 h-14 rounded-2xl bg-foreground/5 flex items-center justify-center flex-shrink-0">
+                <BrainCircuit size={22} />
+              </div>
+              <div className="relative text-left flex-1">
+                <p className="font-semibold text-lg" style={{ fontFamily: "var(--font-display)" }}>
+                  Quiz z paczki
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {total < 4 ? "Wymaga min. 4 słów" : "8 losowych pytań z tej paczki"}
+                </p>
+              </div>
+            </motion.button>
           </div>
 
           {total === 0 && !loading && (
