@@ -298,7 +298,14 @@ export function FlashcardStudyView({ set, onExit, onCardReveal }: FlashcardStudy
             style={{ x: dragX, rotate: dragRotate, y: dragY, boxShadow: dragShadow }}
           >
             <motion.button
-              onClick={() => !isTransitioning && setFlipped((f) => !f)}
+              onClick={() => {
+                if (isTransitioning) return;
+                setFlipped((f) => {
+                  const next = !f;
+                  if (next && card) onCardReveal?.(card.id);
+                  return next;
+                });
+              }}
               className="h-full w-full rounded-2xl bg-card p-6 flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center"
               style={{ border: dragBorder }}
               whileTap={{ scale: 0.98 }}
