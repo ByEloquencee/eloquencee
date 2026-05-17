@@ -83,6 +83,20 @@ export function PackDetailView({ packId, packLabel, onClose }: PackDetailViewPro
     );
   }
 
+  // Quiz view
+  if (studyMode === "quiz" && words.length >= 4) {
+    const quizWords = [...words].sort(() => Math.random() - 0.5).slice(0, Math.min(8, words.length));
+    return (
+      <div className="fixed inset-0 z-50 bg-background">
+        <QuizView
+          words={quizWords}
+          allWords={words}
+          onExit={() => setStudyMode(null)}
+        />
+      </div>
+    );
+  }
+
   // Browse view — WordCard like main panel
   if (studyMode === "browse" && total > 0) {
     const current = words[browseIdx % total];
@@ -96,11 +110,7 @@ export function PackDetailView({ packId, packLabel, onClose }: PackDetailViewPro
           >
             <ChevronLeft size={28} strokeWidth={2} />
           </button>
-          <div className="flex-1 min-w-0 text-center pr-7">
-            <p className="text-xs text-muted-foreground">
-              {(browseIdx % total) + 1} / {total}
-            </p>
-          </div>
+          <div className="flex-1" />
         </header>
         <div className="flex-1 min-h-0 flex items-center justify-center px-4 pb-4">
           {current && (
