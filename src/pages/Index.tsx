@@ -890,9 +890,12 @@ const Index = () => {
                     </div>
                     {moderatorView === "admin" ? <AdminPanel /> : (
                       <WordPacksPanel
-                        onSelectPack={(catId) => {
-                          if (catId === "flagi") {
+                        onOpenPremium={() => setPremiumOpen(true)}
+                        onSelectPack={(packId, label) => {
+                          if (packId === "flagi") {
                             setFlagsOpen(true);
+                          } else {
+                            setActivePack({ id: packId, label });
                           }
                         }}
                       />
