@@ -1,8 +1,9 @@
 import { useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, BookOpen, Play, Sparkles } from "lucide-react";
+import { ChevronLeft, BookOpen, Play, Sparkles, BrainCircuit } from "lucide-react";
 import { FlashcardStudyView } from "@/components/FlashcardStudyView";
 import { WordCard } from "@/components/WordCard";
+import { QuizView } from "@/components/QuizView";
 import { usePackWords } from "@/hooks/use-pack-words";
 import { usePackProgress } from "@/hooks/use-pack-progress";
 import { useFavorites } from "@/hooks/use-favorites";
