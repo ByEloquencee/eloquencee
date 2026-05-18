@@ -20,7 +20,8 @@ import {
   Lightbulb,
   Stethoscope,
   Flag,
-  Feather,
+  
+  MessageSquareWarning,
 } from "lucide-react";
 import { categories, words as staticWords } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
@@ -99,8 +100,8 @@ const FLAGS_PACK: WordPack = {
 
 const POETIC_CURSES_PACK: WordPack = {
   id: "poetyckie_bluzgi",
-  label: "Poetyckie bluzgi",
-  icon: Feather,
+  label: "Poetyckie wylgaryzmy",
+  icon: MessageSquareWarning,
   isPremium: false,
   watermarks: ["bluzg", "fraza", "klątwa", "wiersz", "rym", "soczyście", "ostro", "dosadnie", "metafora", "epitet"],
   count: 0,
