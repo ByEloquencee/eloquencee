@@ -20,6 +20,7 @@ import {
   Lightbulb,
   Stethoscope,
   Flag,
+  Feather,
 } from "lucide-react";
 import { categories, words as staticWords } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
