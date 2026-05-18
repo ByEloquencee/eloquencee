@@ -21,6 +21,7 @@ import {
   Stethoscope,
   Flag,
   Feather,
+  MessageSquareWarning,
 } from "lucide-react";
 import { categories, words as staticWords } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
