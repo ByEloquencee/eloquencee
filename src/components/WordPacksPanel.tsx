@@ -269,15 +269,6 @@ export function WordPacksPanel({ onSelectPack, onOpenPremium }: WordPacksPanelPr
                     {pack.count} słów
                   </span>
                 </div>
-                {/* Pasek progresu */}
-                {pack.count > 0 && (
-                  <div className="h-1 rounded-full bg-white/15 overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full transition-all"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                )}
               </div>
             </motion.button>
           );
