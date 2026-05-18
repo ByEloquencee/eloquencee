@@ -25,7 +25,7 @@ import {
 import type { LucideProps } from "lucide-react";
 
 const CursingPersonIcon = forwardRef<SVGSVGElement, LucideProps>(
-  ({ size = 24, color = "currentColor", strokeWidth = 2, ...props }, ref) => {
+  ({ size = 24, color = "currentColor", strokeWidth = 1.5, ...props }, ref) => {
     return (
       <svg
         ref={ref}
@@ -40,12 +40,16 @@ const CursingPersonIcon = forwardRef<SVGSVGElement, LucideProps>(
         strokeLinejoin="round"
         {...props}
       >
-        <circle cx="10" cy="10" r="6" />
-        <circle cx="8" cy="9" r="0.8" fill="currentColor" stroke="none" />
-        <path d="M13 11c1 1.5 1 3 0 4" />
-        <path d="M17 4v3" />
-        <path d="M17 10h.01" />
-        <path d="M20 6l-1 1.5" />
+        {/* głowa z profilu */}
+        <path d="M4 13c0-3.5 2.8-6.5 6.5-6.5S17 9.5 17 13v2.5c0 .8-.7 1.5-1.5 1.5H14v2.5c0 .8-.7 1.5-1.5 1.5H9v-3" />
+        {/* oko */}
+        <circle cx="11" cy="12" r="0.6" fill="currentColor" stroke="none" />
+        {/* otwarte usta */}
+        <path d="M5.5 14.5c1 1 2.5 1 3.5 0" />
+        {/* dymek z bluzgami: #@%! */}
+        <path d="M19 4v2M19 7.5h.01" />
+        <path d="M21.5 5.5l-1.2 1M16.5 5.5l1.2 1" />
+        <path d="M22 9l-1.5.5M16 9l1.5.5" />
       </svg>
     );
   }
