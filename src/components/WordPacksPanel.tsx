@@ -129,7 +129,7 @@ const FLAGS_PACK: WordPack = {
 const POETIC_CURSES_PACK: WordPack = {
   id: "poetyckie_bluzgi",
   label: "Poetyckie wylgaryzmy",
-  icon: MessageSquareWarning,
+  icon: CursingPersonIcon,
   isPremium: false,
   watermarks: ["bluzg", "fraza", "klątwa", "wiersz", "rym", "soczyście", "ostro", "dosadnie", "metafora", "epitet"],
   count: 0,
