@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { forwardRef } from "react";
 import {
   Crown,
   BookOpen,
@@ -20,37 +21,36 @@ import {
   Lightbulb,
   Stethoscope,
   Flag,
-  MessageSquareWarning,
 } from "lucide-react";
 import type { LucideProps } from "lucide-react";
 
-function CursingPersonIcon(props: LucideProps) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={props.size ?? 24}
-      height={props.size ?? 24}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={props.color ?? "currentColor"}
-      strokeWidth={props.strokeWidth ?? 2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      {/* Głowa / profil */}
-      <circle cx="10" cy="10" r="6" />
-      {/* Oko */}
-      <circle cx="8" cy="9" r="0.8" fill="currentColor" stroke="none" />
-      {/* Otwarte usta / krzyk */}
-      <path d="M13 11c1 1.5 1 3 0 4" />
-      {/* Wykrzykniki / symbole wulgarności obok głowy */}
-      <path d="M17 4v3" />
-      <path d="M17 10h.01" />
-      <path d="M20 6l-1 1.5" />
-    </svg>
-  );
-}
+const CursingPersonIcon = forwardRef<SVGSVGElement, LucideProps>(
+  ({ size = 24, color = "currentColor", strokeWidth = 2, ...props }, ref) => {
+    return (
+      <svg
+        ref={ref}
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        {...props}
+      >
+        <circle cx="10" cy="10" r="6" />
+        <circle cx="8" cy="9" r="0.8" fill="currentColor" stroke="none" />
+        <path d="M13 11c1 1.5 1 3 0 4" />
+        <path d="M17 4v3" />
+        <path d="M17 10h.01" />
+        <path d="M20 6l-1 1.5" />
+      </svg>
+    );
+  }
+);
+CursingPersonIcon.displayName = "CursingPersonIcon";
 import { categories, words as staticWords } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
 import { useSubscription } from "@/hooks/use-subscription";
