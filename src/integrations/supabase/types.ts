@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage: {
+        Row: {
+          count: number
+          date: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          date?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          date?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       custom_words: {
         Row: {
           category: string
@@ -572,6 +596,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_and_increment_ai_usage: {
+        Args: { _limit?: number; _user_id: string }
+        Returns: {
+          allowed: boolean
+          current_count: number
+          daily_limit: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

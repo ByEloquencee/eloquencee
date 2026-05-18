@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { enforceAiLimit } from "../_shared/ai-rate-limit.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -11,6 +12,9 @@ const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const rl = await enforceAiLimit(req, corsHeaders);
+  if (!rl.ok) return rl.response!;
 
   try {
     const { category, difficulty, hint } = await req.json();
