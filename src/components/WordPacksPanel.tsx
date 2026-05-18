@@ -20,7 +20,7 @@ import {
   Lightbulb,
   Stethoscope,
   Flag,
-  Feather,
+  
   MessageSquareWarning,
 } from "lucide-react";
 import { categories, words as staticWords } from "@/data/words";
