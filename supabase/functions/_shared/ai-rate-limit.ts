@@ -40,12 +40,11 @@ export async function enforceAiLimit(
     };
   }
 
-  // Resolve user id from JWT
-  const userClient = createClient(SUPABASE_URL, ANON_KEY, {
-    global: { headers: { Authorization: `Bearer ${token}` } },
-  });
-  const { data: userData, error: userErr } = await userClient.auth.getUser();
+  // Resolve user id from JWT using service role (validates token directly)
+  const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+  const { data: userData, error: userErr } = await admin.auth.getUser(token);
   if (userErr || !userData?.user) {
+    console.error("ai-rate-limit getUser error", userErr);
     return {
       ok: false,
       response: new Response(
@@ -55,9 +54,10 @@ export async function enforceAiLimit(
     };
   }
   const userId = userData.user.id;
+  void ANON_KEY;
 
   // Increment using service role to bypass RLS
-  const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+  // admin client already created above
   const { data, error } = await admin.rpc("check_and_increment_ai_usage", {
     _user_id: userId,
     _limit: limit,
