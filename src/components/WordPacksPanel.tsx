@@ -97,6 +97,15 @@ const FLAGS_PACK: WordPack = {
   count: 130,
 };
 
+const POETIC_CURSES_PACK: WordPack = {
+  id: "poetyckie_bluzgi",
+  label: "Poetyckie bluzgi",
+  icon: Feather,
+  isPremium: false,
+  watermarks: ["bluzg", "fraza", "klątwa", "wiersz", "rym", "soczyście", "ostro", "dosadnie", "metafora", "epitet"],
+  count: 0,
+};
+
 export function WordPacksPanel({ onSelectPack, onOpenPremium }: WordPacksPanelProps = {}) {
   const { asPolishWords } = useGlobalWords();
   const { isPremium } = useSubscription();
