@@ -20,6 +20,7 @@ import {
   Lightbulb,
   Stethoscope,
   Flag,
+  Feather,
 } from "lucide-react";
 import { categories, words as staticWords } from "@/data/words";
 import { useGlobalWords } from "@/hooks/use-global-words";
@@ -96,6 +97,15 @@ const FLAGS_PACK: WordPack = {
   count: 130,
 };
 
+const POETIC_CURSES_PACK: WordPack = {
+  id: "poetyckie_bluzgi",
+  label: "Poetyckie bluzgi",
+  icon: Feather,
+  isPremium: false,
+  watermarks: ["bluzg", "fraza", "klątwa", "wiersz", "rym", "soczyście", "ostro", "dosadnie", "metafora", "epitet"],
+  count: 0,
+};
+
 export function WordPacksPanel({ onSelectPack, onOpenPremium }: WordPacksPanelProps = {}) {
   const { asPolishWords } = useGlobalWords();
   const { isPremium } = useSubscription();
@@ -170,7 +180,7 @@ export function WordPacksPanel({ onSelectPack, onOpenPremium }: WordPacksPanelPr
 
     const withFlags = [...basePacks];
     withFlags.splice(1, 0, FLAGS_PACK);
-    return [...withFlags, ...premiumPacks];
+    return [...withFlags, POETIC_CURSES_PACK, ...premiumPacks];
   }, [asPolishWords, premiumCounts]);
 
   const handleClick = (pack: WordPack) => {
