@@ -180,7 +180,7 @@ export function WordPacksPanel({ onSelectPack, onOpenPremium }: WordPacksPanelPr
 
     const withFlags = [...basePacks];
     withFlags.splice(1, 0, FLAGS_PACK);
-    return [...withFlags, ...premiumPacks];
+    return [...withFlags, POETIC_CURSES_PACK, ...premiumPacks];
   }, [asPolishWords, premiumCounts]);
 
   const handleClick = (pack: WordPack) => {
