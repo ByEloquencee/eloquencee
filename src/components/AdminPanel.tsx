@@ -547,6 +547,11 @@ export function AdminPanel() {
       </div>
 
       {/* Word list */}
+      {tab === "pending" ? (
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <PendingWordsPanel />
+        </div>
+      ) : (
       <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {tab === "ads" ? (
           sponsoredLoading ? (
