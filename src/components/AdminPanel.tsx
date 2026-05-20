@@ -417,18 +417,29 @@ export function AdminPanel() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           <button
             onClick={() => handleTabChange("global")}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "global" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
             Globalne ({globalWords.length})
           </button>
           <button
+            onClick={() => handleTabChange("pending")}
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+              tab === "pending" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+            }`}
+          >
+            <span className="flex items-center justify-center gap-1">
+              <ClipboardCheck size={12} />
+              Kolejka
+            </span>
+          </button>
+          <button
             onClick={() => handleTabChange("static")}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "static" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
@@ -436,7 +447,7 @@ export function AdminPanel() {
           </button>
           <button
             onClick={() => handleTabChange("suggestions")}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "suggestions" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
@@ -447,7 +458,7 @@ export function AdminPanel() {
           </button>
           <button
             onClick={() => handleTabChange("ads")}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "ads" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
@@ -457,6 +468,12 @@ export function AdminPanel() {
             </span>
           </button>
         </div>
+
+        {tab === "pending" && (
+          <div className="flex-1 min-h-0">
+            <PendingWordsPanel />
+          </div>
+        )}
 
         {/* Search + Actions */}
         {tab !== "suggestions" && tab !== "ads" && (
