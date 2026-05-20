@@ -1,71 +1,124 @@
 
-## Paczki tematyczne — plan implementacji
+# Pending Words — moderation queue for AI vocabulary
 
-### 1. Baza danych
+Build a dedicated, moderator-only moderation system on top of the existing admin panel. All AI-generated or imported words go through this queue first; nothing is published to `global_words` automatically.
 
-**Nowa tabela `pack_word_overrides`** (kuratorska warstwa nad kategoriami):
-- `pack_id` (text) — np. `filozofia`, `showbiznes`
-- `word_id` (text) — id słowa z `global_words` lub statycznego
-- `action` enum `include | exclude`
-- moderator może dodać słowo z innej kategorii (`include`) lub ukryć słowo (`exclude`)
-- RLS: read public, write moderator
+## 1. Database (new table `pending_words`)
 
-**Nowa tabela `pack_premium_words`** (słowa dla 5 paczek Premium, których nie ma w `global_words`):
-- pełne pola jak `global_words` + `pack_id`
-- RLS: read public, write moderator
+New table with every requested field:
 
-**Nowa tabela `pack_progress`** (postęp użytkownika):
-- `user_id`, `pack_id`, `word_id`, `revealed_at`
-- unique `(user_id, pack_id, word_id)`
-- RLS: tylko właściciel
+- `id` (uuid, pk)
+- `word`, `definition`, `simplified_definition`, `example_sentence`, `part_of_speech`
+- `dictionary_source` (text, e.g. `"ai:gemini-2.5-pro"`, `"import:csv"`, `"manual"`, future `"sjp_pwn"`, `"wsjp_pan"`)
+- `source_url` (text, nullable — for future dictionary-API verification)
+- `stylistic_tags` (text[])  — e.g. `{"poetic","archaic","dark-academia"}`
+- `difficulty_level` (text)
+- `category` (text)
+- `ai_confidence_score` (numeric 0–1, nullable)
+- `created_by_ai` (boolean)
+- `verification_status` (text: `pending` | `approved` | `rejected`)
+- `rejection_reason` (text, nullable)
+- `batch_id` (uuid, nullable — groups entries from one "Generate Batch" run)
+- `batch_prompt` (text, nullable)
+- `created_at`, `created_by`
+- `approved_at`, `approved_by`
+- `published_word_id` (uuid, nullable — fk-style link to `global_words.id` once approved)
 
-### 2. Logika paczek (frontend)
+RLS:
+- SELECT / INSERT / UPDATE / DELETE: only `has_role(auth.uid(),'moderator')`.
+- No public access — public users can never see pending content.
 
-Hook `usePackWords(packId)` zwraca słowa paczki:
-1. Jeśli `packId` ∈ darmowe kategorie z `global_words` → filtr po `category` + apply `pack_word_overrides`
-2. Jeśli `packId` ∈ 5 premium → `pack_premium_words` + overrides
-3. `flagi` zostają osobno (już istnieje `FlagsLearningPanel`)
+Indexes on `(verification_status, created_at desc)` and `batch_id`.
 
-**Darmowe:** wszystkie kategorie z `global_words` (filozofia, literatura, psychologia, biznes, religia, historia, sztuka, medycyna, ogólne).
+## 2. Edge functions
 
-**Premium:** Show-biznes, Muzyka, Archaizmy, Nauka, Sport — wymagają `is_premium(user)`.
+### `generate-pending-batch` (new)
+Admin-only (verifies moderator role via JWT). Input:
+```json
+{ "prompt": "poetic insults", "count": 10, "category": "literackie", "difficulty": "advanced", "tags": ["poetic"] }
+```
+- Loops `count` times, calls the existing Lovable AI gateway (`google/gemini-2.5-pro`) with a prompt that returns: `word`, `definition`, `simplified_definition`, `example_sentence`, `etymology`, `stylistic_tags[]`, `ai_confidence_score`.
+- Reuses dedup logic from `generate-word` (skip if word already exists in `global_words` or `pending_words`).
+- Inserts every result into `pending_words` with `verification_status='pending'`, `created_by_ai=true`, `dictionary_source='ai:gemini-2.5-pro'`, shared `batch_id`, `batch_prompt`.
+- Streams progress back (SSE) so UI shows live count.
 
-### 3. UI — kafelek paczki
+### `regenerate-pending-word` (new)
+Takes a `pending_words.id`, re-runs the AI generator using the original `batch_prompt` + the existing word as a "regenerate this entry, keep the same headword or pick a better one" instruction, updates the row in place (status stays `pending`).
 
-W `WordPacksPanel.tsx`:
-- pasek postępu na dole kafelka: `X / Y` + cienka linia pomarańczowa (% opanowanych)
-- Premium kafelki: korona w prawym górnym, lekka opacity dla niepremium użytkowników, klik → `PremiumDialog`
-- Klik darmowej paczki → nowy ekran `PackDetailView`
+### Reuse existing `generate-word`
+Modify so admin-panel single-word generation also writes to `pending_words` instead of returning straight to the form (toggle via `target: "pending" | "draft"` param so existing manual flow is preserved).
 
-### 4. UI — ekran paczki (`PackDetailView`)
+### Reuse existing `classify-words` / `ImportWordsDialog`
+Route imports through `pending_words` too (add a `target=pending` flag). Existing manual "Add" form stays as a moderator escape hatch to push straight to `global_words`.
 
-Header: nazwa, ikona, `back`, postęp `X/Y opanowane`.
+## 3. Approval flow
 
-Dwa CTA:
-- **Rozpocznij sesję** (10 losowych nieopanowanych słów) → reuse `FlashcardStudyView` z prefiltrowaną talią
-- **Przeglądaj wszystkie** → lista słów paczki (klik → otwiera `WordCard` w trybie pojedynczego słowa)
+When a moderator clicks Approve on a pending row:
+1. Insert into `global_words` (mapping `example_sentence` → `example`, picking definition/category/difficulty/etymology, dropping `simplified_definition` and `stylistic_tags` unless we extend `global_words` later).
+2. Update `pending_words` row: `verification_status='approved'`, `approved_at=now()`, `approved_by=auth.uid()`, `published_word_id=<new id>`.
 
-W trakcie sesji/przeglądu — kliknięcie "Pokaż definicję" zapisuje wpis do `pack_progress`. Hook `usePackProgress(packId)` zwraca `mastered: Set<wordId>` i `markRevealed(wordId)`.
+Done in a Postgres function `approve_pending_word(_id uuid)` (SECURITY DEFINER, role-checked) so it's atomic.
 
-### 5. Integracja
+Reject → status `rejected` + optional reason. Keeps the row for audit; hidden from default queue view.
 
-- `Index.tsx`: dodać stan `activePackId`, przełączać `PackDetailView` w miejscu głównego widoku
-- `WordCard` / `FlashcardStudyView`: opcjonalny prop `onReveal(wordId)` wywoływany przy odsłonięciu definicji — w kontekście paczki podpinamy `markRevealed`
-- Premium gate: w `WordPacksPanel` przy klik premium paczki sprawdzamy `useSubscription` — jeśli free → `PremiumDialog`
+Edit → update fields in place on the pending row before approving.
 
-### 6. Seeding (dane startowe)
+## 4. Frontend
 
-Migracja dodaje przykładowe wpisy do `pack_premium_words` (po ~20 słów na paczkę, wygenerowane skryptem AI w panelu admina — na razie pustka i moderator dosypie przez `AdminPanel`). Alternatywnie zostawiamy puste i panel admina otrzymuje filtr paczki w istniejącym importerze AI.
+### New tab in existing `AdminPanel.tsx`
+Add a 5th tab `"Pending"` (icon: `ClipboardCheck`) — sits next to Globalne / Wbudowane / Propozycje / Reklamy. Keeps all existing tabs intact.
 
-### Szczegóły techniczne
+### New component `PendingWordsPanel.tsx`
+Modern moderation table optimized for the project's dark, minimal aesthetic (Playfair display headings, semantic tokens, `bg-secondary`/`border-border`, no custom colors):
 
-- Nazwy paczek i ikony pozostają w `WordPacksPanel.tsx` (`categoryIcons` + `premiumPacksMeta`)
-- `ENABLED_PACKS` znika — dostępność wynika z `is_premium`
-- `learning_history` nietknięte (to globalna metryka "dziś"); `pack_progress` to osobny licznik dla paczek
-- Reuse `FlashcardStudyView` z prop `cards` ograniczonym do słów paczki
-- Quizy/AI/etymologia działają identycznie — paczka to tylko filtr puli słów
+Columns: `Słowo` · `Podgląd definicji` (truncated 1 line) · `Źródło` (badge) · `Pewność` (small progress bar of `ai_confidence_score`) · `Tagi` (chips) · `Status` (badge) · `Akcje`.
 
-### Pytania, na które nie muszę pytać (decyzje domyślne)
-- Sesja = 10 słów, priorytet nieopanowane, potem powtórka
-- Postęp resetowalny: nie (na razie), w przyszłości "wyczyść postęp"
-- Premium block: full-screen `PremiumDialog`, bez podglądu słów paczki
+Row actions (icon buttons): Approve (Check), Reject (X), Edit (Pencil → opens existing dialog pattern), Regenerate (RefreshCw — calls `regenerate-pending-word`).
+
+Top toolbar:
+- Search (word/definition).
+- Status filter pills: Pending (default) / Approved / Rejected / All.
+- Batch filter dropdown (groups by `batch_id` + `batch_prompt`).
+- Bulk select + bulk Approve / bulk Reject (reuses existing `selectMode` pattern from `AdminPanel`).
+
+### New component `GenerateBatchDialog.tsx`
+Triggered from a "Generuj partię" button in the Pending tab header. Fields:
+- Prompt / temat (textarea, with quick-pick chips: "poetyckie wyzwiska", "dark academia", "melancholijne archaizmy", "egzystencjalizm", "barokowe komplementy", custom).
+- Liczba słów (slider 1–25, default 10).
+- Kategoria + poziom trudności (existing selects).
+- Tagi stylistyczne (chip input).
+
+On submit, calls `generate-pending-batch`, shows a progress toast / inline counter, then refreshes the pending list. Never publishes automatically.
+
+### New hook `usePendingWords.ts`
+Mirrors `useGlobalWords` shape: `pending`, `loading`, `approve(id)`, `reject(id, reason?)`, `update(id, patch)`, `regenerate(id)`, `refetch`, with status filter. Realtime channel on `pending_words` so multiple admins see updates live.
+
+### Access control
+- Tab and all routes/components gated by `useModerator().isModerator`. Non-moderators never see the tab and direct rendering returns null.
+- Edge functions check `has_role` server-side before any insert.
+
+## 5. Modularity for future dictionary integrations
+
+- `dictionary_source` + `source_url` are free-form so SJP PWN / WSJP PAN entries can land in the same queue.
+- Add a thin server helper `supabase/functions/_shared/dictionary-providers.ts` with an interface:
+  ```ts
+  interface DictionaryProvider {
+    name: string;        // "sjp_pwn" | "wsjp_pan" | "ai:gemini-2.5-pro"
+    fetchWord(term: string): Promise<PendingDraft>;
+    verify(draft: PendingDraft): Promise<{ ok: boolean; notes?: string }>;
+  }
+  ```
+  Only the AI provider is implemented now; SJP/WSJP are stubs returning "not implemented". The batch function and any future verify-button on a row will route through this registry.
+
+## 6. What is NOT changed
+
+- Existing `global_words`, RLS, public reads, `WordCard`, learning algorithm, packs, quizzes, AI chat, daily email, widget — all untouched.
+- Existing `word_suggestions` flow from regular users stays. (It can later be migrated into `pending_words`; out of scope for this plan.)
+- Existing manual "Dodaj słowo" form keeps the option to publish directly to `global_words` (moderator-only escape hatch).
+
+## Technical notes
+
+- Language: all UI strings in Polish to match the app (`Oczekujące`, `Zatwierdź`, `Odrzuć`, `Edytuj`, `Regeneruj`, `Generuj partię`).
+- Styling: semantic tokens only (`bg-secondary`, `text-foreground`, `border-border`, `text-primary`); no raw colors. Reuse `inputClass` from `AdminPanel`.
+- Animation: subtle `motion` fade/slide on row mount, matching existing admin panel.
+- Migration order: (1) create `pending_words` + RLS + `approve_pending_word` function, (2) deploy new edge functions, (3) ship UI tab + dialog.
