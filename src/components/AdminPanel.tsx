@@ -450,6 +450,28 @@ export function AdminPanel() {
           </button>
         </div>
 
+        {/* Sub-tabs for Słownik */}
+        {(tab === "global" || tab === "static") && (
+          <div className="flex gap-1">
+            <button
+              onClick={() => handleTabChange("global")}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                tab === "global" ? "bg-accent text-accent-foreground" : "bg-secondary/50 text-muted-foreground"
+              }`}
+            >
+              Globalne ({globalWords.length})
+            </button>
+            <button
+              onClick={() => handleTabChange("static")}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                tab === "static" ? "bg-accent text-accent-foreground" : "bg-secondary/50 text-muted-foreground"
+              }`}
+            >
+              Wbudowane ({visibleStaticCount}/{words.length})
+            </button>
+          </div>
+        )}
+
         {/* Search + Actions */}
         {tab !== "suggestions" && tab !== "ads" && tab !== "pending" && (
           <div className="flex gap-2">
