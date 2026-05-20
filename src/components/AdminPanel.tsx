@@ -789,6 +789,7 @@ export function AdminPanel() {
           )
         )}
       </div>
+      )}
 
       {/* Add word modal */}
       <AnimatePresence>
