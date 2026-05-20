@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload, CheckSquare, Square, Shuffle, Info, Megaphone } from "lucide-react";
+import { Plus, Trash2, Search, BookOpen, X, Pencil, Eye, Sparkles, Inbox, Check, Upload, CheckSquare, Square, Shuffle, Info, Megaphone, ClipboardCheck } from "lucide-react";
+import { PendingWordsPanel } from "@/components/PendingWordsPanel";
 import { words, categories, type WordCategory, type PolishWord } from "@/data/words";
 import { useGlobalWords, type GlobalWord } from "@/hooks/use-global-words";
 import { useStaticWordManagement } from "@/hooks/use-static-word-management";
@@ -25,7 +26,7 @@ export function AdminPanel() {
   const { globalWords, addWord, deleteWord, loading, refetch: refetchGlobal } = useGlobalWords();
   const { hiddenIds, overrides, hideWord, unhideWord, saveOverride, deleteOverride } = useStaticWordManagement();
   const { sponsoredWords, updateSponsored, loading: sponsoredLoading } = useSponsoredWords();
-  const [tab, setTab] = useState<"static" | "global" | "suggestions" | "ads">("global");
+  const [tab, setTab] = useState<"static" | "global" | "suggestions" | "ads" | "pending">("global");
   const [editingSponsored, setEditingSponsored] = useState<SponsoredWord | null>(null);
   const [sponsoredForm, setSponsoredForm] = useState({ sponsor_name: "", word: "", part_of_speech: "", definition: "", example: "", etymology: "", link: "", active: true });
   const [sponsoredSubmitting, setSponsoredSubmitting] = useState(false);
@@ -58,7 +59,7 @@ export function AdminPanel() {
     setSuggestionsLoaded(true);
   };
 
-  const handleTabChange = (newTab: "static" | "global" | "suggestions" | "ads") => {
+  const handleTabChange = (newTab: "static" | "global" | "suggestions" | "ads" | "pending") => {
     setTab(newTab);
     setSelectMode(false);
     setSelectedStatic(new Set());
@@ -416,18 +417,29 @@ export function AdminPanel() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           <button
             onClick={() => handleTabChange("global")}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "global" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
             Globalne ({globalWords.length})
           </button>
           <button
+            onClick={() => handleTabChange("pending")}
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+              tab === "pending" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+            }`}
+          >
+            <span className="flex items-center justify-center gap-1">
+              <ClipboardCheck size={12} />
+              Kolejka
+            </span>
+          </button>
+          <button
             onClick={() => handleTabChange("static")}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "static" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
@@ -435,7 +447,7 @@ export function AdminPanel() {
           </button>
           <button
             onClick={() => handleTabChange("suggestions")}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "suggestions" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
@@ -446,7 +458,7 @@ export function AdminPanel() {
           </button>
           <button
             onClick={() => handleTabChange("ads")}
-            className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
               tab === "ads" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
@@ -458,7 +470,7 @@ export function AdminPanel() {
         </div>
 
         {/* Search + Actions */}
-        {tab !== "suggestions" && tab !== "ads" && (
+        {tab !== "suggestions" && tab !== "ads" && tab !== "pending" && (
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -507,7 +519,7 @@ export function AdminPanel() {
         )}
 
         {/* Bulk action bar */}
-        {selectMode && tab !== "suggestions" && tab !== "ads" && (
+        {selectMode && tab !== "suggestions" && tab !== "ads" && tab !== "pending" && (
           <div className="flex items-center gap-2">
             <button
               onClick={tab === "static" ? selectAllStatic : selectAllGlobal}
@@ -535,6 +547,11 @@ export function AdminPanel() {
       </div>
 
       {/* Word list */}
+      {tab === "pending" ? (
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <PendingWordsPanel />
+        </div>
+      ) : (
       <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 px-1 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {tab === "ads" ? (
           sponsoredLoading ? (
@@ -772,6 +789,7 @@ export function AdminPanel() {
           )
         )}
       </div>
+      )}
 
       {/* Add word modal */}
       <AnimatePresence>

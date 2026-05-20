@@ -363,6 +363,84 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_words: {
+        Row: {
+          ai_confidence_score: number | null
+          approved_at: string | null
+          approved_by: string | null
+          batch_id: string | null
+          batch_prompt: string | null
+          category: string
+          created_at: string
+          created_by: string | null
+          created_by_ai: boolean
+          definition: string
+          dictionary_source: string
+          difficulty_level: string
+          etymology: string | null
+          example_sentence: string
+          id: string
+          part_of_speech: string
+          published_word_id: string | null
+          rejection_reason: string | null
+          simplified_definition: string
+          source_url: string | null
+          stylistic_tags: string[]
+          verification_status: string
+          word: string
+        }
+        Insert: {
+          ai_confidence_score?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          batch_id?: string | null
+          batch_prompt?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          created_by_ai?: boolean
+          definition?: string
+          dictionary_source?: string
+          difficulty_level?: string
+          etymology?: string | null
+          example_sentence?: string
+          id?: string
+          part_of_speech?: string
+          published_word_id?: string | null
+          rejection_reason?: string | null
+          simplified_definition?: string
+          source_url?: string | null
+          stylistic_tags?: string[]
+          verification_status?: string
+          word: string
+        }
+        Update: {
+          ai_confidence_score?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          batch_id?: string | null
+          batch_prompt?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          created_by_ai?: boolean
+          definition?: string
+          dictionary_source?: string
+          difficulty_level?: string
+          etymology?: string | null
+          example_sentence?: string
+          id?: string
+          part_of_speech?: string
+          published_word_id?: string | null
+          rejection_reason?: string | null
+          simplified_definition?: string
+          source_url?: string | null
+          stylistic_tags?: string[]
+          verification_status?: string
+          word?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -596,6 +674,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_pending_word: { Args: { _id: string }; Returns: string }
       check_and_increment_ai_usage: {
         Args: { _limit?: number; _user_id: string }
         Returns: {
