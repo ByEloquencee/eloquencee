@@ -403,28 +403,17 @@ export function AdminPanel() {
           <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-display)" }}>
             Panel moderatora
           </h2>
-          <button
-            onClick={() => {
-              window.dispatchEvent(new CustomEvent("eloquencee:demo-stats"));
-              toast.success("Wstrzyknięto losowe statystyki — otwórz panel statystyk");
-            }}
-            className="ml-auto flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-secondary text-xs font-medium text-secondary-foreground hover:bg-accent transition-colors cursor-pointer"
-            title="Wypełnij panel statystyk losowymi danymi (podgląd)"
-          >
-            <Shuffle size={12} />
-            Random statystyki
-          </button>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-1 flex-wrap">
           <button
-            onClick={() => handleTabChange("global")}
+            onClick={() => handleTabChange(tab === "static" ? "static" : "global")}
             className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
-              tab === "global" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+              tab === "global" || tab === "static" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           >
-            Globalne ({globalWords.length})
+            Słownik ({globalWords.length + visibleStaticCount})
           </button>
           <button
             onClick={() => handleTabChange("pending")}
@@ -436,14 +425,6 @@ export function AdminPanel() {
               <ClipboardCheck size={12} />
               Kolejka
             </span>
-          </button>
-          <button
-            onClick={() => handleTabChange("static")}
-            className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
-              tab === "static" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-            }`}
-          >
-            Wbudowane ({visibleStaticCount}/{words.length})
           </button>
           <button
             onClick={() => handleTabChange("suggestions")}
