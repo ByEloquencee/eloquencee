@@ -59,7 +59,7 @@ export function AdminPanel() {
     setSuggestionsLoaded(true);
   };
 
-  const handleTabChange = (newTab: "static" | "global" | "suggestions" | "ads") => {
+  const handleTabChange = (newTab: "static" | "global" | "suggestions" | "ads" | "pending") => {
     setTab(newTab);
     setSelectMode(false);
     setSelectedStatic(new Set());
