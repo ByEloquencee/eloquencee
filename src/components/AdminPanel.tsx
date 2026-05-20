@@ -469,14 +469,8 @@ export function AdminPanel() {
           </button>
         </div>
 
-        {tab === "pending" && (
-          <div className="flex-1 min-h-0">
-            <PendingWordsPanel />
-          </div>
-        )}
-
         {/* Search + Actions */}
-        {tab !== "suggestions" && tab !== "ads" && (
+        {tab !== "suggestions" && tab !== "ads" && tab !== "pending" && (
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
