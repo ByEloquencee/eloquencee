@@ -251,7 +251,7 @@ export function PendingWordsPanel() {
           <p className="text-sm text-muted-foreground text-center py-8">Ładowanie...</p>
         ) : filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">
-            {status === "pending" ? 'Kolejka pusta. Kliknij "Generuj partię" aby zacząć.' : "Brak wyników"}
+            {status === "pending" ? 'Kolejka pusta. Kliknij "Prompt do ChatGPT" aby zacząć.' : "Brak wyników"}
           </p>
         ) : (
           filtered.map((p) => (
