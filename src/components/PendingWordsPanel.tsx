@@ -12,7 +12,7 @@ import {
   Filter,
 } from "lucide-react";
 import { usePendingWords, type PendingWord, type PendingStatusFilter } from "@/hooks/use-pending-words";
-import { GenerateBatchDialog } from "@/components/GenerateBatchDialog";
+import { ChatGPTPromptDialog } from "@/components/ChatGPTPromptDialog";
 import { toast } from "sonner";
 
 const inputClass =
