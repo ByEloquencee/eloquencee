@@ -12,7 +12,7 @@ import {
   Filter,
 } from "lucide-react";
 import { usePendingWords, type PendingWord, type PendingStatusFilter } from "@/hooks/use-pending-words";
-import { GenerateBatchDialog } from "@/components/GenerateBatchDialog";
+import { ChatGPTPromptDialog } from "@/components/ChatGPTPromptDialog";
 import { toast } from "sonner";
 
 const inputClass =
@@ -192,7 +192,7 @@ export function PendingWordsPanel() {
             className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity cursor-pointer"
           >
             <Sparkles size={12} />
-            Generuj partię
+            Prompt do ChatGPT
           </button>
         </div>
 
@@ -251,7 +251,7 @@ export function PendingWordsPanel() {
           <p className="text-sm text-muted-foreground text-center py-8">Ładowanie...</p>
         ) : filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">
-            {status === "pending" ? 'Kolejka pusta. Kliknij "Generuj partię" aby zacząć.' : "Brak wyników"}
+            {status === "pending" ? 'Kolejka pusta. Kliknij "Prompt do ChatGPT" aby zacząć.' : "Brak wyników"}
           </p>
         ) : (
           filtered.map((p) => (
@@ -341,7 +341,7 @@ export function PendingWordsPanel() {
         )}
       </div>
 
-      <GenerateBatchDialog open={batchOpen} onClose={() => setBatchOpen(false)} onDone={refetch} />
+      <ChatGPTPromptDialog open={batchOpen} onClose={() => setBatchOpen(false)} onDone={refetch} />
 
       {/* Edit modal */}
       <AnimatePresence>
