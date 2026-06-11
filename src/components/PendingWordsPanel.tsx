@@ -192,7 +192,7 @@ export function PendingWordsPanel() {
             className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity cursor-pointer"
           >
             <Sparkles size={12} />
-            Generuj partię
+            Prompt do ChatGPT
           </button>
         </div>
 
