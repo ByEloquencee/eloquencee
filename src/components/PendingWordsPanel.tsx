@@ -341,7 +341,7 @@ export function PendingWordsPanel() {
         )}
       </div>
 
-      <GenerateBatchDialog open={batchOpen} onClose={() => setBatchOpen(false)} onDone={refetch} />
+      <ChatGPTPromptDialog open={batchOpen} onClose={() => setBatchOpen(false)} onDone={refetch} />
 
       {/* Edit modal */}
       <AnimatePresence>
