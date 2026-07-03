@@ -494,7 +494,30 @@ export function ChatGPTPromptDialog({ open, onClose, onDone }: Props) {
                     placeholder='[{"word":"...", "definition":"...", ...}]'
                     className={`${inputClass} font-mono text-[11px] leading-relaxed`}
                     rows={14}
+                    disabled={submitting}
                   />
+                  {importProgress && (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">
+                          {importProgress.phase === "walidacja" ? "Walidacja" : "Zapis"}…
+                        </span>
+                        <span className="text-foreground font-medium tabular-nums">
+                          {importProgress.done}/{importProgress.total}
+                        </span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+                        <motion.div
+                          className="h-full bg-primary"
+                          initial={{ width: 0 }}
+                          animate={{
+                            width: `${Math.round((importProgress.done / Math.max(1, importProgress.total)) * 100)}%`,
+                          }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
+                    </div>
+                  )}
                   <button
                     onClick={handleInsert}
                     disabled={submitting || !jsonInput.trim()}
@@ -503,7 +526,7 @@ export function ChatGPTPromptDialog({ open, onClose, onDone }: Props) {
                     {submitting ? (
                       <>
                         <Loader2 size={14} className="animate-spin" />
-                        Zapisuję...
+                        {importProgress?.phase === "walidacja" ? "Sprawdzam…" : "Zapisuję…"}
                       </>
                     ) : (
                       <>
