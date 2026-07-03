@@ -193,12 +193,11 @@ export function ChatGPTPromptDialog({ open, onClose, onDone }: Props) {
       return;
     }
     setSubmitting(true);
-    const toastId = toast.loading(`Przetwarzam ${parsed.length} słów...`);
+    setImportProgress({ done: 0, total: parsed.length, phase: "walidacja" });
     try {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id || null;
 
-      // Refresh existence set
       const [{ data: globals }, { data: pendings }] = await Promise.all([
         supabase.from("global_words").select("word"),
         (supabase.from("pending_words" as any) as any).select("word"),
@@ -216,7 +215,12 @@ export function ChatGPTPromptDialog({ open, onClose, onDone }: Props) {
       const rows: any[] = [];
       let invalid = 0;
       let duplicates = 0;
-      for (const item of parsed) {
+      for (let i = 0; i < parsed.length; i++) {
+        const item = parsed[i];
+        if (i % 5 === 0) {
+          setImportProgress({ done: i, total: parsed.length, phase: "walidacja" });
+          await new Promise((r) => setTimeout(r, 0));
+        }
         if (
           !item ||
           typeof item.word !== "string" ||
@@ -258,29 +262,33 @@ export function ChatGPTPromptDialog({ open, onClose, onDone }: Props) {
       }
 
       if (rows.length === 0) {
-        toast.error(
-          `Nic nie dodano. Duplikaty: ${duplicates}, błędne: ${invalid}`,
-          { id: toastId },
-        );
+        toast.error(`Nic nie dodano. Duplikaty: ${duplicates}, błędne: ${invalid}`);
         setSubmitting(false);
+        setImportProgress(null);
         return;
       }
 
-      const { error } = await (supabase.from("pending_words" as any) as any).insert(rows as any);
-      if (error) throw error;
+      const CHUNK = 5;
+      let saved = 0;
+      setImportProgress({ done: 0, total: rows.length, phase: "zapis" });
+      for (let i = 0; i < rows.length; i += CHUNK) {
+        const chunk = rows.slice(i, i + CHUNK);
+        const { error } = await (supabase.from("pending_words" as any) as any).insert(chunk as any);
+        if (error) throw error;
+        saved += chunk.length;
+        setImportProgress({ done: saved, total: rows.length, phase: "zapis" });
+      }
 
       toast.success(
-        `Dodano ${rows.length}/${parsed.length}${
-          duplicates ? ` (duplikaty: ${duplicates})` : ""
-        }${invalid ? ` (błędne: ${invalid})` : ""}`,
-        { id: toastId },
+        `Dodano ${rows.length} słów${duplicates ? ` (duplikaty: ${duplicates})` : ""}${invalid ? ` (błędne: ${invalid})` : ""}`,
       );
       onDone();
       handleClose();
     } catch (e: any) {
-      toast.error(e.message || "Nie udało się zapisać", { id: toastId });
+      toast.error(e.message || "Nie udało się zapisać");
     } finally {
       setSubmitting(false);
+      setImportProgress(null);
     }
   };
 
