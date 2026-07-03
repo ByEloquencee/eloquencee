@@ -140,6 +140,7 @@ export function ChatGPTPromptDialog({ open, onClose, onDone }: Props) {
     setGeneratedPrompt("");
     setAvoidList([]);
     setJsonInput("");
+    setImportProgress(null);
   };
 
   const handleClose = () => {
