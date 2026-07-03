@@ -127,6 +127,11 @@ export function ChatGPTPromptDialog({ open, onClose, onDone }: Props) {
   const [loadingPrompt, setLoadingPrompt] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [importProgress, setImportProgress] = useState<{
+    done: number;
+    total: number;
+    phase: "walidacja" | "zapis";
+  } | null>(null);
 
   const reset = () => {
     setStep(1);
